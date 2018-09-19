@@ -194,15 +194,21 @@ grammar PyNestML;
   /** ASTNestMLCompilationUnit represents a collection of neurons as stored in a model.
     @attribute neuron: A list of processed models.
   */
-  nestMLCompilationUnit: (neuron | NEWLINE )* EOF;
+  nestMLCompilationUnit: (neuron | synapse | NEWLINE )* EOF;
 
   /** ASTNeuron Represents a single neuron.
     @attribute Name:    The name of the neuron, e.g., ht_neuron.
     @attribute body:    The body of the neuron consisting of several sub-blocks.
   */
-  neuron : 'neuron' NAME body;
+  neuron : 'neuron' NAME neuronBody;
 
-  /** ASTBody The body of the neuron, e.g. internal, state, parameter...
+  /** ASTNeuron Represents a single synapse.
+    @attribute Name:    The name of the synapse, e.g., ht_synapse.
+    @attribute body:    The body of the synapse consisting of several sub-blocks.
+  */
+  synapse : 'synapse' NAME synapseBody;
+
+  /** ASTNeuronBody The body of the neuron, e.g. internal, state, parameter...
     @attribute blockWithVariables: A single block of variables, e.g. the state block.
     @attribute updateBlock: A single update block containing the dynamic behavior.
     @attribute equationsBlock: A block of ode declarations.
@@ -210,8 +216,20 @@ grammar PyNestML;
     @attribute outputBlock: A block of output declarations.
     @attribute function: A block declaring a used-defined function.
   */
-  body: BLOCK_OPEN
+  neuronBody: BLOCK_OPEN
          (NEWLINE | blockWithVariables | equationsBlock | inputBlock | outputBlock | updateBlock | function)*
+         BLOCK_CLOSE;
+
+  /** ASTSynapseBody The body of the neuron, e.g. internal, state, parameter...
+    @attribute blockWithVariables: A single block of variables, e.g. the state block.
+    @attribute updateBlock: A single update block containing the dynamic behavior.
+    @attribute equationsBlock: A block of ode declarations.
+    @attribute inputBlock: A block of input buffer declarations.
+    @attribute outputBlock: A block of output declarations.
+    @attribute function: A block declaring a used-defined function.
+  */
+  synapseBody: BLOCK_OPEN
+         (NEWLINE | blockWithVariables | inputBlock | outputBlock )*
          BLOCK_CLOSE;
 
   /** ASTBlockWithVariables Represent a block with variables and constants, e.g.:
