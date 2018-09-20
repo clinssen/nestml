@@ -99,6 +99,7 @@ class ModelParser(object):
         stream.fill()
         # parse the file
         parser = PyNestMLParser(stream)
+        parser.setTrace(True)
         compilation_unit = parser.nestMLCompilationUnit()
         # create a new visitor and return the new AST
         ast_builder_visitor = ASTBuilderVisitor(stream.tokens)
@@ -196,7 +197,8 @@ class ModelParser(object):
     def parse_body(cls, string):
         # type: (str) -> ASTBody
         (builder, parser) = tokenize(string)
-        ret = builder.visit(parser.body())
+        import pdb;pdb.set_trace()
+        ret = builder.visit(parser.neuronBody())
         ret.accept(ASTHigherOrderVisitor(log_set_added_source_position))
         return ret
 

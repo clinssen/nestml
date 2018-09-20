@@ -322,7 +322,7 @@ class ASTBuilderVisitor(PyNestMLVisitor):
 
     # Visit a parse tree produced by PyNESTMLParser#assignment.
     def visitAssignment(self, ctx):
-        lhs = self.visit(ctx.lhsVariable) if ctx.lhsVariable is not None else None
+        lhs = self.visit(ctx.lhs_variable) if ctx.lhs_variable is not None else None
         is_direct_assignment = True if ctx.directAssignment is not None else False
         is_compound_sum = True if ctx.compoundSum is not None else False
         is_compound_minus = True if ctx.compoundMinus is not None else False
@@ -427,7 +427,7 @@ class ASTBuilderVisitor(PyNestMLVisitor):
     # Visit a parse tree produced by PyNESTMLParser#neuron.
     def visitNeuron(self, ctx):
         name = str(ctx.NAME()) if ctx.NAME() is not None else None
-        body = self.visit(ctx.body()) if ctx.body() is not None else None
+        body = self.visit(ctx.neuronBody()) if ctx.neuronBody() is not None else None
         # after we have constructed the meta_model of the neuron,
         # we can ensure some basic properties which should always hold
         # we have to check if each type of block is defined at most once (except for function), and that input,output
@@ -448,7 +448,7 @@ class ASTBuilderVisitor(PyNestMLVisitor):
         return neuron
 
     # Visit a parse tree produced by PyNESTMLParser#body.
-    def visitBody(self, ctx):
+    def visitNeuronBody(self, ctx):
         """
         Here, in order to ensure that the correct order of elements is kept, we use a method which inspects
         a list of elements and returns the one with the smallest source line.
