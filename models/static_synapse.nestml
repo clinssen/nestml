@@ -1,0 +1,11 @@
+
+
+synapse static:
+
+  parameters:
+    delay = 1 ms
+    w = .1 non_homogeneous
+  end
+
+end
+

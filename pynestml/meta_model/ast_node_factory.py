@@ -52,6 +52,8 @@ from pynestml.meta_model.ast_input_line import ASTInputLine
 from pynestml.meta_model.ast_input_type import ASTInputType
 from pynestml.meta_model.ast_signal_type import ASTSignalType
 from pynestml.meta_model.ast_neuron import ASTNeuron
+from pynestml.meta_model.ast_synapse import ASTSynapse
+from pynestml.meta_model.ast_synapse_body import ASTSynapseBody
 from pynestml.meta_model.ast_nestml_compilation_unit import ASTNestMLCompilationUnit
 from pynestml.meta_model.ast_ode_equation import ASTOdeEquation
 from pynestml.meta_model.ast_ode_function import ASTOdeFunction
@@ -250,17 +252,29 @@ class ASTNodeFactory(object):
         return ASTLogicalOperator(is_logical_and, is_logical_or, source_position)
 
     @classmethod
-    def create_ast_nestml_compilation_unit(cls, list_of_neurons, source_position, artifact_name):
+    def create_ast_nestml_compilation_unit(cls, list_of_neurons, list_of_synapses, source_position, artifact_name):
         # type: (list(ASTNeuron),ASTSourceLocation,str) -> ASTNestMLCompilationUnit
         instance = ASTNestMLCompilationUnit(source_position, artifact_name)
         for i in list_of_neurons:
             instance.add_neuron(i)
+        for i in list_of_synapses:
+            instance.add_synapse(i)
         return instance
 
     @classmethod
     def create_ast_neuron(cls, name, body, source_position, artifact_name):
         # type: (str,ASTBody,ASTSourceLocation,str) -> ASTNeuron
         return ASTNeuron(name, body, source_position, artifact_name)
+
+    @classmethod
+    def create_ast_synapse(cls, name, body, source_position, artifact_name):
+        # type: (str,ASTBody,ASTSourceLocation,str) -> ASTNeuron
+        return ASTSynapse(name, body, source_position, artifact_name)
+
+    @classmethod
+    def create_ast_synapse_body(cls, body_elements, source_position):
+        # type: (str,ASTBody,ASTSourceLocation,str) -> ASTNeuron
+        return ASTSynapseBody(body_elements, source_position)
 
     @classmethod
     def create_ast_ode_equation(cls, lhs, rhs, source_position):

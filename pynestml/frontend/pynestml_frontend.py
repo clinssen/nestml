@@ -99,6 +99,7 @@ def process():
     neurons = list()
     for compilationUnit in compilation_units:
         neurons.extend(compilationUnit.get_neuron_list())
+    import pdb;pdb.set_trace()
     # check if across two files two neurons with same name have been defined
     CoCosManager.check_not_two_neurons_across_units(compilation_units)
     # now exclude those which are broken, i.e. have errors.

@@ -43,6 +43,8 @@ from pynestml.meta_model.ast_input_type import ASTInputType
 from pynestml.meta_model.ast_logical_operator import ASTLogicalOperator
 from pynestml.meta_model.ast_nestml_compilation_unit import ASTNestMLCompilationUnit
 from pynestml.meta_model.ast_neuron import ASTNeuron
+from pynestml.meta_model.ast_synapse import ASTSynapse
+from pynestml.meta_model.ast_synapse_body import ASTSynapseBody
 from pynestml.meta_model.ast_ode_equation import ASTOdeEquation
 from pynestml.meta_model.ast_ode_function import ASTOdeFunction
 from pynestml.meta_model.ast_ode_shape import ASTOdeShape
@@ -89,11 +91,27 @@ class ASTVisitor(object):
         """
         return
 
+    def visit_synapse(self, node):
+        """
+        Used to visit a single synapse.
+        :return: a single synapse.
+        :rtype: ASTSynapse
+        """
+        return
+
     def visit_body(self, node):
         """
         Used to visit a single neuron body.
         :param node: a single body element.
         :type node: ASTBody
+        """
+        return
+
+    def visit_synapse_body(self, node):
+        """
+        Used to visit a single synapse body.
+        :param node: a single synapseBody element.
+        :type node: ASTSynapseBody
         """
         return
 
@@ -396,11 +414,27 @@ class ASTVisitor(object):
         """
         return
 
+    def endvisit_synapse(self, node):
+        """
+        Used to endvisit a single synapse.
+        :return: a single synapse.
+        :rtype: ASTSynapse
+        """
+        return
+
     def endvisit_body(self, node):
         """
         Used to endvisit a single neuron body.
         :param node: a single body element.
         :type node: ASTBody
+        """
+        return
+
+    def endvisit_synapse_body(self, node):
+        """
+        Used to endvisit a single synapse body.
+        :param node: a single synapseBody element.
+        :type node: ASTSynapseBody
         """
         return
 
@@ -787,6 +821,12 @@ class ASTVisitor(object):
         if isinstance(node, ASTNeuron):
             self.visit_neuron(node)
             return
+        if isinstance(node, ASTSynapse):
+            self.visit_synapse(node)
+            return
+        if isinstance(node, ASTSynapseBody):
+            self.visit_synapse_body(node)
+            return
         if isinstance(node, ASTOdeEquation):
             self.visit_ode_equation(node)
             return
@@ -912,6 +952,12 @@ class ASTVisitor(object):
         if isinstance(node, ASTNeuron):
             self.traverse_neuron(node)
             return
+        if isinstance(node, ASTSynapse):
+            self.traverse_synapse(node)
+            return
+        if isinstance(node, ASTSynapseBody):
+            self.traverse_synapse_body(node)
+            return
         if isinstance(node, ASTOdeEquation):
             self.traverse_ode_equation(node)
             return
@@ -980,6 +1026,9 @@ class ASTVisitor(object):
         if isinstance(node, ASTBody):
             self.endvisit_body(node)
             return
+        if isinstance(node, ASTSynapseBody):
+            self.endvisit_synapse_body(node)
+            return
         if isinstance(node, ASTComparisonOperator):
             self.endvisit_comparison_operator(node)
             return
@@ -1036,6 +1085,9 @@ class ASTVisitor(object):
             return
         if isinstance(node, ASTNeuron):
             self.endvisit_neuron(node)
+            return
+        if isinstance(node, ASTSynapse):
+            self.endvisit_synapse(node)
             return
         if isinstance(node, ASTOdeEquation):
             self.endvisit_ode_equation(node)
@@ -1109,6 +1161,12 @@ class ASTVisitor(object):
     def traverse_body(self, node):
         if node.get_body_elements() is not None:
             for sub_node in node.get_body_elements():
+                sub_node.accept(self.get_real_self())
+        return
+
+    def traverse_synapse_body(self, node):
+        if node.get_synapse_body_elements() is not None:
+            for sub_node in node.get_synapse_body_elements():
                 sub_node.accept(self.get_real_self())
         return
 
@@ -1241,9 +1299,17 @@ class ASTVisitor(object):
         if node.get_neuron_list() is not None:
             for sub_node in node.get_neuron_list():
                 sub_node.accept(self.get_real_self())
+        if node.get_synapse_list() is not None:
+            for sub_node in node.get_synapse_list():
+                sub_node.accept(self.get_real_self())
         return
 
     def traverse_neuron(self, node):
+        if node.get_body() is not None:
+            node.get_body().accept(self.get_real_self())
+        return
+
+    def traverse_synapse(self, node):
         if node.get_body() is not None:
             node.get_body().accept(self.get_real_self())
         return
