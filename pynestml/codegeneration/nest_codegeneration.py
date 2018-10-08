@@ -66,6 +66,8 @@ template_sli_init = setup_env.get_template('SLI_Init.jinja2')
 template_neuron_h_file = env.get_template('NeuronHeader.jinja2')
 # setup the neuron implementation template
 template_neuron_cpp_file = env.get_template('NeuronClass.jinja2')
+# setup the neuron implementation template
+template_synapse_cpp_file = env.get_template('SynapseClass.jinja2')
 
 _printer = ExpressionsPrettyPrinter()
 
@@ -143,15 +145,42 @@ def analyse_and_generate_neuron(neuron):
         transform_shapes_and_odes(neuron, shape_to_buffers)
         # update the symbol table
         neuron.accept(ASTSymbolTableVisitor())
-    generate_nest_code(neuron)
+    generate_nest_code_neuron(neuron)
     # now store the transformed model
     store_transformed_model(neuron)
     # at that point all shapes are transformed into the ODE form and spikes can be applied
     code, message = Messages.get_code_generated(neuron.get_name(), FrontendConfiguration.get_target_path())
     Logger.log_message(neuron, code, message, neuron.get_source_position(), LoggingLevel.INFO)
 
+def analyse_and_generate_synapses(synapses):
+    # type: (list(ASTNeuron)) -> None
+    """
+    Analysis a list of synapses, solves them and generates the corresponding code.
+    :param synapses: a list of synapses.
+    """
+    for synapse in synapses:
+        if Logger.logging_level == LoggingLevel.INFO:
+            print("Generates code for the synapse {}.".format(synapse.get_name()))
+        analyse_and_generate_synapse(synapse)
 
-def generate_nest_code(neuron):
+
+def analyse_and_generate_synapse(synapse):
+    # type: (ASTNeuron) -> None
+    """
+    Analysis a single synapse, solves it and generates the corresponding code.
+    :param synapse: a single synapse.
+    """
+    code, message = Messages.get_start_processing_synapse(synapse.get_name())
+    Logger.log_message(synapse, code, message, synapse.get_source_position(), LoggingLevel.INFO)
+    generate_nest_code_synapse(synapse)
+    # now store the transformed model
+    store_transformed_model(synapse)
+    # at that point all shapes are transformed into the ODE form and spikes can be applied
+    code, message = Messages.get_code_generated(synapse.get_name(), FrontendConfiguration.get_target_path())
+    Logger.log_message(synapse, code, message, synapse.get_source_position(), LoggingLevel.INFO)
+
+
+def generate_nest_code_neuron(neuron):
     # type: (ASTNeuron) -> None
     """
     For a handed over neuron, this method generates the corresponding header and implementation file.
@@ -161,6 +190,16 @@ def generate_nest_code(neuron):
         os.makedirs(FrontendConfiguration.get_target_path())
     generate_model_h_file(neuron)
     generate_neuron_cpp_file(neuron)
+
+
+def generate_nest_code_synapse(synapse):
+    # type: (ASTSynapse) -> None
+    """
+    """
+    if not os.path.isdir(FrontendConfiguration.get_target_path()):
+        os.makedirs(FrontendConfiguration.get_target_path())
+    # generate_model_h_file(neuron) # XXX: TODO
+    generate_synapse_cpp_file(synapse)
 
 
 def generate_model_h_file(neuron):
@@ -184,6 +223,16 @@ def generate_neuron_cpp_file(neuron):
     neuron_cpp_file = template_neuron_cpp_file.render(setup_generation_helpers(neuron))
     with open(str(os.path.join(FrontendConfiguration.get_target_path(), neuron.get_name())) + '.cpp', 'w+') as f:
         f.write(str(neuron_cpp_file))
+
+def generate_synapse_cpp_file(synapse):
+    # type: (ASTNeuron) -> None
+    """
+    For a handed over neuron, this method generates the corresponding implementation file.
+    :param neuron: a single neuron object.
+    """
+    synapse_cpp_file = template_synapse_cpp_file.render(setup_generation_helpers_synapse(synapse))
+    with open(str(os.path.join(FrontendConfiguration.get_target_path(), synapse.get_name())) + '.h', 'w+') as f:
+        f.write(str(synapse_cpp_file))
 
 
 def setup_generation_helpers(neuron):
@@ -219,6 +268,41 @@ def setup_generation_helpers(neuron):
     namespace['now'] = datetime.datetime.utcnow()
 
     define_solver_type(neuron, namespace)
+    return namespace
+
+def setup_generation_helpers_synapse(synapse):
+    """
+    Returns a standard namespace with often required functionality.
+    :param synapse: a single synapse instance
+    :type synapse: ASTNeuron
+    :return: a map from name to functionality.
+    :rtype: dict
+    """
+    gsl_converter = GSLReferenceConverter()
+    gsl_printer = LegacyExpressionPrinter(gsl_converter)
+    # helper classes and objects
+    converter = NESTReferenceConverter(False)
+    legacy_pretty_printer = LegacyExpressionPrinter(converter)
+
+    namespace = dict()
+
+    namespace['synapseName'] = synapse.get_name()
+    namespace['synapse'] = synapse
+    namespace['moduleName'] = FrontendConfiguration.get_module_name()
+    namespace['printer'] = NestPrinter(legacy_pretty_printer)
+    namespace['assignments'] = NestAssignmentsHelper()
+    namespace['names'] = NestNamesConverter()
+    namespace['declarations'] = NestDeclarationsHelper()
+    namespace['utils'] = ASTUtils()
+    namespace['idemPrinter'] = LegacyExpressionPrinter()
+    # namespace['outputEvent'] = namespace['printer'].print_output_event(synapse.get_synapse_body())
+    # namespace['is_spike_input'] = ASTUtils.is_spike_input(synapse.get_synapse_body())
+    # namespace['is_current_input'] = ASTUtils.is_current_input(synapse.get_synapse_body())
+    # namespace['odeTransformer'] = OdeTransformer()
+    # namespace['printerGSL'] = gsl_printer
+    namespace['now'] = datetime.datetime.utcnow()
+
+    # define_solver_type(synapse, namespace)    # XXX: TODO?
     return namespace
 
 

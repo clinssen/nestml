@@ -746,6 +746,7 @@ class ASTVisitor(object):
         :param node: The ASTElement to visit
         :type node:  ASTElement or inherited
         """
+        
         if isinstance(node, ASTArithmeticOperator):
             self.visit_arithmetic_operator(node)
             return

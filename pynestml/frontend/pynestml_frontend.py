@@ -22,7 +22,7 @@ import os
 import sys
 
 from pynestml.cocos.co_cos_manager import CoCosManager
-from pynestml.codegeneration.nest_codegeneration import analyse_and_generate_neurons, generate_nest_module_code
+from pynestml.codegeneration.nest_codegeneration import analyse_and_generate_neurons, analyse_and_generate_synapses, generate_nest_module_code
 from pynestml.frontend.frontend_configuration import FrontendConfiguration, InvalidPathException, \
     qualifier_store_log_arg, qualifier_module_name_arg, qualifier_logging_level_arg, qualifier_dry_arg, \
     qualifier_target_arg, qualifier_path_arg, qualifier_dev_arg
@@ -97,26 +97,40 @@ def process():
             compilation_units.append(parsed_unit)
     # generate a list of all neurons
     neurons = list()
+    synapses = list()
     for compilationUnit in compilation_units:
         neurons.extend(compilationUnit.get_neuron_list())
-    import pdb;pdb.set_trace()
+        synapses.extend(compilationUnit.get_synapse_list())
+
     # check if across two files two neurons with same name have been defined
     CoCosManager.check_not_two_neurons_across_units(compilation_units)
+    #CoCosManager.check_not_two_synapses_across_units(compilation_units)    # XXX: TODO
     # now exclude those which are broken, i.e. have errors.
     if not FrontendConfiguration.is_dev():
         for neuron in neurons:
             if Logger.has_errors(neuron):
                 code, message = Messages.get_neuron_contains_errors(neuron.get_name())
-                Logger.log_message(neuron=neuron, code=code, message=message,
+                Logger.log_message(astobject=neuron, code=code, message=message,
                                    error_position=neuron.get_source_position(),
                                    log_level=LoggingLevel.INFO)
                 neurons.remove(neuron)
+        for synapse in synapses:
+            if Logger.has_errors(synapse):
+                code, message = Messages.get_neuron_contains_errors(synapse.get_name())
+                Logger.log_message(astobject=synapse, code=code, message=message,
+                                   error_position=synapse.get_source_position(),
+                                   log_level=LoggingLevel.INFO)
+                synapses.remove(synapse)
     if not FrontendConfiguration.is_dry_run():
-        analyse_and_generate_neurons(neurons)
-        generate_nest_module_code(neurons)
+        if len(neurons) > 0:
+            analyse_and_generate_neurons(neurons)
+            generate_nest_module_code(neurons)
+        if len(synapses) > 0:
+            analyse_and_generate_synapses(synapses)
+            # generate_nest_module_code(synapses)    # XXX: TODO
     else:
         code, message = Messages.get_dry_run()
-        Logger.log_message(neuron=None, code=code, message=message, log_level=LoggingLevel.INFO)
+        Logger.log_message(astobject=None, code=code, message=message, log_level=LoggingLevel.INFO)
     if FrontendConfiguration.store_log:
         store_log_to_file()
     return

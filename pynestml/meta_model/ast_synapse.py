@@ -56,7 +56,6 @@ class ASTSynapse(ASTNode):
         :type artifact_name: str
         """
         print("In ASTSynapse::__init__()")
-        import pdb;pdb.set_trace()
 
         assert isinstance(name, str), \
             '(PyNestML.AST.Synapse) No  or wrong type of synapse name provided (%s)!' % type(name)
@@ -81,7 +80,7 @@ class ASTSynapse(ASTNode):
         """
         Return the body of the synapse.
         :return: the body containing the definitions.
-        :rtype: ASTBody
+        :rtype: ASTSynapseBody
         """
         return self.body
 
@@ -101,7 +100,7 @@ class ASTSynapse(ASTNode):
         """
         ret = list()
         from pynestml.meta_model.ast_function import ASTFunction
-        for elem in self.get_body().get_body_elements():
+        for elem in self.get_body().get_synapse_body_elements():
             if isinstance(elem, ASTFunction):
                 ret.append(elem)
         return ret
@@ -115,7 +114,7 @@ class ASTSynapse(ASTNode):
         """
         ret = list()
         from pynestml.meta_model.ast_block_with_variables import ASTBlockWithVariables
-        for elem in self.get_body().get_body_elements():
+        for elem in self.get_body().get_synapse_body_elements():
             if isinstance(elem, ASTBlockWithVariables) and elem.is_parameters:
                 ret.append(elem)
         if isinstance(ret, list) and len(ret) == 1:
@@ -133,7 +132,7 @@ class ASTSynapse(ASTNode):
         """
         ret = list()
         from pynestml.meta_model.ast_block_with_variables import ASTBlockWithVariables
-        for elem in self.get_body().get_body_elements():
+        for elem in self.get_body().get_synapse_body_elements():
             if isinstance(elem, ASTBlockWithVariables) and elem.is_internals:
                 ret.append(elem)
         if isinstance(ret, list) and len(ret) == 1:

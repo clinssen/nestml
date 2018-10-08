@@ -3,8 +3,9 @@
 synapse static:
 
   parameters:
-    delay = 1 ms
-    w = .1 non_homogeneous
+    #w = 1.
+    delay ms = 1 ms
+    #w = .1 non_homogeneous
   end
 
 end

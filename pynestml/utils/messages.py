@@ -268,6 +268,20 @@ class Messages(object):
         return MessageCode.START_PROCESSING_NEURON, message
 
     @classmethod
+    def get_start_processing_synapse(cls, synapse_name):
+        """
+        Returns a message indicating that the processing of a synapse is started.
+        :param synapse_name: the name of the synapse
+        :type synapse_name: str
+        :return: a message
+        :rtype: (MessageCode,str)
+        """
+        assert (synapse_name is not None and isinstance(synapse_name, str)), \
+            '(PyNestML.Utils.Message) Not a string provided (%s)!' % type(synapse_name)
+        message = 'Starts processing of the synapse \'' + synapse_name + '\''
+        return MessageCode.START_PROCESSING_SYNAPSE, message
+
+    @classmethod
     def get_code_generated(cls, neuron_name, path):
         """
         Returns a message indicating that code has been successfully generated for a neuron in a certain path.
@@ -962,3 +976,4 @@ class MessageCode(Enum):
     INTERNAL_WARNING = 56
     OPERATION_NOT_DEFINED = 57
     CONVOLVE_NEEDS_BUFFER_PARAMETER = 58
+    START_PROCESSING_SYNAPSE = 59
