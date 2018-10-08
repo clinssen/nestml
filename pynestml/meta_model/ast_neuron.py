@@ -43,9 +43,17 @@ class ASTNeuron(ASTNode):
         artifact_name = None
     """
 
-    def __init__(self, body_elements, source_position=None):
+    def __init__(self, name, body, source_position=None, artifact_name=None):
         """
-        ...
+        Standard constructor.
+        :param name: the name of the neuron.
+        :type name: str
+        :param body: the body containing the definitions.
+        :type body: ASTBody
+        :param source_position: the position of this element in the source file.
+        :type source_position: ASTSourceLocation.
+        :param artifact_name: the name of the file this neuron is contained in
+        :type artifact_name: str
         """
         assert isinstance(name, str), \
             '(PyNestML.AST.Neuron) No  or wrong type of neuron name provided (%s)!' % type(name)
