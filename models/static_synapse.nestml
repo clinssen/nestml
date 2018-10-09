@@ -1,5 +1,4 @@
 
-
 synapse static:
 
   parameters:
@@ -9,4 +8,3 @@ synapse static:
   end
 
 end
-

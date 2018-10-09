@@ -39,11 +39,13 @@ class ASTNumericLiteralVisitor(ASTVisitor):
         :return: no value returned, the type is updated in-place
         :rtype: void
         """
+        print("In ASTNumericLiteralVisitor::visit_simple_expression(): node = " + str(node) + ", node.get_variable() = " + str(node.get_variable()))
         assert node.get_scope() is not None, "Run symboltable creator."
         # if variable is also set in this rhs, the var type overrides the literal
         if node.get_variable() is not None:
             scope = node.get_scope()
             var_name = node.get_variable().get_name()
+            import pdb;pdb.set_trace()
             variable_symbol_resolve = scope.resolve_to_symbol(var_name, SymbolKind.VARIABLE)
             node.type = variable_symbol_resolve.get_type_symbol()
             node.type.referenced_object = node

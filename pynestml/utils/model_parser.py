@@ -136,6 +136,9 @@ class ModelParser(object):
         for neuron in ast.get_neuron_list():
             neuron.accept(ASTSymbolTableVisitor())
             SymbolTable.add_neuron_scope(neuron.get_name(), neuron.get_scope())
+        for synapse in ast.get_synapse_list():
+            synapse.accept(ASTSymbolTableVisitor())
+            SymbolTable.add_synapse_scope(synapse.get_name(), synapse.get_scope())
         return ast
 
     @classmethod

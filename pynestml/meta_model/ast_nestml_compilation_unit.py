@@ -125,15 +125,6 @@ class ASTNestMLCompilationUnit(ASTNode):
 
 
 
-
-
-
-
-
-
-
-
-
     def get_parent(self, ast):
         """
         Indicates whether a this node contains the handed over node.

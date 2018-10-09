@@ -55,6 +55,7 @@ class ASTNeuron(ASTNode):
         :param artifact_name: the name of the file this neuron is contained in
         :type artifact_name: str
         """
+        print("In ASTNeuron::__init__(), name = " + name)
         assert isinstance(name, str), \
             '(PyNestML.AST.Neuron) No  or wrong type of neuron name provided (%s)!' % type(name)
         assert isinstance(body, ASTBody), \
@@ -323,6 +324,7 @@ class ASTNeuron(ASTNode):
         :return: a list of parameter symbols.
         :rtype: list(VariableSymbol)
         """
+        print("In ASTNeuron::get_parameter_symbols()")
         symbols = self.get_scope().get_symbols_in_this_scope()
         ret = list()
         for symbol in symbols:

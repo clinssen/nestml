@@ -117,6 +117,7 @@ class ASTSymbolTableVisitor(ASTVisitor):
         """
         # set current processed synapse
         # Logger.set_current_synapse(node)
+        import pdb;pdb.set_trace()
         code, message = Messages.get_start_building_symbol_table()
         Logger.log_message(astobject=node, code=code, error_position=node.get_source_position(),
                            message=message, log_level=LoggingLevel.INFO)
@@ -129,12 +130,12 @@ class ASTSymbolTableVisitor(ASTVisitor):
         node.get_body().update_scope(scope)
         import pdb;pdb.set_trace()
         # now first, we add all predefined elements to the scope
-        # variables = PredefinedVariables.get_variables()
-        # functions = PredefinedFunctions.get_function_symbols()
-        # for symbol in variables.keys():
-        #     node.get_scope().add_symbol(variables[symbol])
-        # for symbol in functions.keys():
-        #     node.get_scope().add_symbol(functions[symbol])
+        variables = PredefinedVariables.get_variables()
+        functions = PredefinedFunctions.get_function_symbols()
+        for symbol in variables.keys():
+            node.get_scope().add_symbol(variables[symbol])
+        for symbol in functions.keys():
+            node.get_scope().add_symbol(functions[symbol])
         return
 
     def endvisit_synapse(self, node):

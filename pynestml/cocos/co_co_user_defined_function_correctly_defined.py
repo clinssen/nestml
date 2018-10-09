@@ -19,6 +19,7 @@
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 from pynestml.meta_model.ast_compound_stmt import ASTCompoundStmt
 from pynestml.meta_model.ast_neuron import ASTNeuron
+from pynestml.meta_model.ast_synapse import ASTSynapse
 from pynestml.meta_model.ast_small_stmt import ASTSmallStmt
 from pynestml.meta_model.ast_stmt import ASTStmt
 from pynestml.cocos.co_co import CoCo
@@ -54,7 +55,7 @@ class CoCoUserDefinedFunctionCorrectlyDefined(CoCo):
         :param _neuron: a single neuron instance.
         :type _neuron: ASTNeuron
         """
-        assert (_neuron is not None and isinstance(_neuron, ASTNeuron)), \
+        assert (_neuron is not None and (isinstance(_neuron, ASTNeuron) or isinstance(_neuron, ASTSynapse))), \
             '(PyNestML.CoCo.FunctionCallsConsistent) No or wrong type of neuron provided (%s)!' % type(_neuron)
         cls.__neuronName = _neuron.get_name()
         for userDefinedFunction in _neuron.get_functions():
@@ -70,7 +71,7 @@ class CoCoUserDefinedFunctionCorrectlyDefined(CoCo):
             elif symbol is not None and userDefinedFunction.has_return_type() and \
                     not symbol.get_return_type().equals(PredefinedTypes.get_void_type()):
                 code, message = Messages.get_no_return()
-                Logger.log_message(neuron=_neuron, code=code, message=message,
+                Logger.log_message(astobject=_neuron, code=code, message=message,
                                    error_position=userDefinedFunction.get_source_position(),
                                    log_level=LoggingLevel.ERROR)
         return

@@ -432,6 +432,7 @@ class ASTBuilderVisitor(PyNestMLParserVisitor):
     # Visit a parse tree produced by PyNESTMLParser#neuron.
     def visitNeuron(self, ctx):
         name = str(ctx.NAME()) if ctx.NAME() is not None else None
+        print("In ASTBuilderVisitor::visitNeuron(): name = " + str(name))
         body = self.visit(ctx.body()) if ctx.body() is not None else None
         # after we have constructed the meta_model of the neuron,
         # we can ensure some basic properties which should always hold
@@ -455,6 +456,7 @@ class ASTBuilderVisitor(PyNestMLParserVisitor):
     # Visit a parse tree produced by PyNESTMLParser#neuron.
     def visitSynapse(self, ctx):
         name = str(ctx.NAME()) if ctx.NAME() is not None else None
+        print("In ASTBuilderVisitor::visitSynapse(): name = " + str(name))
         body = self.visit(ctx.synapseBody()) if ctx.synapseBody() is not None else None
         # after we have constructed the meta_model of the neuron,
         # we can ensure some basic properties which should always hold
@@ -467,7 +469,7 @@ class ASTBuilderVisitor(PyNestMLParserVisitor):
         synapse = ASTNodeFactory.create_ast_synapse(name=name, body=body, source_position=create_source_pos(ctx),
                                                   artifact_name=artifact_name)
         # update the comments
-        print(str(self) + ": __comments = " + str(self.__comments))
+        #print(str(self) + ": __comments = " + str(self.__comments))
 
         update_node_comments(synapse, self.__comments.visit(ctx))
         # in order to enable the logger to print correct messages set as the source the corresponding neuron
