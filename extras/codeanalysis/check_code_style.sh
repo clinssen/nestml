@@ -30,7 +30,7 @@ GIT_END_SHA=HEAD                 # '<master>..<HEAD>' are processed.
 
 VERA=vera++                      # The names of the static code analysis tools executables.
 CPPCHECK=cppcheck                #    CPPCHECK version 1.69 or later is required !
-CLANG_FORMAT=clang-format-3.6    #    CLANG-FORMAT version 3.6 and only this version is required !
+CLANG_FORMAT=clang-format        #    CLANG-FORMAT version 3.6 and only this version is required !
 PEP8=pep8
 
 PERFORM_VERA=true                # Perform VERA++ analysis.
@@ -39,6 +39,16 @@ PERFORM_CLANG_FORMAT=true        # Perform CLANG-FORMAT analysis.
 PERFORM_PEP8=true                # Perform PEP8 analysis.
 
 INCREMENTAL=false                # Do not prompt the user before each file analysis.
+
+# verlt, verlte due to @kanaka and @heemayl, stackoverflow.com, fetched Nov 7, 2018
+verlte() {
+    [  "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]
+}
+
+verlt() {
+    [ "$1" = "$2" ] && return 1 || verlte $1 $2
+}
+
 
 # Exit script on 'Unknown option' condition.
 # error_unknown_option "option"
@@ -253,7 +263,7 @@ EXTENDED_REGEX_PARAM=r
 if $PERFORM_VERA; then
   $VERA ./extras/codeanalysis/verify.cpp >/dev/null 2>&1 || error_exit "Failed to verify the VERA++ installation. Executable: $VERA"
   $VERA --profile nestml ./extras/codeanalysis/verify.cpp >/dev/null 2>&1 || error_exit \
-  "Failed to verify the VERA++ installation. The profile 'nest' could not be found. See https://nest.github.io/nest-simulator/coding_guidelines_c++#vera-profile-nest"
+  "Failed to verify the VERA++ installation. The profile 'nestml' could not be found. See https://nest.github.io/nest-simulator/coding_guidelines_c++#vera-profile-nest"
 fi
 
 # Verify the CPPCHECK installation. CPPCHECK version 1.69 or later is required.
@@ -263,20 +273,20 @@ if $PERFORM_CPPCHECK; then
   cppcheck_version=`$CPPCHECK --version | sed 's/^Cppcheck //'`
   IFS=\. read -a cppcheck_version_a <<< "$cppcheck_version"
   if [[ ${cppcheck_version_a[0]} -lt 1 ]]; then
-    error_exit "Failed to verify the CPPCHECK installation. Version 1.69 or later is requires. The executable '$CPPCHECK' is of version $cppcheck_version."
+    error_exit "Failed to verify the CPPCHECK installation. Version 1.69 or later is required. The executable '$CPPCHECK' is of version $cppcheck_version."
   elif [[ ${cppcheck_version_a[0]} -eq 1 && ${cppcheck_version_a[1]} -lt 69 ]]; then
-    error_exit "Failed to verify the CPPCHECK installation. Version 1.69 or later is requires. The executable '$CPPCHECK' is of version $cppcheck_version."
+    error_exit "Failed to verify the CPPCHECK installation. Version 1.69 or later is required. The executable '$CPPCHECK' is of version $cppcheck_version."
   fi
 fi
 
-# Verify the CLANG-FORMAT installation. CLANG-FORMAT version 3.6 and only 3.6 is required.
-# The CLANG-FORMAT versions up to and including 3.5 do not support all configuration options required for NEST. 
-# Version 3.7 introduced a different formatting. NEST relies on the formatting of version 3.6.
+# Verify the CLANG-FORMAT installation.
 if $PERFORM_CLANG_FORMAT; then
   $CLANG_FORMAT -style=./.clang-format ./extras/codeanalysis/verify.cpp >/dev/null 2>&1 || error_exit "Failed to verify the CLANG-FORMAT installation. Executable: $CLANG_FORMAT"
   clang_format_version=`$CLANG_FORMAT --version | sed -${EXTENDED_REGEX_PARAM} 's/^.*([0-9]\.[0-9])\..*/\1/'`
-  if [[ "x$clang_format_version" != "x3.6" ]]; then
-    error_exit "Failed to verify the CLANG-FORMAT installation. Version 3.6 is requires. The executable '$CLANG_FORMAT' is of version $clang_format_version."
+  verlte 4.0 "$clang_format_version"
+  retVal=$?
+  if [[ $retVal -ne 0 ]]; then
+    error_exit "Failed to verify the CLANG-FORMAT installation. Version 4.0 is required. The executable '$CLANG_FORMAT' is of version $clang_format_version."
   fi
 fi
 

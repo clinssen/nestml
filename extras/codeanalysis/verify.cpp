@@ -21,7 +21,6 @@
  */
 
 int main() {
-  printf( "This source file is used to check the installation of the static code analysis tools.\n" );
-  return( 0 );
+  printf("This source file is used to check the installation of the static code analysis tools.\n");
+  return 0;
 }
-
