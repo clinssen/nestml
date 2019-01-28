@@ -108,11 +108,4 @@ class RealTypeSymbol(TypeSymbol):
         return self.binary_operation_not_defined_error('-', other)
 
     def is_castable_to(self, _other_type):
-        from pynestml.symbols.boolean_type_symbol import BooleanTypeSymbol
-        from pynestml.symbols.integer_type_symbol import IntegerTypeSymbol
-        if _other_type.is_instance_of(BooleanTypeSymbol):
-            return True
-        elif _other_type.is_instance_of(IntegerTypeSymbol):
-            return True
-        else:
-            return False
+        return True        # anything can be cast to a real
