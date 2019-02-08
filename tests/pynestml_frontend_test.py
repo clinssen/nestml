@@ -36,7 +36,7 @@ class PyNestMLFrontendTest(unittest.TestCase):
         params.append(path)
         # params.append('-dry')
         params.append('-logging_level')
-        params.append('NO')
+        params.append('INFO')
         params.append('-target')
         params.append('target/models')
         params.append('-store_log')

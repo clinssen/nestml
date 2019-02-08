@@ -43,7 +43,7 @@ PredefinedFunctions.register_functions()
 
 class InvalidElementDefinedAfterUsage(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoVariableDefinedAfterUsage.nestml'))
@@ -53,7 +53,7 @@ class InvalidElementDefinedAfterUsage(unittest.TestCase):
 
 class ValidElementDefinedAfterUsage(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoVariableDefinedAfterUsage.nestml'))
@@ -63,7 +63,7 @@ class ValidElementDefinedAfterUsage(unittest.TestCase):
 
 class InvalidElementInSameLine(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoElementInSameLine.nestml'))
@@ -73,7 +73,7 @@ class InvalidElementInSameLine(unittest.TestCase):
 
 class ValidElementInSameLine(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoElementInSameLine.nestml'))
@@ -83,7 +83,7 @@ class ValidElementInSameLine(unittest.TestCase):
 
 class InvalidElementNotDefinedInScope(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoVariableNotDefined.nestml'))
@@ -93,7 +93,7 @@ class InvalidElementNotDefinedInScope(unittest.TestCase):
 
 class ValidElementNotDefinedInScope(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoVariableNotDefined.nestml'))
@@ -104,7 +104,7 @@ class ValidElementNotDefinedInScope(unittest.TestCase):
 
 class InvalidVariableRedeclaration(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoVariableRedeclared.nestml'))
@@ -114,7 +114,7 @@ class InvalidVariableRedeclaration(unittest.TestCase):
 
 class ValidVariableRedeclaration(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoVariableRedeclared.nestml'))
@@ -124,7 +124,7 @@ class ValidVariableRedeclaration(unittest.TestCase):
 
 class InvalidEachBlockUnique(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoEachBlockUnique.nestml'))
@@ -134,7 +134,7 @@ class InvalidEachBlockUnique(unittest.TestCase):
 
 class ValidEachBlockUnique(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoEachBlockUnique.nestml'))
@@ -144,7 +144,7 @@ class ValidEachBlockUnique(unittest.TestCase):
 
 class InvalidFunctionUniqueAndDefined(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoFunctionNotUnique.nestml'))
@@ -154,7 +154,7 @@ class InvalidFunctionUniqueAndDefined(unittest.TestCase):
 
 class ValidFunctionUniqueAndDefined(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoFunctionNotUnique.nestml'))
@@ -164,7 +164,7 @@ class ValidFunctionUniqueAndDefined(unittest.TestCase):
 
 class InvalidFunctionsHaveRhs(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoFunctionHasNoRhs.nestml'))
@@ -174,7 +174,7 @@ class InvalidFunctionsHaveRhs(unittest.TestCase):
 
 class ValidFunctionsHaveRhs(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoFunctionHasNoRhs.nestml'))
@@ -184,7 +184,7 @@ class ValidFunctionsHaveRhs(unittest.TestCase):
 
 class InvalidFunctionHasSeveralLhs(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoFunctionWithSeveralLhs.nestml'))
@@ -194,7 +194,7 @@ class InvalidFunctionHasSeveralLhs(unittest.TestCase):
 
 class ValidFunctionHasSeveralLhs(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoFunctionWithSeveralLhs.nestml'))
@@ -204,7 +204,7 @@ class ValidFunctionHasSeveralLhs(unittest.TestCase):
 
 class InvalidNoValuesAssignedToBuffers(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoValueAssignedToBuffer.nestml'))
@@ -214,7 +214,7 @@ class InvalidNoValuesAssignedToBuffers(unittest.TestCase):
 
 class ValidNoValuesAssignedToBuffers(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoValueAssignedToBuffer.nestml'))
@@ -224,7 +224,7 @@ class ValidNoValuesAssignedToBuffers(unittest.TestCase):
 
 class InvalidOrderOfEquationsCorrect(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoNoOrderOfEquations.nestml'))
@@ -234,7 +234,7 @@ class InvalidOrderOfEquationsCorrect(unittest.TestCase):
 
 class ValidOrderOfEquationsCorrect(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoNoOrderOfEquations.nestml'))
@@ -244,7 +244,7 @@ class ValidOrderOfEquationsCorrect(unittest.TestCase):
 
 class InvalidNumeratorOfUnitOne(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoUnitNumeratorNotOne.nestml'))
@@ -254,7 +254,7 @@ class InvalidNumeratorOfUnitOne(unittest.TestCase):
 
 class ValidNumeratorOfUnitOne(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoUnitNumeratorNotOne.nestml'))
@@ -264,7 +264,7 @@ class ValidNumeratorOfUnitOne(unittest.TestCase):
 
 class InvalidNamesOfNeuronsUnique(unittest.TestCase):
     def test(self):
-        Logger.init_logger(LoggingLevel.NO)
+        Logger.init_logger(LoggingLevel.INFO)
         ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoMultipleNeuronsWithEqualName.nestml'))
@@ -273,7 +273,7 @@ class InvalidNamesOfNeuronsUnique(unittest.TestCase):
 
 class ValidNamesOfNeuronsUnique(unittest.TestCase):
     def test(self):
-        Logger.init_logger(LoggingLevel.NO)
+        Logger.init_logger(LoggingLevel.INFO)
         ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoMultipleNeuronsWithEqualName.nestml'))
@@ -282,7 +282,7 @@ class ValidNamesOfNeuronsUnique(unittest.TestCase):
 
 class InvalidNoNestCollision(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoNestNamespaceCollision.nestml'))
@@ -292,7 +292,7 @@ class InvalidNoNestCollision(unittest.TestCase):
 
 class ValidNoNestCollision(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoNestNamespaceCollision.nestml'))
@@ -302,7 +302,7 @@ class ValidNoNestCollision(unittest.TestCase):
 
 class InvalidRedundantBufferKeywordsDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoBufferWithRedundantTypes.nestml'))
@@ -312,7 +312,7 @@ class InvalidRedundantBufferKeywordsDetected(unittest.TestCase):
 
 class ValidRedundantBufferKeywordsDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoBufferWithRedundantTypes.nestml'))
@@ -322,7 +322,7 @@ class ValidRedundantBufferKeywordsDetected(unittest.TestCase):
 
 class InvalidParametersAssignedOnlyInParametersBlock(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoParameterAssignedOutsideBlock.nestml'))
@@ -332,7 +332,7 @@ class InvalidParametersAssignedOnlyInParametersBlock(unittest.TestCase):
 
 class ValidParametersAssignedOnlyInParametersBlock(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoParameterAssignedOutsideBlock.nestml'))
@@ -342,7 +342,7 @@ class ValidParametersAssignedOnlyInParametersBlock(unittest.TestCase):
 
 class InvalidCurrentBuffersNotSpecifiedWithKeywords(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoCurrentBufferTypeSpecified.nestml'))
@@ -352,7 +352,7 @@ class InvalidCurrentBuffersNotSpecifiedWithKeywords(unittest.TestCase):
 
 class ValidCurrentBuffersNotSpecifiedWithKeywords(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoCurrentBufferTypeSpecified.nestml'))
@@ -362,7 +362,7 @@ class ValidCurrentBuffersNotSpecifiedWithKeywords(unittest.TestCase):
 
 class InvalidSpikeBufferWithoutDatatype(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoSpikeBufferWithoutType.nestml'))
@@ -372,7 +372,7 @@ class InvalidSpikeBufferWithoutDatatype(unittest.TestCase):
 
 class ValidSpikeBufferWithoutDatatype(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoSpikeBufferWithoutType.nestml'))
@@ -382,7 +382,7 @@ class ValidSpikeBufferWithoutDatatype(unittest.TestCase):
 
 class InvalidFunctionWithWrongArgNumberDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoFunctionCallNotConsistentWrongArgNumber.nestml'))
@@ -392,7 +392,7 @@ class InvalidFunctionWithWrongArgNumberDetected(unittest.TestCase):
 
 class ValidFunctionWithWrongArgNumberDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoFunctionCallNotConsistentWrongArgNumber.nestml'))
@@ -402,7 +402,7 @@ class ValidFunctionWithWrongArgNumberDetected(unittest.TestCase):
 
 class InvalidInitValuesHaveRhsAndOde(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoInitValuesWithoutOde.nestml'))
@@ -412,7 +412,7 @@ class InvalidInitValuesHaveRhsAndOde(unittest.TestCase):
 
 class ValidInitValuesHaveRhsAndOde(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoInitValuesWithoutOde.nestml'))
@@ -422,7 +422,7 @@ class ValidInitValuesHaveRhsAndOde(unittest.TestCase):
 
 class InvalidIncorrectReturnStmtDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoIncorrectReturnStatement.nestml'))
@@ -432,7 +432,7 @@ class InvalidIncorrectReturnStmtDetected(unittest.TestCase):
 
 class ValidIncorrectReturnStmtDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoIncorrectReturnStatement.nestml'))
@@ -442,7 +442,7 @@ class ValidIncorrectReturnStmtDetected(unittest.TestCase):
 
 class InvalidOdeVarsOutsideInitBlockDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoOdeVarNotInInitialValues.nestml'))
@@ -452,7 +452,7 @@ class InvalidOdeVarsOutsideInitBlockDetected(unittest.TestCase):
 
 class ValidOdeVarsOutsideInitBlockDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoOdeVarNotInInitialValues.nestml'))
@@ -462,7 +462,7 @@ class ValidOdeVarsOutsideInitBlockDetected(unittest.TestCase):
 
 class InvalidConvolveCorrectlyDefined(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoConvolveNotCorrectlyProvided.nestml'))
@@ -472,7 +472,7 @@ class InvalidConvolveCorrectlyDefined(unittest.TestCase):
 
 class ValidConvolveCorrectlyDefined(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoConvolveNotCorrectlyProvided.nestml'))
@@ -482,7 +482,7 @@ class ValidConvolveCorrectlyDefined(unittest.TestCase):
 
 class InvalidVectorInNonVectorDeclarationDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoVectorInNonVectorDeclaration.nestml'))
@@ -492,7 +492,7 @@ class InvalidVectorInNonVectorDeclarationDetected(unittest.TestCase):
 
 class ValidVectorInNonVectorDeclarationDetected(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoVectorInNonVectorDeclaration.nestml'))
@@ -502,7 +502,7 @@ class ValidVectorInNonVectorDeclarationDetected(unittest.TestCase):
 
 class InvalidSumCorrectlyParametrized(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoSumNotCorrectlyParametrized.nestml'))
@@ -512,7 +512,7 @@ class InvalidSumCorrectlyParametrized(unittest.TestCase):
 
 class ValidSumCorrectlyParametrized(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoSumNotCorrectlyParametrized.nestml'))
@@ -522,7 +522,7 @@ class ValidSumCorrectlyParametrized(unittest.TestCase):
 
 class InvalidInvariantCorrectlyTyped(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoInvariantNotBool.nestml'))
@@ -532,7 +532,7 @@ class InvalidInvariantCorrectlyTyped(unittest.TestCase):
 
 class ValidInvariantCorrectlyTyped(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoInvariantNotBool.nestml'))
@@ -542,7 +542,7 @@ class ValidInvariantCorrectlyTyped(unittest.TestCase):
 
 class InvalidExpressionCorrectlyTyped(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'invalid')),
                          'CoCoIllegalExpression.nestml'))
@@ -552,7 +552,7 @@ class InvalidExpressionCorrectlyTyped(unittest.TestCase):
 
 class ValidExpressionCorrectlyTyped(unittest.TestCase):
     def test(self):
-        Logger.set_logging_level(LoggingLevel.NO)
+        Logger.set_logging_level(LoggingLevel.INFO)
         model = ModelParser.parse_model(
             os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), 'valid')),
                          'CoCoIllegalExpression.nestml'))
