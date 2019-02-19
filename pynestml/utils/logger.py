@@ -79,6 +79,13 @@ class Logger(object):
         cls.curr_message = counter
 
     @classmethod
+    def freeze_log(cls, do_freeze=True):
+        """
+        Freeze the log: while log is frozen, all logging requests will be ignored.
+        """
+        cls.log_frozen = do_freeze
+
+    @classmethod
     def log_message(cls, neuron=None, code=None, message=None, error_position=None, log_level=None):
         """
         Logs the handed over message on the handed over. If the current logging is appropriate, the 
@@ -94,6 +101,8 @@ class Logger(object):
         :param log_level: the corresponding log level.
         :type log_level: LoggingLevel
         """
+        if cls.log_frozen:
+            return
         if cls.curr_message is None:
             cls.init_logger(LoggingLevel.INFO)
         from pynestml.meta_model.ast_neuron import ASTNeuron
@@ -150,6 +159,8 @@ class Logger(object):
         :param level: a new logging level.
         :type level: LoggingLevel
         """
+        if cls.log_frozen:
+            return
         cls.logging_level = level
 
     @classmethod
@@ -160,6 +171,8 @@ class Logger(object):
         :param neuron:  a single neuron instance
         :type neuron: ast_neuron
         """
+        if cls.log_frozen:
+            return
         cls.current_neuron = neuron
 
     @classmethod
