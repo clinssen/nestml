@@ -130,8 +130,7 @@ class ModelParser(object):
 
         # create and update the corresponding symbol tables
         SymbolTable.initialize_symbol_table(ast.get_source_position())
-        log_to_restore = copy.deepcopy(Logger.get_log())
-        counter = Logger.curr_message
+        Logger.freeze_log()
 
         # replace all derived variables through a computer processable names: e.g. g_in''' -> g_in__ddd
         restore_differential_order = []
@@ -156,7 +155,9 @@ class ModelParser(object):
         # now also equations have no ' at lhs. replace every occurrence of last d to ' to compensate
         for ode_variable in restore_differential_order:
             ode_variable.differential_order = 1
-        Logger.set_log(log_to_restore, counter)
+
+        Logger.freeze_log(False)
+
         for neuron in ast.get_neuron_list():
             neuron.accept(ASTSymbolTableVisitor())
             SymbolTable.add_neuron_scope(neuron.get_name(), neuron.get_scope())
