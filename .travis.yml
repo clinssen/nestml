@@ -16,11 +16,11 @@ before_install:
   - pip install --upgrade pip enum34 pytest
   - pip install -r requirements.txt
   #- pip install matplotlib
-  #- cd ~ && git clone https://github.com/nest/nest-simulator nest_source
-  #- mkdir nest_install
-  #- cd nest_source && mkdir build && cd build
-  #- cmake -DCMAKE_INSTALL_PREFIX=~/nest_install .. && make && make install
-  #- cd $TRAVIS_BUILD_DIR
+  - cd && git clone https://github.com/nest/nest-simulator nest_source
+  - mkdir nest_install
+  - cd nest_source && mkdir build && cd build
+  - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install .. && make && make install
+  - cd $TRAVIS_BUILD_DIR
   - pip install git+https://github.com/DimitriPlotnikov/ode-toolbox.git
 
 install:
