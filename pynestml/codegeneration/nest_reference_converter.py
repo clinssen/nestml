@@ -126,41 +126,42 @@ class NESTReferenceConverter(IReferenceConverter):
                 variable)
         variable_name = NestNamesConverter.convert_to_cpp_name(variable.get_complete_name())
 
-        if PredefinedUnits.is_unit(variable.get_complete_name()):
-            return str(
-                UnitConverter.get_factor(PredefinedUnits.get_unit(variable.get_complete_name()).get_unit()))
         if variable_name == PredefinedVariables.E_CONSTANT:
             return 'numerics::e'
+
+        symbol = variable.get_scope().resolve_to_symbol(variable_name, SymbolKind.VARIABLE)
+        if symbol is None:
+            if PredefinedUnits.is_unit(variable.get_complete_name()):
+                return str(
+                    UnitConverter.get_factor(PredefinedUnits.get_unit(variable.get_complete_name()).get_unit()))
+
+            # this should actually not happen, but an error message is better than an exception
+            code, message = Messages.get_could_not_resolve(variable_name)
+            Logger.log_message(log_level=LoggingLevel.ERROR, code=code, message=message,
+                                error_position=variable.get_source_position())
+            return ''
         else:
-            symbol = variable.get_scope().resolve_to_symbol(variable_name, SymbolKind.VARIABLE)
-            if symbol is None:
-                # this should actually not happen, but an error message is better than an exception
-                code, message = Messages.get_could_not_resolve(variable_name)
-                Logger.log_message(log_level=LoggingLevel.ERROR, code=code, message=message,
-                                   error_position=variable.get_source_position())
-                return ''
+            if symbol.is_local():
+                return variable_name + ('[i]' if symbol.has_vector_parameter() else '')
+            elif symbol.is_buffer():
+                return NestPrinter.print_origin(symbol) + NestNamesConverter.buffer_value(symbol) \
+                        + ('[i]' if symbol.has_vector_parameter() else '')
             else:
-                if symbol.is_local():
-                    return variable_name + ('[i]' if symbol.has_vector_parameter() else '')
-                elif symbol.is_buffer():
-                    return NestPrinter.print_origin(symbol) + NestNamesConverter.buffer_value(symbol) \
-                           + ('[i]' if symbol.has_vector_parameter() else '')
+                if symbol.is_function:
+                    return 'get_' + variable_name + '()' + ('[i]' if symbol.has_vector_parameter() else '')
                 else:
-                    if symbol.is_function:
-                        return 'get_' + variable_name + '()' + ('[i]' if symbol.has_vector_parameter() else '')
-                    else:
-                        if symbol.is_init_values():
-                            temp = NestPrinter.print_origin(symbol)
-                            if self.uses_gsl:
-                                temp += GSLNamesConverter.name(symbol)
-                            else:
-                                temp += NestNamesConverter.name(symbol)
-                            temp += ('[i]' if symbol.has_vector_parameter() else '')
-                            return temp
+                    if symbol.is_init_values():
+                        temp = NestPrinter.print_origin(symbol)
+                        if self.uses_gsl:
+                            temp += GSLNamesConverter.name(symbol)
                         else:
-                            return NestPrinter.print_origin(symbol) + \
-                                   NestNamesConverter.name(symbol) + \
-                                   ('[i]' if symbol.has_vector_parameter() else '')
+                            temp += NestNamesConverter.name(symbol)
+                        temp += ('[i]' if symbol.has_vector_parameter() else '')
+                        return temp
+                    else:
+                        return NestPrinter.print_origin(symbol) + \
+                                NestNamesConverter.name(symbol) + \
+                                ('[i]' if symbol.has_vector_parameter() else '')
 
     @classmethod
     def convert_constant(cls, constant_name):

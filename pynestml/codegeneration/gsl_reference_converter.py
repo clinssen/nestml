@@ -56,21 +56,27 @@ class GSLReferenceConverter(IReferenceConverter):
         variable_name = NestNamesConverter.convert_to_cpp_name(ast_variable.get_name())
         symbol = ast_variable.get_scope().resolve_to_symbol(ast_variable.get_complete_name(), SymbolKind.VARIABLE)
 
-        if PredefinedUnits.is_unit(ast_variable.get_complete_name()):
+        if symbol is None and PredefinedUnits.is_unit(ast_variable.get_complete_name()):
+            # N.B. test for "is this a unit" is name- (string-) based, so try this only if variable name conversion failed (symbol is None)
             return str(
                 UnitConverter.get_factor(PredefinedUnits.get_unit(ast_variable.get_complete_name()).get_unit()))
+
         if symbol.is_init_values():
             return GSLNamesConverter.name(symbol)
-        elif symbol.is_buffer():
+
+        if symbol.is_buffer():
             return 'node.B_.' + NestNamesConverter.buffer_value(symbol)
-        elif variable_name == PredefinedVariables.E_CONSTANT:
+
+        if variable_name == PredefinedVariables.E_CONSTANT:
             return 'numerics::e'
-        elif symbol.is_local() or symbol.is_function:
+
+        if symbol.is_local() or symbol.is_function:
             return variable_name
-        elif symbol.has_vector_parameter():
+
+        if symbol.has_vector_parameter():
             return 'node.get_' + variable_name + '()[i]'
-        else:
-            return 'node.get_' + variable_name + '()'
+
+        return 'node.get_' + variable_name + '()'
 
     def convert_function_call(self, function_call):
         """
