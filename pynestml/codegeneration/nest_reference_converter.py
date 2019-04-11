@@ -140,28 +140,29 @@ class NESTReferenceConverter(IReferenceConverter):
             Logger.log_message(log_level=LoggingLevel.ERROR, code=code, message=message,
                                 error_position=variable.get_source_position())
             return ''
-        else:
-            if symbol.is_local():
-                return variable_name + ('[i]' if symbol.has_vector_parameter() else '')
-            elif symbol.is_buffer():
-                return NestPrinter.print_origin(symbol) + NestNamesConverter.buffer_value(symbol) \
-                        + ('[i]' if symbol.has_vector_parameter() else '')
+
+        if symbol.is_local():
+            return variable_name + ('[i]' if symbol.has_vector_parameter() else '')
+
+        if symbol.is_buffer():
+            return NestPrinter.print_origin(symbol) + NestNamesConverter.buffer_value(symbol) \
+                    + ('[i]' if symbol.has_vector_parameter() else '')
+
+        if symbol.is_function:
+            return 'get_' + variable_name + '()' + ('[i]' if symbol.has_vector_parameter() else '')
+
+        if symbol.is_init_values():
+            temp = NestPrinter.print_origin(symbol)
+            if self.uses_gsl:
+                temp += GSLNamesConverter.name(symbol)
             else:
-                if symbol.is_function:
-                    return 'get_' + variable_name + '()' + ('[i]' if symbol.has_vector_parameter() else '')
-                else:
-                    if symbol.is_init_values():
-                        temp = NestPrinter.print_origin(symbol)
-                        if self.uses_gsl:
-                            temp += GSLNamesConverter.name(symbol)
-                        else:
-                            temp += NestNamesConverter.name(symbol)
-                        temp += ('[i]' if symbol.has_vector_parameter() else '')
-                        return temp
-                    else:
-                        return NestPrinter.print_origin(symbol) + \
-                                NestNamesConverter.name(symbol) + \
-                                ('[i]' if symbol.has_vector_parameter() else '')
+                temp += NestNamesConverter.name(symbol)
+            temp += ('[i]' if symbol.has_vector_parameter() else '')
+            return temp
+
+        return NestPrinter.print_origin(symbol) + \
+                    NestNamesConverter.name(symbol) + \
+                    ('[i]' if symbol.has_vector_parameter() else '')
 
     @classmethod
     def convert_constant(cls, constant_name):
