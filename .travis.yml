@@ -7,8 +7,16 @@ python: "3.6"
 addons:
   apt:
     packages:
+      - build-essential
+      - cmake
+      - libltdl7-dev
       - libgsl0-dev
+      - libncurses5-dev
+      - libreadline6-dev
       - python-all-dev
+      - python-matplotlib
+      - python-numpy
+      - python-scipy
 
 before_install:
   # in before_install, we install all the NESTML dependencies
