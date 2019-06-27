@@ -46,6 +46,10 @@ before_script:
   - ./generate_lexer_parser
   - cd ../..
 
+stages:
+  - test
+  - integration
+
 jobs:
   include:
     - stage test:
