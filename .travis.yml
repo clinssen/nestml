@@ -26,7 +26,6 @@ before_install:
 
 install:
   # in install, we install NESTML itself
-  - echo `pwd`
 
   - export PYTHONPATH=$PYTHONPATH:`pwd`
   - echo $PYTHONPATH
@@ -51,7 +50,14 @@ jobs:
 
     - stage: integration
       install:
-
+        # install nest-simulator
+        - cd
+        - git clone --depth=1 https://github.com/nest/nest-simulator
+        - mkdir nest_install
+        - cd nest_install
+        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install ~/nest-simulator
+        - echo make && make install 
+                                                                
         # install NESTML itself
         - cd $TRAVIS_BUILD_DIR
         - export PYTHONPATH=$PYTHONPATH:/home/travis/virtualenv/python3.6.7/lib/python3.6/site-packages
@@ -60,9 +66,7 @@ jobs:
 
       script:
         - echo `pwd`
-        - nestml --input_path models --target_path target --logging_level INFO
-        - echo $PYTHONPATH
-        - python nestml --input_path models --target_path target --logging_level INFO
+        - nestml --input_path models/iaf_psc_exp.nestml --target_path target --suffix nestml_unit_test --logging_level INFO
         - cd target
         - cmake -Dwith-nest=~/nest_install/bin/nest-config .
         - make && make install
