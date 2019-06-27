@@ -45,6 +45,18 @@ stages:
 jobs:
   include:
     - stage: test
-      script: echo "foo"
+      script: pytest -s tests
     - stage: integration
-      script: echo "bar"
+      install:
+        - git clone https://github.com/nest/nest-simulator
+        - mkdir nest_install
+        - cd nest_install
+        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install ~/nest-simulator
+        - make && make install
+        - cd
+
+      script:
+        - python nestml --input_path models --target_path target --logging_level INFO
+        - cd target
+        - cmake -Dwith-nest=~/nest_install/bin/nest-config .
+        - make && make install
