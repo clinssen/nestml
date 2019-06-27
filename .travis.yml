@@ -53,16 +53,6 @@ stages:
 jobs:
   include:
     - stage: test
-      script: pytest -s tests
+      script: echo "foo"
     - stage: integration
-       install:
-        - pip install matplotlib
-        - cd ~ && git clone https://github.com/nest/nest-simulator nest_source
-        - mkdir nest_install
-        - cd nest_source && mkdir build && cd build
-        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install .. && make && make install
-        - cd $TRAVIS_BUILD_DIR
-      script:
-        - echo "Hello, world!"
-
-
+      script: echo "bar"
