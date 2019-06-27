@@ -6,7 +6,7 @@ python: "3.6"
 
 before_install:
   # in before_install, we install all the NESTML dependencies
-
+  - echo `pwd`
   # install antrl4
   - sudo apt install openjdk-8-jre
   - wget http://www.antlr.org/download/antlr-4.7.1-complete.jar
@@ -26,6 +26,7 @@ before_install:
 
 install:
   # in install, we install NESTML itself
+  - echo `pwd`
 
   - export PYTHONPATH=$PYTHONPATH:`pwd`
   - echo $PYTHONPATH
