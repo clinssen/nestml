@@ -1,11 +1,11 @@
 stages:
-  - Test
+  - Test123
   - Foobar
 
 jobs:
   include:
-    - stage Test:
+    - stage: Test123
       script: "echo 'baz'"
-    - stage Foobar:
+    - stage: Foobar
       script: "echo 'foo'"
     
