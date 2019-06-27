@@ -73,4 +73,8 @@ jobs:
         - ls -la ~/nest_install/bin
         - cmake -Dwith-nest=/home/travis/nest_install/bin/nest-config .
         - make && make install
+        - PYNESTKERNEL_LOCATION=`find /home/travis/nest_install -name pynestkernel.so`
+        - PYNESTKERNEL_LOCATION=`dirname $PYNESTKERNEL_LOCATION`
+        - PYNESTKERNEL_LOCATION=`dirname $PYNESTKERNEL_LOCATION`
+        - export PYTHONPATH=$PYTHONPATH:$PYNESTKERNEL_LOCATION
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
