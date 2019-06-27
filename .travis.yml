@@ -33,6 +33,7 @@ install:
 
 before_script:
   # use antlr4 to re-generate lexer+parser
+  - cd ~/clinssen/nestml
   - find pynestml/generated -not -name __init__.py -a -not -name generated -delete
   - cd pynestml/grammars
   - ./generate_lexer_parser
@@ -46,6 +47,7 @@ jobs:
   include:
     - stage: test
       script: echo "pytest -s tests"
+
     - stage: integration
       install:
         # install nest-simulator
@@ -56,7 +58,12 @@ jobs:
         - cd nest_install
         - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install ~/nest-simulator
         - make && make install
-        - cd
+
+        # install NESTML itself
+        - cd ~/clinssen/nestml
+        - export PYTHONPATH=$PYTHONPATH:`pwd`
+        - echo $PYTHONPATH
+        - python setup.py install
 
       script:
         - pwd
