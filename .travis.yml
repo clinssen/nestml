@@ -1,7 +1,3 @@
-language: python
-
-sudo: true
-
 stages:
   - test
   - integration
