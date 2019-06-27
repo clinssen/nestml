@@ -55,7 +55,7 @@ jobs:
         - git clone --depth=1 https://github.com/nest/nest-simulator
         - mkdir nest_install
         - cd nest_install
-        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install ~/nest-simulator
+        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install -Dwith-python=3 ~/nest-simulator
         - echo make && make install 
                                                                 
         # install NESTML itself
