@@ -5,7 +5,7 @@ stages:
 jobs:
   include:
     - stage Test:
-      script: "pytest -s tests"
+      script: "echo 'baz'"
     - stage Integration:
       script: "echo 'foo'"
     
