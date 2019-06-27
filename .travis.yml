@@ -4,6 +4,11 @@ sudo: true
 
 python: "3.6"
 
+addons:
+  apt:
+    packages:
+      - libgsl0-dev
+
 before_install:
   # in before_install, we install all the NESTML dependencies
 
