@@ -68,6 +68,9 @@ jobs:
         - echo `pwd`
         - nestml --input_path models/iaf_psc_exp.nestml --target_path target --suffix nestml_unit_test --logging_level INFO
         - cd target
+        - ls -la ~
+        - ls -la ~/nest_install
+        - ls -la ~/nest_install/bin
         - cmake -Dwith-nest=~/nest_install/bin/nest-config .
         - make && make install
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
