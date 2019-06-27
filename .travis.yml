@@ -76,7 +76,7 @@ jobs:
         - cd nest_install
         - export PYTHON_INCLUDE_DIR=`python3 -c "from sysconfig import get_paths; from pprint import pprint; info = get_paths(); print(info['include'])"`
         - echo $PYTHON_INCLUDE_DIR
-        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install -Dwith-python=3 -DPYTHON_LIBRARY=`find /usr/lib/x86_64-linux-gnu -name "libpython3*.so"` -DPYTHON_INCLUDE_DIRS=$PYTHON_INCLUDE_DIR ~/nest-simulator
+        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install -Dwith-python=3 -DPYTHON_LIBRARY=`find /usr/lib/x86_64-linux-gnu -name "libpython3*.so"` -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR ~/nest-simulator
         - echo make && make install 
                                                                 
         # install NESTML itself
