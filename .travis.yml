@@ -1,7 +1,11 @@
+stages:
+  - Test
+  - Integration
+
 jobs:
   include:
-    - stage test:
+    - stage Test:
       script: pytest -s tests
-    - stage integration:
+    - stage Integration:
       script: echo "Hello"
     
