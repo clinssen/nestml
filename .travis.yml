@@ -70,3 +70,4 @@ jobs:
         - cd target
         - cmake -Dwith-nest=~/nest_install/bin/nest-config .
         - make && make install
+        - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
