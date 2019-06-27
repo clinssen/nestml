@@ -48,6 +48,8 @@ jobs:
       script: pytest -s tests
     - stage: integration
       install:
+        # install nest-simulator
+        - pwd
         - cd
         - git clone --depth=1 https://github.com/nest/nest-simulator
         - mkdir nest_install
@@ -57,6 +59,7 @@ jobs:
         - cd
 
       script:
+        - pwd
         - python nestml --input_path models --target_path target --logging_level INFO
         - cd target
         - cmake -Dwith-nest=~/nest_install/bin/nest-config .
