@@ -24,6 +24,20 @@ before_install:
   - pip uninstall --yes odetoolbox
   - pip install git+https://github.com/nest/ode-toolbox.git
 
+install:
+  # in install, we install NESTML itself
+
+  - export PYTHONPATH=$PYTHONPATH:`pwd`
+  - echo $PYTHONPATH
+  - python setup.py install
+
+before_script:
+  # use antlr4 to re-generate lexer+parser
+  - find pynestml/generated -not -name __init__.py -a -not -name generated -delete
+  - cd pynestml/grammars
+  - ./generate_lexer_parser
+  - cd ../..
+
 stages:
   - test
   - integration
