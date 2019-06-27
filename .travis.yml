@@ -62,8 +62,9 @@ jobs:
   include:
     - stage: test
       script:
-        - find /usr/lib -name "libpython*.so"
+        - find /usr/lib/x86_64-linux-gnu -name "libpython3*.so"
         - find /opt/python -name "python*"
+        - python3 -c "from sysconfig import get_paths; from pprint import pprint; info = get_paths(); print(info)"
         # echo "pytest -s tests"
 
     - stage: integration
