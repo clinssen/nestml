@@ -71,6 +71,6 @@ jobs:
         - ls -la ~
         - ls -la ~/nest_install
         - ls -la ~/nest_install/bin
-        - cmake -Dwith-nest=~/nest_install/bin/nest-config .
+        - cmake -Dwith-nest=/home/travis/nest_install/bin/nest-config .
         - make && make install
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
