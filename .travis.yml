@@ -8,6 +8,7 @@ addons:
   apt:
     packages:
       - libgsl0-dev
+      - python-all-dev
 
 before_install:
   # in before_install, we install all the NESTML dependencies
