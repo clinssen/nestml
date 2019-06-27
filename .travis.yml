@@ -1,11 +1,11 @@
 stages:
   - Test
-  - Integration
+  - Foobar
 
 jobs:
   include:
     - stage Test:
       script: "echo 'baz'"
-    - stage Integration:
+    - stage Foobar:
       script: "echo 'foo'"
     
