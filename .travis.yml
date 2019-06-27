@@ -70,6 +70,7 @@ jobs:
     - stage: integration
       install:
         # install nest-simulator
+        - pip install cython
         - cd
         - git clone --depth=1 https://github.com/nest/nest-simulator
         - mkdir nest_install
