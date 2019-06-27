@@ -13,6 +13,7 @@ addons:
       - libgsl0-dev
       - libncurses5-dev
       - libreadline6-dev
+      - pkg-config
       - python-all-dev
       - python-matplotlib
       - python-numpy
@@ -60,7 +61,10 @@ stages:
 jobs:
   include:
     - stage: test
-      script: echo "pytest -s tests"
+      script:
+        - find /usr/lib -name "libpython*.so"
+        - find /opt/python -name "python*"
+        # echo "pytest -s tests"
 
     - stage: integration
       install:
