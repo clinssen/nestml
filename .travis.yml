@@ -1,8 +1,6 @@
 language: python
 
-python:
-  - "3.5"
-  - "3.6"
+sudo: true
 
 before_install:
   # in before_install, we install all the NESTML dependencies
@@ -36,8 +34,6 @@ install:
   #- cmake -Dwith-nest=~/nest_install/bin/nest-config .. && make && make install
   #- cd $TRAVIS_BUILD_DIR
   #- source $TRAVIS_BUILD_DIR/nest_install/bin/nest_vars.sh
-
-sudo: true
 
 before_script:
   # use antlr4 to re-generate lexer+parser
