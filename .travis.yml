@@ -64,7 +64,8 @@ jobs:
       script:
         - find /usr/lib/x86_64-linux-gnu -name "libpython3*.so"
         - find /opt/python -name "python*"
-        - python3 -c "from sysconfig import get_paths; from pprint import pprint; info = get_paths(); print(info)"
+        - export PYTHON_INCLUDE_DIR=`python3 -c "from sysconfig import get_paths; from pprint import pprint; info = get_paths(); print(info['include'])"`
+        - export PYTHON_LIB_DIR=
         # echo "pytest -s tests"
 
     - stage: integration
@@ -74,7 +75,7 @@ jobs:
         - git clone --depth=1 https://github.com/nest/nest-simulator
         - mkdir nest_install
         - cd nest_install
-        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install -Dwith-python=3 ~/nest-simulator
+        - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install -Dwith-python=3 -DPYTHON_LIBRARY=`find /usr/lib/x86_64-linux-gnu -name "libpython3*.so"` ~/nest-simulator
         - echo make && make install 
                                                                 
         # install NESTML itself
