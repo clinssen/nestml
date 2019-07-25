@@ -62,6 +62,7 @@ stages:
 jobs:
   include:
     - stage: test
+      python: "3.6"
       script: pytest -s tests
 
     - stage: integration
