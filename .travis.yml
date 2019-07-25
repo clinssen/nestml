@@ -2,10 +2,6 @@ language: python
 
 sudo: true
 
-python:
-  - "3.6"
-  - "3.7"
-
 addons:
   apt:
     packages:
@@ -63,8 +59,15 @@ jobs:
   include:
     - stage: test
       script: pytest -s tests
+      python:
+        - "3.6"
+        - "3.7"
 
     - stage: integration
+      python:
+        - "3.6"
+        - "3.7"
+
       install:
         # install nest-simulator
         - pip install cython
