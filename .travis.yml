@@ -1,7 +1,7 @@
 language: python
 
 python:
-  - 3.7
+  - 3.6
   - 3.7
 
 sudo: true
@@ -58,6 +58,7 @@ before_script:
 stages:
   - test
   - integration
+  - dummy
 
 jobs:
   include:
