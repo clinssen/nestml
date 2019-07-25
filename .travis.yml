@@ -1,5 +1,9 @@
 language: python
 
+python:
+  - 3.7
+  - 3.7
+
 sudo: true
 
 addons:
@@ -57,9 +61,6 @@ stages:
 
 jobs:
   include:
-    - python: 3.6
-    - python: 3.7
-
     - stage: test
       script: pytest -s tests
 
@@ -95,3 +96,7 @@ jobs:
         - echo $PYNESTKERNEL_LOCATION
         - export PYTHONPATH=$PYTHONPATH:$PYNESTKERNEL_LOCATION
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
+
+    - stage: dummy
+      script: true
+      # necessary due to travis-ci oddities (https://github.com/travis-ci/beta-features/issues/41)
