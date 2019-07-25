@@ -55,15 +55,11 @@ before_script:
   - ./generate_lexer_parser
   - cd ../..
 
-stages:
-  - test
-  - integration
+script:
+  - pytest -s tests
 
 jobs:
   include:
-    - stage: test
-      script: pytest -s tests
-
     - stage: integration
       python: "3.6"
       install:
