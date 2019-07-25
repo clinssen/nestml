@@ -1,8 +1,8 @@
 language: python
 
-matrix:
-  include:
-    - python: "3.7"
+python:
+- 3.6
+- 3.7
 
 sudo: true
 
@@ -62,7 +62,6 @@ stages:
 jobs:
   include:
     - stage: test
-      python: "3.6"
       script: pytest -s tests
 
     - stage: integration
