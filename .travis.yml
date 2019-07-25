@@ -2,10 +2,6 @@ dist: xenial
 
 language: python
 
-python:
-  - "3.6"
-  - "3.7"
-
 sudo: true
 
 addons:
@@ -64,10 +60,20 @@ stages:
 
 jobs:
   include:
+    python:
+      - "3.6"
+      - "3.7"
     - stage: test
+      python:
+        - "3.6"
+        - "3.7"
+
       script: pytest -s tests
 
     - stage: integration
+      python:
+        - "3.6"
+        - "3.7"
       install:
         # install nest-simulator
         - pip install cython
