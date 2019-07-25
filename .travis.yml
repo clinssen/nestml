@@ -58,18 +58,14 @@ before_script:
 stages:
   - test
   - integration
-  - dummy
 
 jobs:
   include:
     - stage: test
-      python: "3.6"
-      python: "3.7"
       script: pytest -s tests
 
     - stage: integration
       python: "3.6"
-      python: "3.7"
       install:
         # install nest-simulator
         - pip install cython
@@ -101,7 +97,3 @@ jobs:
         - echo $PYNESTKERNEL_LOCATION
         - export PYTHONPATH=$PYTHONPATH:$PYNESTKERNEL_LOCATION
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
-
-    - stage: dummy
-      script: true
-      # necessary due to travis-ci oddities (https://github.com/travis-ci/beta-features/issues/41)
