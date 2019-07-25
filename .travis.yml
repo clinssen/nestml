@@ -1,3 +1,5 @@
+language: python
+
 sudo: true
 
 addons:
@@ -61,6 +63,8 @@ jobs:
     - stage: test
       script: pytest -s tests
 
+    - python: "3.6"
+    - python: "3.7"
     - stage: integration
       install:
         # install nest-simulator
