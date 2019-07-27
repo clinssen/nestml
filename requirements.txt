@@ -1,4 +1,4 @@
-numpy >= 1.8.2
+numpy >= 1.9
 sympy >= 1.1.1
 antlr4-python3-runtime >= 4.7
 setuptools
