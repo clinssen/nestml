@@ -92,3 +92,8 @@ jobs:
         - echo $PYNESTKERNEL_LOCATION
         - export PYTHONPATH=$PYTHONPATH:$PYNESTKERNEL_LOCATION
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
+
+    - stage: dummy
+      script:
+        - echo "dummy"
+
