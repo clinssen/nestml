@@ -61,7 +61,6 @@ script:
 jobs:
   include:
     - stage: integration
-      python: "3.6"
       install:
         # install nest-simulator
         - pip install cython
