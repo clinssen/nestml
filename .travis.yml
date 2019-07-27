@@ -94,6 +94,9 @@ jobs:
         - python $TRAVIS_BUILD_DIR/extras/nest_integration_test.py
 
     - stage: dummy
+      install:
+        - echo "dummy"
       script:
         - echo "dummy"
+
 
