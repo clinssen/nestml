@@ -107,6 +107,7 @@ jobs:
         - cd nest_install
         - export PYTHON_INCLUDE_DIR=`python3 -c "from sysconfig import get_paths; info = get_paths(); print(info['include'])"`
         - echo $PYTHON_INCLUDE_DIR
+        - find /usr -name "libpython3*.so"
         - export PYTHON_LIB_DIR=`find /usr/lib/x86_64-linux-gnu -name "libpython3*7*.so"`
         - echo $PYTHON_LIB_DIR
         - cmake -DCMAKE_INSTALL_PREFIX=~/nest_install -Dwith-python=3 -DPYTHON_LIBRARY=$PYTHON_LIB_DIR -DPYTHON_INCLUDE_DIR=$PYTHON_INCLUDE_DIR ~/nest-simulator
