@@ -99,6 +99,9 @@ jobs:
     - stage: integration-3.7
       python: 3.7
       install:
+        # N.B. `typing` module is part of standard library since Python 3.7
+        - pip uninstall --yes typing
+
         # install nest-simulator
         - pip install cython
         - cd
