@@ -49,15 +49,29 @@
 
 #include "config.h"
 
-{% if useGSL %}
+{% if useGSL -%}
 #ifdef HAVE_GSL
-
-// External includes:
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_odeiv.h>
+#endif
+{% endif -%}
 
-// forwards the declaration of the function
+// Includes from nestkernel:
+#include "archiving_node.h"
+#include "connection.h"
+#include "event.h"
+#include "nest_types.h"
+#include "ring_buffer.h"
+#include "universal_data_logger.h"
+
+// Includes from sli:
+#include "dictdatum.h"
+
+namespace nest {
+
+{% if useGSL -%}
+#ifdef HAVE_GSL
 /**
  * Function computing right-hand side of ODE for GSL solver.
  * @note Must be declared here so we can befriend it in class.
@@ -69,22 +83,11 @@
  * @param void* Pointer to model neuron instance.
  */
 extern "C" inline int {{neuronName}}_dynamics( double, const double y[], double f[], void* pnode );
-{% endif %}
+#endif
+{% endif -%}
 
-// Includes from nestkernel:
-#include "archiving_node.h"
-#include "connection.h"
-#include "event.h"
-#include "nest_types.h"
-#include "ring_buffer.h"
-#include "universal_data_logger.h"
-
-
-// Includes from sli:
-#include "dictdatum.h"
-
-/* BeginDocumentation
-  Name: {{neuronName}}.
+/* @BeginDocumentation
+  Name: {{neuronName}}
 
   Description:{% filter indent(2,True) %}
   {{neuron.print_comment()}}{% endfilter %}
@@ -238,7 +241,9 @@ private:
     {% endfor -%}{% endfilter %}
 
     {% if useGSL -%}
+    #ifdef HAVE_GSL
     double __gsl_error_tol;
+    #endif
     {% endif -%}
 
     /** Initialize parameters to their default values. */
@@ -362,6 +367,7 @@ private:
     {% endfor %}
 
     {%- if useGSL -%}
+#ifdef HAVE_GSL
     /** GSL ODE stuff */
     gsl_odeiv_step* __s;    //!< stepping function
     gsl_odeiv_control* __c; //!< adaptive stepsize control function
@@ -374,6 +380,7 @@ private:
     // it is safe to place both here.
     double __step;             //!< step size in ms
     double __integration_step; //!< current integration time step, updated by GSL
+#endif
     {% endif -%}
   };
 
@@ -434,7 +441,9 @@ private:
   static nest::RecordablesMap<{{neuronName}}> recordablesMap_;
 
   {% if useGSL -%}
+#ifdef HAVE_GSL
   friend int {{neuronName}}_dynamics( double, const double y[], double f[], void* pnode );
+#endif
   {% endif %}
 /** @} */
 }; /* neuron {{neuronName}} */
@@ -531,12 +540,14 @@ inline void {{neuronName}}::get_status(DictionaryDatum &__d) const{
   {% endif %}
 
   (*__d)[nest::names::recordables] = recordablesMap_.get_list();
-  {% if useGSL %}
+  {% if useGSL -%}
+#ifdef HAVE_GSL
   def< double >(__d, nest::names::gsl_error_tol, P_.__gsl_error_tol);
   if ( P_.__gsl_error_tol <= 0. ){
     throw nest::BadProperty( "The gsl_error_tol must be strictly positive." );
   }
-  {% endif %}
+#endif
+  {% endif -%}
 
 }
 
@@ -590,12 +601,15 @@ inline void {{neuronName}}::set_status(const DictionaryDatum &__d){
   {%- endfor -%}
 
   {% if useGSL %}
+  #ifdef HAVE_GSL
   updateValue< double >(__d, nest::names::gsl_error_tol, P_.__gsl_error_tol);
   if ( P_.__gsl_error_tol <= 0. ){
     throw nest::BadProperty( "The gsl_error_tol must be strictly positive." );
   }
+  #endif
   {% endif %}
-};
+}
 
-#endif /* #ifndef {{neuronName.upper()}} */{% if useGSL %}
-#endif /* HAVE GSL */{% endif %}
+} /* namespace nest */
+
+#endif /* #ifndef {{neuronName.upper()}} */
