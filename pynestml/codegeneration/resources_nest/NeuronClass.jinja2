@@ -95,7 +95,6 @@ namespace nest
     {%- endwith %}
   {%- endfor %}{% endfilter %}
   }
-}
 
 /* ----------------------------------------------------------------
  * Default constructors defining default parameters and state
@@ -358,3 +357,5 @@ void {{neuronName}}::handle(nest::CurrentEvent& e){
   {% endfor %}
 }
 {% endif %}
+
+} /* namespace nest */
