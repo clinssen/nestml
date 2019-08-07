@@ -67,6 +67,10 @@
 {% for neuron in neurons %}
 #include "{{neuron.get_name()}}.h"
 {% endfor %}
+
+namespace nest
+{
+
 // -- Interface to dynamic module loader ---------------------------------------
 
 /*
@@ -130,3 +134,5 @@ void
     nest::kernel().model_manager.register_node_model<{{neuron.get_name()}}>("{{neuron.get_name()}}");
   {% endfor %}
 } // {{moduleName}}::init()
+
+} /* namespace nest */
