@@ -236,10 +236,6 @@ class NESTCodeGenerator(CodeGenerator):
         neuron.accept(rng_visitor)
         namespace['norm_rng'] = rng_visitor._norm_rng_is_used
 
-        rng_visitor = ASTRandomNumberGeneratorVisitor()
-        neuron.accept(rng_visitor)
-        namespace['norm_rng'] = rng_visitor._norm_rng_is_used
-
         self.define_solver_type(neuron, namespace)
         return namespace
 
