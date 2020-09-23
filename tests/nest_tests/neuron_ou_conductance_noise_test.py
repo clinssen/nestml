@@ -56,7 +56,7 @@ class TestOUConductanceNoise(unittest.TestCase):
         nest.SetKernelStatus({'resolution': resolution, 'grng_seed': seed, 'rng_seeds': [seed+1]})
 
         input_path = os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "hh_cond_exp_destexhe.nestml")))
-        nest_path = "/home/travis/nest_install"
+        nest_path = "/home/archels/nest-simulator-build"
         target_path = 'target'
         logging_level = 'INFO'
         module_name = 'nestmlmodule'
