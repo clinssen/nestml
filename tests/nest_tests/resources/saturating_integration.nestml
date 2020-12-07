@@ -1,0 +1,42 @@
+"""
+saturating integration synapse test
+###################################
+
+Description
++++++++++++
+
+Used in NESTML unit testing.
+
+For more information about the model, see iaf_psc_exp in the ``models`` directory.
+
+For more information about "multisynapse" models, please refer to the NESTML documentation.
+"""
+neuron saturating_integration:
+  initial_values:
+    V_abs mV = 0 mV  # membrane potential
+    k real = (1/7) * (1 - k)
+  end
+
+  equations:
+    kernel k' = -k / tau_syn
+    recordable inline I_syn pA = convolve(k, spikes)
+    V_abs' = -V_abs / tau_m + I_syn / C_m
+  end
+
+  parameters:
+    C_m      pF = 250pF  # Capacity of the membrane
+    tau_m    ms = 100ms # Membrane time constant.
+    tau_syn  ms = 10ms     # Time constant of synaptic current.
+  end
+
+  input:
+    spikes pA <- spike
+  end
+
+  output: spike
+
+  update:
+    integrate_odes()
+  end
+
+end

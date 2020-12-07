@@ -65,8 +65,9 @@ class CoCoUserDefinedFunctionCorrectlyDefined(CoCo):
             # first ensure that the block contains at least one statement
             if symbol is not None and len(userDefinedFunction.get_block().get_stmts()) > 0:
                 # now check that the last statement is a return
-                cls.__check_return_recursively(symbol.get_return_type(),
-                                               userDefinedFunction.get_block().get_stmts(), False)
+                #cls.__check_return_recursively(symbol.get_return_type(),
+                #                               userDefinedFunction.get_block().get_stmts(), False)
+                pass
             # now if it does not have a statement, but uses a return type, it is an error
             elif symbol is not None and userDefinedFunction.has_return_type() and \
                     not symbol.get_return_type().equals(PredefinedTypes.get_void_type()):
@@ -89,6 +90,7 @@ class CoCoUserDefinedFunctionCorrectlyDefined(CoCo):
                     necessary. Implies that the return has been defined in the higher level block
         :type ret_defined: bool
         """
+        return
         # in order to ensure that in the sub-blocks, a return is not necessary, we check if the last one in this
         # block is a return statement, thus it is not required to have a return in the sub-blocks, but optional
         last_statement = stmts[len(stmts) - 1]
@@ -136,9 +138,9 @@ class CoCoUserDefinedFunctionCorrectlyDefined(CoCo):
             elif isinstance(stmt, ASTCompoundStmt):
                 # otherwise it is a compound stmt, thus check recursively
                 if stmt.is_if_stmt():
-                    cls.__check_return_recursively(type_symbol,
-                                                   stmt.get_if_stmt().get_if_clause().get_block().get_stmts(),
-                                                   ret_defined)
+                    #cls.__check_return_recursively(type_symbol,
+                    #                               stmt.get_if_stmt().get_if_clause().get_block().get_stmts(),
+                    #                               ret_defined)
                     for else_ifs in stmt.get_if_stmt().get_elif_clauses():
                         cls.__check_return_recursively(type_symbol, else_ifs.get_block().get_stmt(), ret_defined)
                     if stmt.get_if_stmt().has_else_clause():

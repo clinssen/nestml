@@ -459,6 +459,7 @@ class Messages(object):
         assert (variable_name is not None and isinstance(variable_name, str)), \
             '(PyNestML.Utils.Message) Not a string provided (%s)!' % type(variable_name)
         message = 'Variable \'%s\' defined recursively!' % variable_name
+        import pdb;pdb.set_trace()
         return MessageCode.VARIABLE_DEFINED_RECURSIVELY, message
 
     @classmethod
