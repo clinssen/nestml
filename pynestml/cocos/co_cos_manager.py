@@ -25,13 +25,12 @@ from pynestml.cocos.co_co_correct_numerator_of_unit import CoCoCorrectNumeratorO
 from pynestml.cocos.co_co_correct_order_in_equation import CoCoCorrectOrderInEquation
 from pynestml.cocos.co_co_current_buffers_not_specified import CoCoCurrentBuffersNotSpecified
 from pynestml.cocos.co_co_each_block_unique_and_defined import CoCoEachBlockUniqueAndDefined
-from pynestml.cocos.co_co_equations_only_for_init_values import CoCoEquationsOnlyForInitValues
+from pynestml.cocos.co_co_ode_vars_declared import CoCoODEVarsDeclared
 from pynestml.cocos.co_co_function_calls_consistent import CoCoFunctionCallsConsistent
 from pynestml.cocos.co_co_function_have_rhs import CoCoFunctionHaveRhs
 from pynestml.cocos.co_co_function_max_one_lhs import CoCoFunctionMaxOneLhs
 from pynestml.cocos.co_co_function_unique import CoCoFunctionUnique
 from pynestml.cocos.co_co_illegal_expression import CoCoIllegalExpression
-from pynestml.cocos.co_co_init_vars_with_odes_provided import CoCoInitVarsWithOdesProvided
 from pynestml.cocos.co_co_invariant_is_boolean import CoCoInvariantIsBoolean
 from pynestml.cocos.co_co_neuron_name_unique import CoCoNeuronNameUnique
 from pynestml.cocos.co_co_no_nest_name_space_collision import CoCoNoNestNameSpaceCollision
@@ -237,15 +236,6 @@ class CoCosManager(object):
         CoCoBufferDataType.check_co_co(neuron)
 
     @classmethod
-    def check_init_vars_with_odes_provided(cls, neuron):
-        """
-        Checks that all initial variables have a rhs and are provided with the corresponding ode declaration.
-        :param neuron: a single neuron object.
-        :type neuron: ast_neuron
-        """
-        CoCoInitVarsWithOdesProvided.check_co_co(neuron)
-
-    @classmethod
     def check_user_defined_function_correctly_built(cls, neuron):
         """
         Checks that all user defined functions are correctly constructed, i.e., have a return statement if declared
@@ -256,13 +246,13 @@ class CoCosManager(object):
         CoCoUserDefinedFunctionCorrectlyDefined.check_co_co(neuron)
 
     @classmethod
-    def check_initial_ode_initial_values(cls, neuron):
+    def check_ode_vars_declared(cls, neuron):
         """
-        Checks if variables of odes are declared in the initial_values block.
+        Checks if variables of ODEs are declared in the state block.
         :param neuron: a single neuron object.
         :type neuron: ast_neuron
         """
-        CoCoEquationsOnlyForInitValues.check_co_co(neuron)
+        CoCoODEVarsDeclared.check_co_co(neuron)
 
     @classmethod
     def check_convolve_cond_curr_is_correct(cls, neuron):
@@ -353,7 +343,7 @@ class CoCosManager(object):
         cls.check_current_buffers_no_keywords(neuron)
         cls.check_buffer_types_are_correct(neuron)
         cls.check_user_defined_function_correctly_built(neuron)
-        cls.check_initial_ode_initial_values(neuron)
+        cls.check_ode_vars_declared(neuron)
         cls.check_kernel_type(neuron)
         cls.check_convolve_cond_curr_is_correct(neuron)
         cls.check_output_port_defined_if_emit_call(neuron)
@@ -369,16 +359,6 @@ class CoCosManager(object):
         cls.check_simple_delta_function(neuron)
         cls.check_function_argument_template_types_consistent(neuron)
         return
-
-    @classmethod
-    def post_ode_specification_checks(cls, neuron):
-        """
-        Checks the following constraints:
-            cls.check_init_vars_with_odes_provided
-        :param neuron: a single neuron object.
-        :type neuron: ast_neuron
-        """
-        cls.check_init_vars_with_odes_provided(neuron)
 
     @classmethod
     def check_function_argument_template_types_consistent(cls, neuron):

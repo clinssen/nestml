@@ -569,7 +569,7 @@ class Messages(object):
         return MessageCode.BLOCK_NOT_CORRECT, message
 
     @classmethod
-    def get_equation_var_not_in_init_values_block(cls, variable_name):
+    def get_equation_var_not_in_state_block(cls, variable_name):
         """
         Indicates that a variable in the equations block is not defined in the initial values block.
         :param variable_name: the name of the variable of an equation which is not defined in an equations block

@@ -677,8 +677,7 @@ Block types
 Within the top-level block, the following blocks may be defined:
 
 -  ``parameters`` - This block is composed of a list of variable declarations that are supposed to contain all parameters which remain constant during the simulation, but can vary among different simulations or instantiations of the same neuron. These variables can be set and read by the user using ``nest.SetStatus(<gid>, <variable>, <value>)`` and ``nest.GetStatus(<gid>, <variable>)``.
--  ``state`` - This block is composed of a list of variable declarations that are supposed to describe parts of the neuron which may change over time.
--  ``initial_values`` - This block describes the initial values of all stated differential equations. Only variables from this block can be further defined with differential equations. The variables in this block can be recorded using a ``multimeter``.
+-  ``state`` - This block is composed of a list of variable declarations that describe parts of the neuron which may change over time. It should include at least those variables defined as ODEs in the ``equations`` block, and include one or more initial values (depending on the order of the ODE).
 -  ``internals`` - This block is composed of a list of implementation-dependent helper variables that supposed to be constant during the simulation run. Therefore, their initialization expression can only reference parameters or other internal variables.
 -  ``equations`` - This block contains kernel definitions and differential equations. It will be explained in further detail `later on in the manual <#equations>`__.
 -  ``input`` - This block is composed of one or more input ports. It will be explained in further detail `later on in the manual <#input>`__.
@@ -849,7 +848,7 @@ in the ``equations`` block,
 
    V mV = 0 mV
 
-has to be stated in the ``initial_values`` block. Otherwise, an error message is generated.
+has to be stated in the ``state`` block. Otherwise, an error message is generated.
 
 The content of spike and current buffers can be used by just using their plain names. NESTML takes care behind the scenes that the buffer location at the current simulation time step is used.
 
@@ -896,7 +895,7 @@ In this case, initial values have to be specified up to the order of the differe
 
 .. code-block:: nestml
 
-   initial_values:
+   state:
      g real = 1
    end
 
@@ -921,7 +920,7 @@ An example second-order kernel is the dual exponential ("alpha") kernel, which c
 
     .. code-block:: nestml
 
-       initial_values:
+       state:
          g real = 0
          g$ real = 1
        end
@@ -938,7 +937,7 @@ An example second-order kernel is the dual exponential ("alpha") kernel, which c
 
     .. code-block:: nestml
 
-       initial_values:
+       state:
          g real = 0
          g' ms**-1 = e / tau
        end
@@ -997,7 +996,7 @@ In order to model refractory and non-refractory states, two variables are necess
 Setting and retrieving model properties
 ---------------------------------------
 
--  All variables in the ``state``, ``parameters`` and ``initial_values`` blocks are added to the status dictionary of the neuron.
+-  All variables in the ``state`` and ``parameters`` blocks are added to the status dictionary of the neuron.
 -  Values can be set using ``nest.SetStatus(<gid>, <variable>, <value>)`` where ``<variable>`` is the name of the corresponding NESTML variable.
 -  Values can be read using ``nest.GetStatus(<gid>, <variable>)``. This call will return the value of the corresponding NESTML variable.
 

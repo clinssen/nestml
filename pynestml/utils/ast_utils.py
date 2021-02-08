@@ -24,6 +24,7 @@ from typing import List, Optional
 from pynestml.meta_model.ast_block import ASTBlock
 from pynestml.meta_model.ast_declaration import ASTDeclaration
 from pynestml.meta_model.ast_function_call import ASTFunctionCall
+from pynestml.meta_model.ast_neuron import ASTNeuron
 from pynestml.meta_model.ast_variable import ASTVariable
 from pynestml.utils.ast_source_location import ASTSourceLocation
 from pynestml.symbols.predefined_functions import PredefinedFunctions
@@ -350,45 +351,25 @@ class ASTUtils(object):
         """
         from pynestml.meta_model.ast_node_factory import ASTNodeFactory
         if neuron.get_internals_blocks() is None:
-            internal = ASTNodeFactory.create_ast_block_with_variables(False, False, True, False, list(),
+            internal = ASTNodeFactory.create_ast_block_with_variables(False, False, True, list(),
                                                                       ASTSourceLocation.get_added_source_position())
             internal.update_scope(neuron.get_scope())
             neuron.get_body().get_body_elements().append(internal)
         return neuron
 
     @classmethod
-    def create_state_block(cls, neuron):
+    def create_state_block(cls, neuron: ASTNeuron) -> ASTNeuron:
         """
-        Creates a single internal block in the handed over neuron.
+        Creates a single state block in the handed over neuron.
         :param neuron: a single neuron
-        :type neuron: ast_neuron
         :return: the modified neuron
-        :rtype: ast_neuron
         """
         # local import since otherwise circular dependency
         from pynestml.meta_model.ast_node_factory import ASTNodeFactory
-        if neuron.get_internals_blocks() is None:
-            state = ASTNodeFactory.create_ast_block_with_variables(True, False, False, False, list(),
+        if neuron.get_state_blocks() is None:
+            state = ASTNodeFactory.create_ast_block_with_variables(True, False, False, list(),
                                                                    ASTSourceLocation.get_added_source_position())
             neuron.get_body().get_body_elements().append(state)
-        return neuron
-
-    @classmethod
-    def create_initial_values_block(cls, neuron):
-        """
-        Creates a single initial values block in the handed over neuron.
-        :param neuron: a single neuron
-        :type neuron: ast_neuron
-        :return: the modified neuron
-        :rtype: ast_neuron
-        """
-        # local import since otherwise circular dependency
-        from pynestml.meta_model.ast_node_factory import ASTNodeFactory
-        if neuron.get_initial_blocks() is None:
-            initial_values = ASTNodeFactory. \
-                create_ast_block_with_variables(False, False, False, True, list(),
-                                                ASTSourceLocation.get_added_source_position())
-            neuron.get_body().get_body_elements().append(initial_values)
         return neuron
 
     @classmethod

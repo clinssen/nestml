@@ -42,9 +42,7 @@ neuron hh_cond_exp_destexhe:
     r integer # counts number of tick during the refractory period
     g_noise_ex uS = g_noise_ex0
     g_noise_in uS = g_noise_in0
-  end
 
-  initial_values:
     V_m mV = E_L #  Membrane potential
 
     Act_m real =  alpha_m_init / ( alpha_m_init + beta_m_init )

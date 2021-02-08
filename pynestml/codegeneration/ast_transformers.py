@@ -81,22 +81,22 @@ def add_declaration_to_internals(neuron: ASTNeuron, variable_name: str, init_exp
     return neuron
 
 
-def add_declarations_to_initial_values(neuron: ASTNeuron, variables: List, initial_values: List) -> ASTNeuron:
+def add_declarations_to_state_block(neuron: ASTNeuron, variables: List, initial_values: List) -> ASTNeuron:
     """
-    Adds a single declaration to the initial values block of the neuron.
+    Adds a single declaration to the state block of the neuron.
     :param neuron: a neuron
-    :param variables: list of variables
-    :param initial_values: list of initial values
+    :param variables: list of state variables to add
+    :param initial_values: list of correponding initial values
     :return: a modified neuron
     """
     for variable, initial_value in zip(variables, initial_values):
-        add_declaration_to_initial_values(neuron, variable, initial_value)
+        add_declaration_to_state_block(neuron, variable, initial_value)
     return neuron
 
 
-def add_declaration_to_initial_values(neuron: ASTNeuron, variable: str, initial_value: str) -> ASTNeuron:
+def add_declaration_to_state_block(neuron: ASTNeuron, variable: str, initial_value: str) -> ASTNeuron:
     """
-    Adds a single declaration to the initial values block of the neuron. The declared variable is of type real.
+    Adds a single declaration to the state block of the neuron. The declared variable is of type real.
     :param neuron: a neuron
     :param variable: state variable to add
     :param initial_value: corresponding initial value
@@ -110,21 +110,21 @@ def add_declaration_to_initial_values(neuron: ASTNeuron, variable: str, initial_
     ast_declaration = ModelParser.parse_declaration(declaration_string)
     if vector_variable is not None:
         ast_declaration.set_size_parameter(vector_variable.get_vector_parameter())
-    neuron.add_to_initial_values_block(ast_declaration)
-    ast_declaration.update_scope(neuron.get_initial_values_blocks().get_scope())
+    neuron.add_to_state_block(ast_declaration)
+    ast_declaration.update_scope(neuron.get_state_blocks().get_scope())
 
     symtable_visitor = ASTSymbolTableVisitor()
-    symtable_visitor.block_type_stack.push(BlockType.INITIAL_VALUES)
+    symtable_visitor.block_type_stack.push(BlockType.STATE)
     ast_declaration.accept(symtable_visitor)
     symtable_visitor.block_type_stack.pop()
 
     return neuron
 
 
-def declaration_in_initial_values(neuron: ASTNeuron, variable_name: str) -> bool:
+def declaration_in_state(neuron: ASTNeuron, variable_name: str) -> bool:
     assert type(variable_name) is str
 
-    for decl in neuron.get_initial_values_blocks().get_declarations():
+    for decl in neuron.get_state_blocks().get_declarations():
         for var in decl.get_variables():
             if var.get_complete_name() == variable_name:
                 return True
@@ -149,7 +149,7 @@ def apply_incoming_spikes(neuron: ASTNeuron):
         kernel = convCall.get_args()[0].get_variable().get_complete_name()
         buffer = convCall.get_args()[1].get_variable().get_complete_name()
         initial_values = (
-            neuron.get_initial_values_blocks().get_declarations() if neuron.get_initial_values_blocks() is not None else list())
+            neuron.get_state_blocks().get_declarations() if neuron.get_state_blocks() is not None else list())
         for astDeclaration in initial_values:
             for variable in astDeclaration.get_variables():
                 if re.match(kernel + "[\']*", variable.get_complete_name()) or re.match(kernel + '__[\\d]+$',
@@ -215,8 +215,8 @@ def add_state_updates(neuron: ASTNeuron, update_expressions: Mapping[str, str]) 
     return neuron
 
 
-def variable_in_neuron_initial_values(name: str, neuron: ASTNeuron):
-    for decl in neuron.get_initial_blocks().get_declarations():
+def variable_in_neuron_state(name: str, neuron: ASTNeuron):
+    for decl in neuron.get_state().get_declarations():
         assert len(decl.get_variables()) == 1, "Multiple declarations in the same statement not yet supported"
         if decl.get_variables()[0].get_complete_name() == name:
             return True

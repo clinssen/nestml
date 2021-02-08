@@ -28,11 +28,8 @@ hh_cond_exp_traub, wb_cond_multisyn
 """
 neuron wb_cond_exp:
   state:
-    r integer # number of steps in the current refractory phase
-  end
-
-  initial_values:
     V_m mV = E_L    # Membrane potential
+    r integer # number of steps in the current refractory phase
 
     Inact_h real = alpha_h_init / ( alpha_h_init + beta_h_init )
     Act_n real = alpha_n_init / ( alpha_n_init + beta_n_init )

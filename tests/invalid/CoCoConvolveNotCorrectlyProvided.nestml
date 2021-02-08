@@ -27,11 +27,8 @@
 
 neuron CoCoConvolveNotCorrectlyProvided:
     state:
-        g_ex mV = 10mV
-    end
-
-    initial_values:
         V_m mV = 10mV
+        g_ex mV = 10mV
     end
 
     equations:

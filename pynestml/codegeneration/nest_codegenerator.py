@@ -31,7 +31,7 @@ from odetoolbox import analysis
 
 import pynestml
 
-from pynestml.codegeneration.ast_transformers import add_assignment_to_update_block, add_declarations_to_internals, add_declaration_to_initial_values, declaration_in_initial_values, get_delta_kernel_prefactor_expr, is_delta_kernel, replace_rhs_variables, replace_rhs_variable, construct_kernel_X_spike_buf_name, get_expr_from_kernel_var, to_ode_toolbox_name, to_ode_toolbox_processed_name, get_kernel_var_order_from_ode_toolbox_result, get_initial_value_from_ode_toolbox_result, variable_in_kernels, is_ode_variable, variable_in_solver, variable_in_neuron_initial_values
+from pynestml.codegeneration.ast_transformers import add_assignment_to_update_block, add_declarations_to_internals, add_declaration_to_state_block, declaration_in_state, get_delta_kernel_prefactor_expr, is_delta_kernel, replace_rhs_variables, replace_rhs_variable, construct_kernel_X_spike_buf_name, get_expr_from_kernel_var, to_ode_toolbox_name, to_ode_toolbox_processed_name, get_kernel_var_order_from_ode_toolbox_result, get_initial_value_from_ode_toolbox_result, variable_in_kernels, is_ode_variable, variable_in_solver, variable_in_neuron_state
 from pynestml.codegeneration.codegenerator import CodeGenerator
 from pynestml.codegeneration.expressions_pretty_printer import ExpressionsPrettyPrinter
 from pynestml.codegeneration.gsl_names_converter import GSLNamesConverter
@@ -300,7 +300,6 @@ class NESTCodeGenerator(CodeGenerator):
         if equations_block is None:
             # add all declared state variables as none of them are used in equations block
             self.non_equations_state_variables[neuron.get_name()] = []
-            self.non_equations_state_variables[neuron.get_name()].extend(ASTUtils.all_variables_defined_in_block(neuron.get_initial_values_blocks()))
             self.non_equations_state_variables[neuron.get_name()].extend(ASTUtils.all_variables_defined_in_block(neuron.get_state_blocks()))
 
             return []
@@ -317,7 +316,7 @@ class NESTCodeGenerator(CodeGenerator):
         self.numeric_solver[neuron.get_name()] = numeric_solver
 
         self.non_equations_state_variables[neuron.get_name()] = []
-        for decl in neuron.get_initial_values_blocks().get_declarations():
+        for decl in neuron.get_state_blocks().get_declarations():
             for var in decl.get_variables():
                 # check if this variable is not in equations
                 if not neuron.get_equations_blocks():
@@ -338,11 +337,11 @@ class NESTCodeGenerator(CodeGenerator):
                 if not used_in_eq:
                     self.non_equations_state_variables[neuron.get_name()].append(var)
 
-        self.remove_initial_values_for_kernels(neuron)
+        self.remove_state_for_kernels(neuron)
         kernels = self.remove_kernel_definitions_from_equations_block(neuron)
-        self.update_initial_values_for_odes(neuron, [analytic_solver, numeric_solver], kernels)
+        self.update_state_for_odes(neuron, [analytic_solver, numeric_solver], kernels)
         self.remove_ode_definitions_from_equations_block(neuron)
-        self.create_initial_values_for_kernels(neuron, [analytic_solver, numeric_solver], kernels)
+        self.create_state_for_kernels(neuron, [analytic_solver, numeric_solver], kernels)
         self.replace_variable_names_in_expressions(neuron, [analytic_solver, numeric_solver])
         self.add_timestep_symbol(neuron)
 
@@ -526,9 +525,9 @@ class NESTCodeGenerator(CodeGenerator):
         neuron.accept(symbol_table_visitor)
         SymbolTable.add_neuron_scope(neuron.get_name(), neuron.get_scope())
 
-    def remove_initial_values_for_kernels(self, neuron):
+    def remove_state_for_kernels(self, neuron):
         """
-        Remove initial values for original declarations (e.g. g_in, g_in', V_m); these might conflict with the initial value expressions returned from ODE-toolbox.
+        Remove state variable definitions for original declarations (e.g. g_in, g_in', V_m); these might conflict with the initial value expressions returned from ODE-toolbox.
         """
         assert isinstance(neuron.get_equations_blocks(), ASTEquationsBlock), "only one equation block should be present"
 
@@ -556,10 +555,9 @@ class NESTCodeGenerator(CodeGenerator):
         for decl in decl_to_remove:
             neuron.get_initial_blocks().get_declarations().remove(decl)
 
-    def update_initial_values_for_odes(self, neuron, solver_dicts, kernels):
+    def update_state_for_odes(self, neuron, solver_dicts, kernels):
         """
-        Update initial values for original ODE declarations (e.g. g_in, V_m', g_ahp'') that are present in the model
-        before ODE-toolbox processing, with the formatted variable names and initial values returned by ODE-toolbox.
+        Update state variables for original ODE declarations (e.g. g_in, V_m', g_ahp'') that are present in the model before ODE-toolbox processing, with the formatted variable names and initial values returned by ODE-toolbox.
         """
         assert isinstance(neuron.get_equations_blocks(), ASTEquationsBlock), "only one equation block should be present"
         equations_block = neuron.get_equations_block()
@@ -586,13 +584,13 @@ class NESTCodeGenerator(CodeGenerator):
         """
         Grab the ASTVariable corresponding to the initial value by this name
         """
-        for decl in neuron.get_initial_values_blocks().get_declarations():
+        for decl in neuron.get_state_blocks().get_declarations():
             for var in decl.variables:
                 if var.get_name() == var_name:
                     return var
         return None
 
-    def create_initial_values_for_kernels(self, neuron, solver_dicts, kernels):
+    def create_state_for_kernels(self, neuron, solver_dicts, kernels):
         """
         Add the variables used in kernels from the ode-toolbox result dictionary as ODEs in NESTML AST
         """
@@ -602,7 +600,7 @@ class NESTCodeGenerator(CodeGenerator):
             for var_name in solver_dict["initial_values"].keys():
                 if variable_in_kernels(var_name, kernels):
                     # original initial value expressions should have been removed to make place for ode-toolbox results
-                    assert not declaration_in_initial_values(neuron, var_name)
+                    assert not declaration_in_state(neuron, var_name)
 
         for solver_dict in solver_dicts:
             if solver_dict is None:
@@ -612,10 +610,11 @@ class NESTCodeGenerator(CodeGenerator):
                 # here, overwrite is allowed because initial values might be repeated between numeric and analytic solver
                 if variable_in_kernels(var_name, kernels):
                     expr = "0"    # for kernels, "initial value" returned by ode-toolbox is actually the increment value; the actual initial value is assumed to be 0
-                    if not declaration_in_initial_values(neuron, var_name):
-                        add_declaration_to_initial_values(neuron, var_name, expr)
+                    if not declaration_in_state(neuron, var_name):
+                        add_declaration_to_state_block(neuron, var_name, expr)
 
-    def create_initial_values_for_ode_toolbox_odes(self, neuron, solver_dicts, kernel_buffers, kernels):
+
+    def create_state_for_ode_toolbox_odes(self, neuron, solver_dicts, kernel_buffers, kernels):
         """
         Add the variables used in ODEs from the ode-toolbox result dictionary as ODEs in NESTML AST.
         """
@@ -624,7 +623,7 @@ class NESTCodeGenerator(CodeGenerator):
                 continue
             for var_name in solver_dict["initial_values"].keys():
                 # original initial value expressions should have been removed to make place for ode-toolbox results
-                assert not declaration_in_initial_values(neuron, var_name)
+                assert not declaration_in_state(neuron, var_name)
 
         for solver_dict in solver_dicts:
             if solver_dict is None:
@@ -636,8 +635,8 @@ class NESTCodeGenerator(CodeGenerator):
                 if variable_in_kernels(var_name, kernels):
                     expr = "0"    # for kernels, "initial value" returned by ode-toolbox is actually the increment value; the actual initial value is assumed to be 0
 
-                if not declaration_in_initial_values(neuron, var_name):
-                    add_declaration_to_initial_values(neuron, var_name, expr)
+                if not declaration_in_state(neuron, var_name):
+                    add_declaration_to_state_block(neuron, var_name, expr)
 
 
     def get_spike_update_expressions(self, neuron: ASTNeuron, kernel_buffers, solver_dicts, delta_factors) -> List[ASTAssignment]:
@@ -649,7 +648,6 @@ class NESTCodeGenerator(CodeGenerator):
         Note that for kernels, `initial_values` actually contains the increment upon spike arrival, rather than the initial value of the corresponding ODE dimension.
         """
         spike_updates = []
-        initial_values = neuron.get_initial_values_blocks()
 
         for kernel, spike_input_port in kernel_buffers:
             if neuron.get_scope().resolve_to_symbol(str(spike_input_port), SymbolKind.VARIABLE) is None:

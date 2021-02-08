@@ -260,9 +260,6 @@ class NestPrinter(object):
         if variable_symbol.block_type == BlockType.STATE:
             return prefix + 'S_.'
 
-        if variable_symbol.block_type == BlockType.INITIAL_VALUES:
-            return prefix + 'S_.'
-
         if variable_symbol.block_type == BlockType.EQUATION:
             return prefix + 'S_.'
 

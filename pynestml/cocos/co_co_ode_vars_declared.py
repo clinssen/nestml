@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# co_co_equations_only_for_init_values.py
+# co_co_ode_vars_declared.py
 #
 # This file is part of NEST.
 #
@@ -25,24 +25,9 @@ from pynestml.utils.messages import Messages
 from pynestml.visitors.ast_visitor import ASTVisitor
 
 
-class CoCoEquationsOnlyForInitValues(CoCo):
+class CoCoODEVarsDeclared(CoCo):
     """
-    This coco ensures that ode equations are only provided for variables which have been defined in the
-    initial_values block.
-    Allowed:
-        initial_values:
-            V_m mV = 10mV
-        end
-        equations:
-            V_m' = ....
-        end
-    Not allowed:
-        state:
-            V_m mV = 10mV
-        end
-        equations:
-            V_m' = ....
-        end
+    This coco ensures that variables are declared in the ``state`` block for all ODEs.
     """
 
     @classmethod
@@ -52,10 +37,10 @@ class CoCoEquationsOnlyForInitValues(CoCo):
         :param node: a single neuron instance.
         :type node: ast_neuron
         """
-        node.accept(EquationsOnlyForInitValues())
+        node.accept(StateVarsDeclaredVisitor())
 
 
-class EquationsOnlyForInitValues(ASTVisitor):
+class StateVarsDeclaredVisitor(ASTVisitor):
     """
     This visitor ensures that for all ode equations exists an initial value.
     """
@@ -67,8 +52,8 @@ class EquationsOnlyForInitValues(ASTVisitor):
         :type node: ast_ode_equation
         """
         symbol = node.get_scope().resolve_to_symbol(node.get_lhs().get_name_of_lhs(), SymbolKind.VARIABLE)
-        if symbol is not None and not symbol.is_init_values():
-            code, message = Messages.get_equation_var_not_in_init_values_block(node.get_lhs().get_name_of_lhs())
+        if symbol is not None and not symbol.is_state():
+            code, message = Messages.get_equation_var_not_in_state_block(node.get_lhs().get_name_of_lhs())
             Logger.log_message(code=code, message=message,
                                error_position=node.get_source_position(),
                                log_level=LoggingLevel.ERROR)

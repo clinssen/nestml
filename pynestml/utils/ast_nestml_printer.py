@@ -239,7 +239,7 @@ class ASTNestMLPrinter(object):
         elif node.is_internals:
             ret += 'internals'
         else:
-            ret += 'initial_values'
+            raise Exception("Unexpected node type")
         ret += ':' + print_sl_comment(node.in_comment) + '\n'
         if node.get_declarations() is not None:
             for decl in node.get_declarations():

@@ -33,11 +33,8 @@ Sven Schrader
 neuron iaf_cond_exp:
 
   state:
-    r integer        # counts number of tick during the refractory period
-  end
-
-  initial_values:
     V_m mV = E_L     # membrane potential
+    r integer        # counts number of tick during the refractory period
   end
 
   equations:
