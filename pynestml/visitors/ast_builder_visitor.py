@@ -554,7 +554,12 @@ class ASTBuilderVisitor(PyNestMLParserVisitor):
     # Visit a parse tree produced by PyNESTMLParser#inputPort.
     def visitInputPort(self, ctx):
         name = str(ctx.name.text) if ctx.name is not None else None
-        size_parameter = str(ctx.sizeParameter.text) if ctx.sizeParameter is not None else None
+        size_parameter = None
+        if ctx.indexParameter is not None:
+            if ctx.indexParameter().sizeStr is not None:
+                size_parameter = ctx.indexParameter().sizeStr.text
+            elif ctx.indexParameter().sizeInt is not None:
+                size_parameter = ctx.indexParameter().sizeInt.text
         input_qualifiers = []
         if ctx.inputQualifier() is not None:
             for qual in ctx.inputQualifier():
