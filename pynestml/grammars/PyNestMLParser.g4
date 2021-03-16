@@ -281,7 +281,6 @@ parser grammar PyNestMLParser;
     @attribute isSpike: Indicates that this input port accepts spikes.
     @attribute isCurrent: Indicates that this input port accepts current generator input.
   */
-   indexParameter : (sizeStr=NAME | sizeInt=UNSIGNED_INTEGER);
   inputPort:
     name=NAME
     (LEFT_SQUARE_BRACKET sizeParameter=indexParameter RIGHT_SQUARE_BRACKET)?

@@ -180,11 +180,6 @@ class PyNestMLParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by PyNestMLParser#indexParameter.
-    def visitIndexParameter(self, ctx):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by PyNestMLParser#inputPort.
     def visitInputPort(self, ctx):
         return self.visitChildren(ctx)
