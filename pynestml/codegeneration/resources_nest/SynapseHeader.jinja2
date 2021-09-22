@@ -634,9 +634,11 @@ inline void set_weight(double w) {
         **/
 
 {%-         set dynamics = synapse.get_on_receive_block(post_port) %}
-{%-         with ast = dynamics.get_block() %}
-{%-             include "directives/Block.jinja2" %}
-{%-         endwith %}
+{%-         if dynamics is not none %}
+{%-             with ast = dynamics.get_block() %}
+{%-                 include "directives/Block.jinja2" %}
+{%-             endwith %}
+{%-         endif %}
 {%-     endfor %}
 {%- endif %}
 {%- endfilter %}
@@ -723,9 +725,11 @@ inline void set_weight(double w) {
         **/
 
 {%-         set dynamics = synapse.get_on_receive_block(post_port) %}
-{%-         with ast = dynamics.get_block() %}
-{%-             include "directives/Block.jinja2" %}
-{%-         endwith %}
+{%-         if dynamics is not none %}
+{%-             with ast = dynamics.get_block() %}
+{%-                 include "directives/Block.jinja2" %}
+{%-             endwith %}
+{%-         endif %}
 {%-     endfor %}
 {%- endif %}
 {%- endfilter %}

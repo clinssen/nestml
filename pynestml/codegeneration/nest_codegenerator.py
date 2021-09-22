@@ -637,7 +637,6 @@ class NESTCodeGenerator(CodeGenerator):
                 Logger.log_message(None, -1, "Moving onPost updates for " + str(state_var), None, LoggingLevel.INFO)
                 post_port_names = self.get_post_port_names(synapse, neuron.name, synapse.name)
 
-                assert len(post_port_names) <= 1, "Can only handle one \"post\" port"
                 if len(post_port_names)  == 0:
                     continue
                 post_port_name = post_port_names[0]
@@ -670,6 +669,44 @@ class NESTCodeGenerator(CodeGenerator):
                 Logger.log_message(None, -1, "\t• Copying variable " + str(state_var), None, LoggingLevel.INFO)
                 equations_from_syn_to_neuron(state_var, new_synapse.get_equations_block(), new_neuron.get_equations_block(), var_name_suffix, mode="move")
 
+            # Replace the post_port in the neuron to its equivalent post port
+            def replace_post_port_in_neurons(var_name, neuron, new_var_name, new_scope):
+                """
+                Replace occurrences of moved post_port in the neuron with the neuron equivalent of post_port
+                """
+                def replace_post_port(_expr=None):
+                    if isinstance(_expr, ASTSimpleExpression) and _expr.is_variable():
+                        var = _expr.get_variable()
+                    elif isinstance(_expr, ASTVariable):
+                        var = _expr
+                    else:
+                        return
+
+                    if var.get_name() != var_name:
+                        return
+
+                    new_var = ASTVariable(new_var_name, differential_order=var.get_differential_order(),
+                                          source_position=var.get_source_position())
+                    new_var.update_scope(new_scope)
+                    new_var.accept(ASTSymbolTableVisitor())
+
+                    if isinstance(_expr, ASTSimpleExpression) and _expr.is_variable():
+                        _expr.set_variable(new_var)
+                    elif isinstance(_expr, ASTVariable):
+                        if isinstance(neuron.get_parent(_expr), ASTAssignment):
+                            neuron.get_parent(_expr).lhs = new_var
+                            Logger.log_message(None, -1, "ASTVariable replacement made in expression: " + str(
+                                neuron.get_parent(_expr)), None, LoggingLevel.INFO)
+                        elif isinstance(neuron.get_parent(_expr), ASTSimpleExpression) and neuron.get_parent(
+                                _expr).is_variable():
+                            neuron.get_parent(_expr).set_variable(new_var)
+                    else:
+                        Logger.log_message(None, -1,
+                                           "Error: instance of the variable not supported",
+                                           None, LoggingLevel.ERROR)
+                        raise
+
+                neuron.accept(ASTHigherOrderVisitor(lambda x: replace_post_port(x)))
 
             #
             #    replace occurrences of the variables in expressions in the original synapse with calls to the corresponding neuron getters
@@ -736,6 +773,7 @@ class NESTCodeGenerator(CodeGenerator):
             for state_var, alternate_name in zip(post_connected_continuous_input_ports, post_variable_names):
                 Logger.log_message(None, -1, "\t• Replacing variable " + str(state_var), None, LoggingLevel.INFO)
                 replace_variable_name_in_expressions(state_var, new_synapse, "", new_synapse.get_equations_blocks().get_scope(), alternate_name)
+                replace_post_port_in_neurons(state_var, new_neuron, alternate_name, new_neuron.get_equations_blocks().get_scope())
 
             # --------------    add dummy variable to state variable (and initial value) declarations so that type of the ASTExternalVariable can be resolved
             """

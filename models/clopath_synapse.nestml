@@ -1,0 +1,79 @@
+"""
+Name: clopath - Synapse type for spike-timing dependent plasticity.
+
+Description:
+
+"""
+synapse clopath:
+
+  state:
+    w real = 1.
+    u_bar_plus mV = E_L
+  end
+
+  parameters:
+    the_delay ms = 1 ms  @nest::delay   # !!! cannot have a variable called "delay"
+    lambda real = .01
+    tau_tr_pre ms = 20 ms
+    tau_tr_post ms = 20 ms
+    alpha real = 1.
+    mu_plus real = 1.
+    mu_minus real = 1.
+    Wmax real = 100.
+    Wmin real = 0.
+
+    # Clopath
+    g_L nS = 30.0 nS
+    C_m pF = 281.0 pF
+    E_L mV = -70.6 mV
+    Delta_T mV = 2.0 mV
+    tau_w ms = 144.0 ms
+    tau_z ms = 40.0 ms
+    tau_V_th ms = 50.0 ms
+    V_th_max mV = 30.4 mV
+    V_th_rest mV = -50.4 mV
+    tau_plus ms = 7.0 ms
+    tau_minus ms = 10.0 ms
+    tau_bar_bar ms = 100.0 ms
+    a nS = 4.0 nS
+    b pA = 80.5 pA
+    I_sp pA = 400.0 pA
+    I_e pA = 0.0 pA
+  end
+
+  equations:
+    kernel pre_trace_kernel = exp(-t / tau_tr_pre)
+    inline pre_trace real = convolve(pre_trace_kernel, pre_spikes)
+
+    # all-to-all trace of postsynaptic neuron
+    kernel post_trace_kernel = exp(-t / tau_tr_post)
+    inline post_trace real = convolve(post_trace_kernel, post_spikes)
+
+    u_bar_plus' = (-u_bar_plus + v_clamp) / tau_plus
+  end
+
+  input:
+    pre_spikes nS <- spike
+    post_spikes nS <- spike
+    v_clamp mV <- continuous
+  end
+
+  output: spike
+
+  onReceive(post_spikes):
+    # potentiate synapse
+    w_ real = Wmax * ( w / Wmax  + (lambda * ( 1. - ( w / Wmax ) )**mu_plus * pre_trace ))
+    w = min(Wmax, w_)
+  end
+
+  onReceive(pre_spikes):
+    # depress synapse
+    w_ real = Wmax * ( w / Wmax  - ( alpha * lambda * ( w / Wmax )**mu_minus * post_trace ))
+    w = max(Wmin, w_)
+
+    # deliver spike to postsynaptic partner
+    deliver_spike(w, the_delay)
+  end
+
+end
+

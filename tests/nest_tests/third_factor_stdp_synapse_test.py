@@ -52,7 +52,7 @@ class NestThirdFactorSTDPSynapseTest(unittest.TestCase):
         nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
 
         # generate the "jit" model (co-generated neuron and synapse), that does not rely on ArchivingNode
-        to_nest(input_path=["models/iaf_psc_exp_dend.nestml", "models/third_factor_stdp_synapse.nestml"],
+        to_nest(input_path=["../../models/iaf_psc_exp_dend.nestml", "../../models/third_factor_stdp_synapse.nestml"],
                 target_path="/tmp/nestml-jit",
                 logging_level="INFO",
                 module_name="nestml_jit_module",
@@ -112,7 +112,9 @@ class NestThirdFactorSTDPSynapseTest(unittest.TestCase):
         nest.set_verbosity("M_ALL")
         nest.ResetKernel()
         nest.Install("nestml_jit_module")
-        nest.Install("nestml_non_jit_module")
+
+        if sim_ref:
+            nest.Install("nestml_non_jit_module")
 
         print("Pre spike times: " + str(pre_spike_times))
         print("Post spike times: " + str(post_spike_times))
