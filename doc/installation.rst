@@ -98,3 +98,18 @@ The corresponding paths in ``ipython`` are:
            target_path="/tmp/nestml-component",
            logging_level="INFO")
    install_nest("/tmp/nestml-component", "/home/graber/miniconda3/envs/wnestml/") 
+
+
+Docker installation
+-------------------
+
+To install a complete `Docker <https://docker.io/>`_ image, simply pull and run from `Dockerhub <https://hub.docker.com/>`_:
+
+.. code-block:: sh
+
+   docker pull clifzju/nest-nestml-tutorial
+   docker run -i -d -p 7003:7003 -t clifzju/nest-nestml-tutorial
+
+A JupyerHub instance will run on port 7003, and can then be accessed by going to https://localhost:7003/ in your browser.
+
+In case you want to customize the image, the Dockerfile and other files necessary for building the image can be found at https://github.com/nest/nestml/tree/master/docker.
