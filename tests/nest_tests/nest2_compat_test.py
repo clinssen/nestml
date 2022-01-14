@@ -28,7 +28,8 @@ from pynestml.frontend.pynestml_frontend import to_nest
 from pynestml.utils.model_installer import install_nest
 
 
-@pytest.mark.skip(reason="Should be run with NEST 2.20.1+")
+@pytest.mark.skipif(os.environ.get('NEST_VERSION_MAJOR') != "2",
+                    reason="Should be run with NEST 2.20.*")
 class Nest2CompatTest(unittest.TestCase):
     """
     Tests the code generation and installation with custom NESTML templates for NEST
@@ -53,10 +54,10 @@ class Nest2CompatTest(unittest.TestCase):
                                      'resources_nest', 'point_neuron_nest2'),
                 "model_templates": {
                     "neuron": ['NeuronClass.cpp.jinja2', 'NeuronHeader.h.jinja2'],
-                    "synapse":  ['SynapseHeader.h.jinja2']
+                    "synapse": ['SynapseHeader.h.jinja2']
                 },
-                "module_templates": ['setup/CMakeLists.txt.jinja2', 'setup/SLI_Init.sli.jinja2',
-                                     'setup/ModuleHeader.h.jinja2', 'setup/ModuleClass.cpp.jinja2']}}
+                "module_templates": ['setup/CMakeLists.txt.jinja2', 'setup/ModuleHeader.h.jinja2',
+                                     'setup/ModuleClass.cpp.jinja2']}}
 
         to_nest(input_path, target_path, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         install_nest(target_path, nest_path)
