@@ -54,7 +54,7 @@ class NestSTDPNNSynapseTest(unittest.TestCase):
         # generate the "jit" model (co-generated neuron and synapse), that does not rely on ArchivingNode
         generate_target(input_path=["models/neurons/iaf_psc_exp.nestml", "models/synapses/stdp_nn_pre_centered.nestml"],
                         target_path="/tmp/nestml-jit",
-                        target_platform="NEST"
+                        target_platform="NEST",
                         logging_level="INFO",
                         module_name="nestml_jit_module",
                         suffix="_nestml",
