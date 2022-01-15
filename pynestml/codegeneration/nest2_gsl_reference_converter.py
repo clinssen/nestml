@@ -20,6 +20,7 @@
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
 from pynestml.codegeneration.gsl_reference_converter import GSLReferenceConverter
+from pynestml.symbols.predefined_functions import PredefinedFunctions
 
 
 class NEST2GSLReferenceConverter(GSLReferenceConverter):
