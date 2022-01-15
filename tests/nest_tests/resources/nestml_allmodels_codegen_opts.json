@@ -1,4 +1,5 @@
 {
+   "nest_path": "%NEST_PATH%",
    "neuron_parent_class": "Archiving_Node",
    "neuron_parent_class_include": "archiving_node.h",
     "templates":
