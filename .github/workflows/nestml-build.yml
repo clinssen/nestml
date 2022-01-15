@@ -200,6 +200,9 @@ jobs:
           echo "NEST_VERSION_MAJOR = $NEST_VERSION_MAJOR"
 
           git clone --depth=1 https://github.com/nest/nest-simulator --branch v2.20.2
+          cd nest-simulator
+          git status
+          cd ..
           mkdir nest_install
           echo "NEST_INSTALL=$NEST_INSTALL" >> $GITHUB_ENV
           cd nest_install
@@ -222,7 +225,8 @@ jobs:
           echo $ALL_MODEL_FILENAMES
           echo "NEST_INSTALL = ${{ env.NEST_INSTALL }}"
           sed -i 's|%NEST_PATH%|${{ env.NEST_INSTALL }}|' tests/nest_tests/resources/nestml_allmodels_codegen_opts.json
-          nestml --input_path $ALL_MODEL_FILENAMES --target_path target --suffix _nestml --logging_level INFO --module_name nestml_allmodels_module --codegen_opts tests/nest_tests/resources/nestml_allmodels_codegen_opts.json
+          cat tests/nest_tests/resources/nestml_allmodels_codegen_opts.json
+          nestml --input_path $ALL_MODEL_FILENAMES --target_path target --target_platform NEST2 --suffix _nestml --logging_level INFO --module_name nestml_allmodels_module --codegen_opts tests/nest_tests/resources/nestml_allmodels_codegen_opts.json
 
       # Integration tests
       - name: Run integration tests
