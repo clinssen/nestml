@@ -49,10 +49,10 @@ along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
 // Includes for random number generator
 #if NEST2_COMPAT
-#include <random>
-#else
 #include "poisson_randomdev.h"
 #include "uniform_randomdev.h"
+#else
+#include <random>
 #endif
 {%- endif %}
 {%- if useGSL %}
