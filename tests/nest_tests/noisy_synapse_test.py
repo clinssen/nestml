@@ -46,7 +46,7 @@ class NoisySynapseTest(unittest.TestCase):
 
         generate_target(input_path="models/synapses/noisy_synapse.nestml",
                         target_path="/tmp/nestml-noisy-synapse",
-                        target_platform="NEST"
+                        target_platform="NEST",
                         logging_level="INFO",
                         module_name="nestml_noisy_synapse_module",
                         suffix="_nestml",

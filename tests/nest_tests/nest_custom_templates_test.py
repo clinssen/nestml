@@ -35,20 +35,20 @@ class NestCustomTemplatesTest(unittest.TestCase):
         input_path = os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
             os.pardir, os.pardir, "models", "neurons", "iaf_psc_exp.nestml"))))
         nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
-        target_path = 'target'
+        target_path = "target"
         target_platform = "NEST"
-        logging_level = 'INFO'
-        module_name = 'nestmlmodule'
+        logging_level = "INFO"
+        module_name = "nestmlmodule"
         store_log = False
-        suffix = '_nestml'
+        suffix = "_nestml"
         dev = True
 
         codegen_opts = {"nest_path": nest_path,
-                        "templates": {"path": 'point_neuron',
-                                      "model_templates": {"neuron": ['NeuronClass.cpp.jinja2', 'NeuronHeader.h.jinja2'],
-                                                          "synapse": ['SynapseHeader.h.jinja2']},
-                                      "module_templates": ['setup/CMakeLists.txt.jinja2',
-                                                           'setup/ModuleHeader.h.jinja2', 'setup/ModuleClass.cpp.jinja2']}}
+                        "templates": {"path": "point_neuron",
+                                      "model_templates": {"neuron": ["NeuronClass.cpp.jinja2", "NeuronHeader.h.jinja2"],
+                                                          "synapse": ["SynapseHeader.h.jinja2"]},
+                                      "module_templates": ["setup/CMakeLists.txt.jinja2",
+                                                           "setup/ModuleHeader.h.jinja2", "setup/ModuleClass.cpp.jinja2"]}}
 
         generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         nest.set_verbosity("M_ALL")
@@ -57,7 +57,7 @@ class NestCustomTemplatesTest(unittest.TestCase):
         nest.Install("nestmlmodule")
 
         nrn = nest.Create("iaf_psc_exp_nestml")
-        mm = nest.Create('multimeter')
+        mm = nest.Create("multimeter")
         mm.set({"record_from": ["V_m"]})
 
         nest.Connect(mm, nrn)
@@ -69,11 +69,12 @@ class NestCustomTemplatesTest(unittest.TestCase):
         input_paths = [os.path.join(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
             os.pardir, os.pardir, "models", fn)))) for fn in models]
         nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
-        target_path = 'target'
-        logging_level = 'INFO'
-        module_name = 'nestmlmodule'
+        target_path = "target"
+        target_platform = "NEST"
+        logging_level = "INFO"
+        module_name = "nestmlmodule"
         store_log = False
-        suffix = '_nestml'
+        suffix = "_nestml"
         dev = True
 
         codegen_opts = {
@@ -83,18 +84,18 @@ class NestCustomTemplatesTest(unittest.TestCase):
                                       "synapse": "stdp_triplet",
                                       "post_ports": ["post_spikes"]}],
             "templates": {
-                "path": 'point_neuron',
+                "path": "point_neuron",
                 "model_templates": {
-                    "neuron": ['NeuronClass.cpp.jinja2', 'NeuronHeader.h.jinja2'],
-                    "synapse": ['SynapseHeader.h.jinja2']
+                    "neuron": ["NeuronClass.cpp.jinja2", "NeuronHeader.h.jinja2"],
+                    "synapse": ["SynapseHeader.h.jinja2"]
                 },
-                "module_templates": ['setup/CMakeLists.txt.jinja2',
-                                     'setup/ModuleHeader.h.jinja2', 'setup/ModuleClass.cpp.jinja2']
+                "module_templates": ["setup/CMakeLists.txt.jinja2",
+                                     "setup/ModuleHeader.h.jinja2", "setup/ModuleClass.cpp.jinja2"]
             }
         }
 
         neuron_model_name = "iaf_psc_delta_nestml__with_stdp_triplet_nestml"
         synapse_model_name = "stdp_triplet_nestml__with_iaf_psc_delta_nestml"
 
-        generate_target(input_paths, target_path, logging_level, module_name, store_log, suffix, dev, codegen_opts)
+        generate_target(input_paths, target_path, target_platform, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         nest.set_verbosity("M_ALL")
