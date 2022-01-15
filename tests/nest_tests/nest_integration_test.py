@@ -78,7 +78,7 @@ class NestIntegrationTest(unittest.TestCase):
                                                                {"neuron": "iaf_psc_exp_dend",
                                                                 "synapse": "third_factor_stdp",
                                                                 "post_ports": ["post_spikes",
-                                                                              ["I_post_dend", "I_dend"]]},
+                                                                               ["I_post_dend", "I_dend"]]},
                                                                {"neuron": "iaf_psc_exp",
                                                                 "synapse": "stdp_nn_pre_centered",
                                                                 "post_ports": ["post_spikes"]}]})

@@ -42,7 +42,7 @@ def nestml_generate_target():
 
     generate_target(input_path=["models/neurons/iaf_psc_delta.nestml", "models/synapses/stdp_triplet_naive.nestml"],
                     target_path="/tmp/nestml-triplet-stdp",
-                    target_platform = "NEST",
+                    target_platform="NEST",
                     logging_level="INFO",
                     module_name="nestml_triplet_pair_module",
                     suffix="_nestml",

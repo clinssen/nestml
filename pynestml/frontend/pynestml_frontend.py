@@ -41,7 +41,7 @@ from pynestml.utils.model_parser import ModelParser
 
 
 def generate_target(input_path: Union[str, Sequence[str]], target_path=None, target_platform: str = 'NEST', logging_level='ERROR',
-            module_name=None, store_log=False, suffix="", dev=False, codegen_opts: Optional[Mapping[str, Any]]=None):
+                    module_name=None, store_log=False, suffix="", dev=False, codegen_opts: Optional[Mapping[str, Any]]=None):
     '''Generate and build code for the given target platform.
 
     Parameters

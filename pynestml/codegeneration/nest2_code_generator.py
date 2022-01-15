@@ -26,6 +26,7 @@ from pynestml.codegeneration.nest2_gsl_reference_converter import NEST2GSLRefere
 from pynestml.codegeneration.nest2_reference_converter import NEST2ReferenceConverter
 from pynestml.codegeneration.unitless_expression_printer import UnitlessExpressionPrinter
 
+
 class NEST2CodeGenerator(NESTCodeGenerator):
     """
     Code generator for a C++ NEST extension module.
@@ -33,9 +34,9 @@ class NEST2CodeGenerator(NESTCodeGenerator):
 
     def __init__(self, options: Optional[Mapping[str, Any]] = None):
         super().__init__(options)
-        
+
         self._target = "NEST2"
-        
+
         self.gsl_reference_converter = NEST2GSLReferenceConverter()
         self.gsl_printer = UnitlessExpressionPrinter(self.gsl_reference_converter)
 

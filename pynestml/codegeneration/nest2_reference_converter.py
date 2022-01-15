@@ -20,8 +20,8 @@
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
 from pynestml.codegeneration.nest_reference_converter import NESTReferenceConverter
-
 from pynestml.symbols.predefined_functions import PredefinedFunctions
+
 
 class NEST2ReferenceConverter(NESTReferenceConverter):
     """

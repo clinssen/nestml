@@ -35,7 +35,7 @@ from pynestml.frontend.frontend_configuration import FrontendConfiguration
 class NESTBuilder(Builder):
 
     _default_options = {
-            "nest_path": None
+        "nest_path": None
     }
 
     def build(self) -> None:
@@ -51,7 +51,7 @@ class NESTBuilder(Builder):
         """
         target_path = FrontendConfiguration.get_target_path()
         nest_path = self.get_option("nest_path")
-        
+
         if not os.path.isdir(target_path):
             raise InvalidPathException('Target path (' + target_path + ') is not a directory!')
 
@@ -71,20 +71,20 @@ class NESTBuilder(Builder):
         # first call cmake with all the arguments
         try:
             result = subprocess.check_call(cmake_cmd, stderr=subprocess.STDOUT, shell=shell,
-                                        cwd=str(os.path.join(target_path)))
+                                           cwd=str(os.path.join(target_path)))
         except subprocess.CalledProcessError as e:
             raise GeneratedCodeBuildException('Error occurred during \'cmake\'! More detailed error messages can be found in stdout.')
 
         # now execute make all
         try:
             subprocess.check_call(make_all_cmd, stderr=subprocess.STDOUT, shell=shell,
-                                cwd=str(os.path.join(target_path)))
+                                  cwd=str(os.path.join(target_path)))
         except subprocess.CalledProcessError as e:
             raise GeneratedCodeBuildException('Error occurred during \'make all\'! More detailed error messages can be found in stdout.')
 
         # finally execute make install
         try:
             subprocess.check_call(make_install_cmd, stderr=subprocess.STDOUT, shell=shell,
-                                cwd=str(os.path.join(target_path)))
+                                  cwd=str(os.path.join(target_path)))
         except subprocess.CalledProcessError as e:
             raise GeneratedCodeBuildException('Error occurred during \'make install\'! More detailed error messages can be found in stdout.')

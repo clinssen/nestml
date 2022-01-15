@@ -126,7 +126,7 @@ class NESTCodeGenerator(CodeGenerator):
         self.numeric_solver = {}
         self.non_equations_state_variables = {}   # those state variables not defined as an ODE in the equations block
         self.setup_template_env()
-        
+
         self.gsl_reference_converter = GSLReferenceConverter()
         self.gsl_printer = UnitlessExpressionPrinter(self.gsl_reference_converter)
 

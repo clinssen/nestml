@@ -48,11 +48,12 @@ class NestSTNExpTest(unittest.TestCase):
         suffix = '_nestml'
 
         generate_target(input_path=input_path,
-                target_path=target_path,
-                target_platform = "NEST",
-                logging_level="INFO",
-                suffix=suffix,
-                module_name=module_name)
+                        target_path=target_path,
+                        target_platform="NEST",
+                        logging_level="INFO",
+                        suffix=suffix,
+                        module_name=module_name,
+                        codegen_opts={"nest_path": nest_path})
 
         nest.Install(module_name)
         model = "terub_stn_nestml"

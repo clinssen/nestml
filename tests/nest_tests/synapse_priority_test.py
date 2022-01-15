@@ -50,12 +50,12 @@ class NestSynapsePriorityTest(unittest.TestCase):
                         module_name="nestml_module",
                         suffix="_nestml",
                         codegen_opts={"nest_path": nest_path,
-                                    "neuron_parent_class": "StructuralPlasticityNode",
-                                    "neuron_parent_class_include": "structural_plasticity_node.h",
-                                    "neuron_synapse_pairs": [{"neuron": "iaf_psc_delta",
+                                      "neuron_parent_class": "StructuralPlasticityNode",
+                                      "neuron_parent_class_include": "structural_plasticity_node.h",
+                                      "neuron_synapse_pairs": [{"neuron": "iaf_psc_delta",
                                                                 "synapse": "synapse_event_priority_test",
                                                                 "post_ports": ["post_spikes"]},
-                                                            {"neuron": "iaf_psc_delta",
+                                                               {"neuron": "iaf_psc_delta",
                                                                 "synapse": "synapse_event_inv_priority_test",
                                                                 "post_ports": ["post_spikes"]}]})
 
