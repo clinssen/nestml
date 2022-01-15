@@ -23,7 +23,7 @@ import nest
 import numpy as np
 import os
 import unittest
-from pynestml.frontend.pynestml_frontend import to_nest, install_nest
+from pynestml.frontend.pynestml_frontend import generate_target
 
 try:
     import matplotlib
@@ -52,8 +52,9 @@ class NestSTDPNNSynapseTest(unittest.TestCase):
         nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
 
         # generate the "jit" model (co-generated neuron and synapse), that does not rely on ArchivingNode
-        to_nest(input_path=["models/neurons/iaf_psc_exp.nestml", "models/synapses/stdp_nn_symm.nestml"],
+        generate_target(input_path=["models/neurons/iaf_psc_exp.nestml", "models/synapses/stdp_nn_symm.nestml"],
                 target_path="/tmp/nestml-jit",
+                target_platform = "NEST",
                 logging_level="INFO",
                 module_name="nestml_jit_module",
                 suffix="_nestml",
@@ -62,17 +63,16 @@ class NestSTDPNNSynapseTest(unittest.TestCase):
                               "neuron_synapse_pairs": [{"neuron": "iaf_psc_exp",
                                                         "synapse": "stdp_nn_symm",
                                                         "post_ports": ["post_spikes"]}]})
-        install_nest("/tmp/nestml-jit", nest_path)
 
         # generate the "non-jit" model, that relies on ArchivingNode
-        to_nest(input_path="models/neurons/iaf_psc_exp.nestml",
+        generate_target(input_path="models/neurons/iaf_psc_exp.nestml",
                 target_path="/tmp/nestml-non-jit",
+                target_platform = "NEST",
                 logging_level="INFO",
                 module_name="nestml_non_jit_module",
                 suffix="_nestml_non_jit",
                 codegen_opts={"neuron_parent_class": "ArchivingNode",
                               "neuron_parent_class_include": "archiving_node.h"})
-        install_nest("/tmp/nestml-non-jit", nest_path)
 
     def test_stdp_nn_synapse(self):
 

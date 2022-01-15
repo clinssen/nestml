@@ -22,7 +22,7 @@
 import nest
 import numpy as np
 import unittest
-from pynestml.frontend.pynestml_frontend import to_nest, install_nest
+from pynestml.frontend.pynestml_frontend import generate_target
 
 try:
     import matplotlib
@@ -53,8 +53,9 @@ class NestThirdFactorSTDPSynapseTest(unittest.TestCase):
         nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
 
         # generate the "jit" model (co-generated neuron and synapse), that does not rely on ArchivingNode
-        to_nest(input_path=["models/neurons/iaf_psc_exp_dend.nestml", "models/synapses/third_factor_stdp_synapse.nestml"],
+        generate_target(input_path=["models/neurons/iaf_psc_exp_dend.nestml", "models/synapses/third_factor_stdp_synapse.nestml"],
                 target_path="/tmp/nestml-jit",
+                target_platform = "NEST",
                 logging_level="INFO",
                 module_name="nestml_jit_module",
                 suffix="_nestml",
@@ -64,7 +65,6 @@ class NestThirdFactorSTDPSynapseTest(unittest.TestCase):
                                                         "synapse": "third_factor_stdp",
                                                         "post_ports": ["post_spikes",
                                                                        ["I_post_dend", "I_dend"]]}]})
-        install_nest("/tmp/nestml-jit", nest_path)
 
     def test_nest_stdp_synapse(self):
 

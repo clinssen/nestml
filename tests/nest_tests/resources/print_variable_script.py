@@ -23,19 +23,19 @@ import os
 import nest
 import shutil
 
-from pynestml.frontend.pynestml_frontend import to_nest, install_nest
+from pynestml.frontend.pynestml_frontend import generate_target
 
-input_path = str(os.path.realpath(os.path.join(os.path.dirname(__file__), 'PrintVariables.nestml')))
+input_path = str(os.path.realpath(os.path.join(os.path.dirname(__file__), "PrintVariables.nestml")))
 nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
-target_path = '../target'
-logging_level = 'INFO'
-module_name = 'nestmlmodule'
+target_platform = "NEST"
+target_path = "../target"
+logging_level = "INFO"
+module_name = "nestmlmodule"
 store_log = False
-suffix = '_nestml'
+suffix = "_nestml"
 dev = True
 
-to_nest(input_path, target_path, logging_level, module_name, store_log, suffix, dev)
-install_nest(target_path, nest_path)
+generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev)
 nest.set_verbosity("M_ALL")
 
 nest.ResetKernel()

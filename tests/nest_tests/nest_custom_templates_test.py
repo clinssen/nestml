@@ -23,8 +23,7 @@ import unittest
 
 import nest
 
-from pynestml.frontend.pynestml_frontend import to_nest
-from pynestml.utils.model_installer import install_nest
+from pynestml.frontend.pynestml_frontend import generate_target
 
 
 class NestCustomTemplatesTest(unittest.TestCase):
@@ -37,24 +36,21 @@ class NestCustomTemplatesTest(unittest.TestCase):
             os.pardir, os.pardir, "models", "neurons", "iaf_psc_exp.nestml"))))
         nest_path = nest.ll_api.sli_func("statusdict/prefix ::")
         target_path = 'target'
+        target_platform = "NEST"
         logging_level = 'INFO'
         module_name = 'nestmlmodule'
         store_log = False
         suffix = '_nestml'
         dev = True
 
-        codegen_opts = {"templates": {
-            "path": 'point_neuron',
-            "model_templates": {
-                "neuron": ['NeuronClass.cpp.jinja2', 'NeuronHeader.h.jinja2'],
-                "synapse": ['SynapseHeader.h.jinja2']
-            },
-            "module_templates": ['setup/CMakeLists.txt.jinja2',
-                                 'setup/ModuleHeader.h.jinja2', 'setup/ModuleClass.cpp.jinja2']
-        }}
+        codegen_opts = {"nest_path": nest_path,
+                        "templates": {"path": 'point_neuron',
+                                      "model_templates": {"neuron": ['NeuronClass.cpp.jinja2', 'NeuronHeader.h.jinja2'],
+                                                          "synapse": ['SynapseHeader.h.jinja2']},
+                                      "module_templates": ['setup/CMakeLists.txt.jinja2',
+                                                           'setup/ModuleHeader.h.jinja2', 'setup/ModuleClass.cpp.jinja2']}}
 
-        to_nest(input_path, target_path, logging_level, module_name, store_log, suffix, dev, codegen_opts)
-        install_nest(target_path, nest_path)
+        generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         nest.set_verbosity("M_ALL")
 
         nest.ResetKernel()
@@ -100,6 +96,5 @@ class NestCustomTemplatesTest(unittest.TestCase):
         neuron_model_name = "iaf_psc_delta_nestml__with_stdp_triplet_nestml"
         synapse_model_name = "stdp_triplet_nestml__with_iaf_psc_delta_nestml"
 
-        to_nest(input_paths, target_path, logging_level, module_name, store_log, suffix, dev, codegen_opts)
-        install_nest(target_path, nest_path)
+        generate_target(input_paths, target_path, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         nest.set_verbosity("M_ALL")
