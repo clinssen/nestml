@@ -48,14 +48,7 @@ class NESTReferenceConverter(IReferenceConverter):
     This concrete reference converter is used to transfer internal names to counter-pieces in NEST.
     """
 
-    def __init__(self):
-        """
-        Standard constructor.
-        """
-        pass
-
-    @classmethod
-    def convert_binary_op(cls, binary_operator) -> str:
+    def convert_binary_op(self, binary_operator) -> str:
         """
         Converts a single binary operator to nest processable format.
         :param binary_operator: a single binary operator string.
@@ -63,21 +56,20 @@ class NESTReferenceConverter(IReferenceConverter):
         :return: the corresponding nest representation
         """
         if isinstance(binary_operator, ASTArithmeticOperator):
-            return cls.convert_arithmetic_operator(binary_operator)
+            return self.convert_arithmetic_operator(binary_operator)
 
         if isinstance(binary_operator, ASTBitOperator):
-            return cls.convert_bit_operator(binary_operator)
+            return self.convert_bit_operator(binary_operator)
 
         if isinstance(binary_operator, ASTComparisonOperator):
-            return cls.convert_comparison_operator(binary_operator)
+            return self.convert_comparison_operator(binary_operator)
 
         if isinstance(binary_operator, ASTLogicalOperator):
-            return cls.convert_logical_operator(binary_operator)
+            return self.convert_logical_operator(binary_operator)
 
         raise RuntimeError('Cannot determine binary operator!')
 
-    @classmethod
-    def convert_function_call(cls, function_call, prefix='') -> str:
+    def convert_function_call(self, function_call, prefix='') -> str:
         """
         Converts a single handed over function call to C++ NEST API syntax.
 
@@ -319,8 +311,7 @@ e();
         else:
             return '"' + stmt + '"'  # format bare string in C++ (add double quotes)
 
-    @classmethod
-    def convert_constant(cls, constant_name) -> str:
+    def convert_constant(self, constant_name) -> str:
         """
         Converts a single handed over constant.
         :param constant_name: a constant as string.
@@ -332,8 +323,7 @@ e();
 
         return constant_name
 
-    @classmethod
-    def convert_unary_op(cls, unary_operator) -> str:
+    def convert_unary_op(self, unary_operator) -> str:
         """
         Depending on the concretely used operator, a string is returned.
         :param unary_operator: a single operator.
@@ -351,24 +341,21 @@ e();
 
         raise RuntimeError('Cannot determine unary operator!', LoggingLevel.ERROR)
 
-    @classmethod
-    def convert_encapsulated(cls) -> str:
+    def convert_encapsulated(self) -> str:
         """
         Converts the encapsulating parenthesis to NEST style.
         :return: a set of parenthesis
         """
         return '(%s)'
 
-    @classmethod
-    def convert_logical_not(cls) -> str:
+    def convert_logical_not(self) -> str:
         """
         Returns a representation of the logical not in NEST.
         :return: a string representation
         """
         return '(' + '!' + '%s' + ')'
 
-    @classmethod
-    def convert_logical_operator(cls, op) -> str:
+    def convert_logical_operator(self, op) -> str:
         """
         Prints a logical operator in NEST syntax.
         :param op: a logical operator object
@@ -382,8 +369,7 @@ e();
         else:
             raise RuntimeError('Cannot determine logical operator!', LoggingLevel.ERROR)
 
-    @classmethod
-    def convert_comparison_operator(cls, op) -> str:
+    def convert_comparison_operator(self, op) -> str:
         """
         Prints a logical operator in NEST syntax.
         :param op: a logical operator object
@@ -410,8 +396,7 @@ e();
 
         raise RuntimeError('Cannot determine comparison operator!')
 
-    @classmethod
-    def convert_bit_operator(cls, op) -> str:
+    def convert_bit_operator(self, op) -> str:
         """
         Prints a logical operator in NEST syntax.
         :param op: a logical operator object
@@ -435,8 +420,7 @@ e();
 
         raise RuntimeError('Cannot determine bit operator!')
 
-    @classmethod
-    def convert_arithmetic_operator(cls, op) -> str:
+    def convert_arithmetic_operator(self, op) -> str:
         """
         Prints a logical operator in NEST syntax.
         :param op: a logical operator object
@@ -463,8 +447,7 @@ e();
 
         raise RuntimeError('Cannot determine arithmetic operator!')
 
-    @classmethod
-    def convert_ternary_operator(cls) -> str:
+    def convert_ternary_operator(self) -> str:
         """
         Prints a ternary operator in NEST syntax.
         :return: a string representation

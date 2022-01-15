@@ -28,9 +28,8 @@ class NEST2ReferenceConverter(NESTReferenceConverter):
     This concrete reference converter is used to transfer internal names to NEST 2 syntax.
     """
 
-    @classmethod
-    def convert_function_call(cls, function_call, prefix=''):
-        """
+    def convert_function_call(self, function_call, prefix='') -> str:
+        r"""
         Converts a single handed over function call to C++ NEST API syntax.
 
         Parameters
@@ -55,4 +54,4 @@ class NEST2ReferenceConverter(NESTReferenceConverter):
         if function_name == PredefinedFunctions.RANDOM_UNIFORM:
             return '(({!s}) + ({!s}) * nest::kernel().rng_manager.get_rng( ' + prefix + 'get_thread() )->drand())'
 
-        return NESTReferenceConverter.convert_function_call(function_call, prefix=prefix)
+        return super().convert_function_call(function_call, prefix=prefix)

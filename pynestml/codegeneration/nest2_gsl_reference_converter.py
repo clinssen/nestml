@@ -29,7 +29,7 @@ class NEST2GSLReferenceConverter(GSLReferenceConverter):
     """
 
     def convert_function_call(self, function_call, prefix=''):
-        """Convert a single function call to C++ GSL API syntax.
+        r"""Convert a single function call to C++ GSL API syntax.
 
         Parameters
         ----------
@@ -53,4 +53,4 @@ class NEST2GSLReferenceConverter(GSLReferenceConverter):
         if function_name == PredefinedFunctions.RANDOM_UNIFORM:
             return '(({!s}) + ({!s}) * nest::kernel().rng_manager.get_rng( ' + prefix + 'get_thread() )->drand())'
 
-        return GSLReferenceConverter.convert_function_call(function_call, prefix=prefix)
+        return super().convert_function_call(function_call, prefix=prefix)
