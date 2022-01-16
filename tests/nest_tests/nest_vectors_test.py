@@ -42,7 +42,8 @@ class NestVectorsIntegrationTest(unittest.TestCase):
         store_log = False
         suffix = '_nestml'
         dev = True
-        generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev)
+        codegen_opts = {"nest_path": nest_path}
+        generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         nest.set_verbosity("M_ALL")
 
         nest.ResetKernel()
