@@ -234,6 +234,8 @@ jobs:
 
       # Integration tests
       - name: Run integration tests
+        env:
+          LD_LIBRARY_PATH: ${{ env.NEST_INSTALL }}/lib/nest
         run: |
           cd $GITHUB_WORKSPACE
           rc=0
