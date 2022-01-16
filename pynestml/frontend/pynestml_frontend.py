@@ -200,7 +200,8 @@ def process():
     if not errors_occurred:
         _builder = Builder.from_target_name(FrontendConfiguration.get_target_platform(),
                                             options=FrontendConfiguration.get_codegen_opts())
-        _builder.build()
+        if _builder is not None:
+            _builder.build()
 
     if FrontendConfiguration.store_log:
         store_log_to_file()
