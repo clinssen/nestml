@@ -237,3 +237,7 @@ jobs:
               pytest -s -o log_cli=true -o log_cli_level="DEBUG" ${fn} || rc=1
           done;
           exit $rc
+
+      # XXX: DEBUGGING GITHUB ACTIONS
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
