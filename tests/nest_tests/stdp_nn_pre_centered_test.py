@@ -68,7 +68,7 @@ class NestSTDPNNSynapseTest(unittest.TestCase):
         # generate the "non-jit" model, that relies on ArchivingNode
         generate_target(input_path="models/neurons/iaf_psc_exp.nestml",
                         target_path="/tmp/nestml-non-jit",
-                        target_platform="NEST"
+                        target_platform="NEST",
                         logging_level="INFO",
                         module_name="nestml_non_jit_module",
                         suffix="_nestml_non_jit",
