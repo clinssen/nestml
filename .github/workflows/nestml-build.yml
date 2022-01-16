@@ -233,11 +233,5 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           rc=0
-          for fn in $GITHUB_WORKSPACE/tests/nest_tests/*.py; do
-              pytest -s -o log_cli=true -o log_cli_level="DEBUG" ${fn} || rc=1
-          done;
+          pytest -s -o log_cli=true -o log_cli_level="DEBUG" tests/nest_tests/nest2_compat_test.py || rc=1
           exit $rc
-
-      # XXX: DEBUGGING GITHUB ACTIONS
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
