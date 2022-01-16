@@ -51,7 +51,7 @@ class RecordableVariablesTest(unittest.TestCase):
         suffix = "_nestml"
         dev = True
         codegen_opts = {"nest_path": nest_path}
-        generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev, nest_path)
+        generate_target(input_path, target_path, target_platform, logging_level, module_name, store_log, suffix, dev, codegen_opts)
         nest.set_verbosity("M_ALL")
 
         nest.ResetKernel()
