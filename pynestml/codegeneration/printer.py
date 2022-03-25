@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# latex_types_printer.py
+# printer.py
 #
 # This file is part of NEST.
 #
@@ -19,25 +19,16 @@
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Tuple
-
+from pynestml.codegeneration.reference_converter import ReferenceConverter
 from pynestml.codegeneration.types_printer import TypesPrinter
 
 
-class LatexTypesPrinter(TypesPrinter):
+class Printer:
+    r"""
+    By using a different ReferenceConverter and TypesPrinter for the handling of variables, names, and functions and so on, Printers can be easily adapted to different targets.
     """
-    Returns a LaTeX syntax version of the handed over element.
-    """
 
-    @classmethod
-    def pretty_print(cls, element):
-        if isinstance(element, bool) and element:
-            return 'true'
-
-        if isinstance(element, bool) and not element:
-            return 'false'
-
-        if isinstance(element, int) or isinstance(element, float):
-            return str(element)
-
-        raise Exception("Tried to print unknown type: " + str(type(element)) + " (string representation: " + str(element) + ")")
+    def __init__(self, reference_converter: ReferenceConverter, types_printer: TypesPrinter):
+        assert isinstance(reference_converter, ReferenceConverter)
+        self.reference_converter = reference_converter
+        self.types_printer = types_printer

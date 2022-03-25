@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# pynestml_2_nest_type_converter.py
+# debug_types_printer.py
 #
 # This file is part of NEST.
 #
@@ -18,6 +18,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
+
+from pynestml.codegeneration.types_printer import TypesPrinter
 from pynestml.symbols.type_symbol import TypeSymbol
 from pynestml.symbols.real_type_symbol import RealTypeSymbol
 from pynestml.symbols.boolean_type_symbol import BooleanTypeSymbol
@@ -27,43 +29,52 @@ from pynestml.symbols.void_type_symbol import VoidTypeSymbol
 from pynestml.symbols.unit_type_symbol import UnitTypeSymbol
 from pynestml.symbols.nest_time_type_symbol import NESTTimeTypeSymbol
 from pynestml.symbols.error_type_symbol import ErrorTypeSymbol
+from pynestml.utils.either import Either
 
 
-class PyNestml2NestTypeConverter:
+class DebugTypesPrinter(TypesPrinter):
     """
-    This class contains a single operation as used to convert nestml types to nest centerpieces.
+    Returns a string format that is suitable for info/warning/error messages.
     """
 
-    @classmethod
-    def convert(cls, type_symbol):
-        # type: (TypeSymbol) -> str
+    def convert(self, type_symbol: TypeSymbol) -> str:
         """
         Converts the name of the type symbol to a corresponding nest representation.
         :param type_symbol: a single type symbol
-        :type type_symbol: TypeSymbol
         :return: the corresponding string representation.
-        :rtype: str
         """
-        assert isinstance(type_symbol, TypeSymbol)
+        if isinstance(type_symbol, Either):
+            if type_symbol.is_value():
+                return self.convert(type_symbol.get_value())
+            else:
+                assert type_symbol.is_error()
+                return type_symbol.get_error()
 
-        if type_symbol.is_buffer:
-            return 'nest::RingBuffer'
+        if 'is_buffer' in dir(type_symbol) and type_symbol.is_buffer:
+            return 'buffer'
 
         if isinstance(type_symbol, RealTypeSymbol):
-            return 'double'
-        elif isinstance(type_symbol, BooleanTypeSymbol):
+            return 'real'
+
+        if isinstance(type_symbol, BooleanTypeSymbol):
             return 'bool'
-        elif isinstance(type_symbol, IntegerTypeSymbol):
-            return 'long'
-        elif isinstance(type_symbol, StringTypeSymbol):
-            return 'std::string'
-        elif isinstance(type_symbol, VoidTypeSymbol):
+
+        if isinstance(type_symbol, IntegerTypeSymbol):
+            return 'int'
+
+        if isinstance(type_symbol, StringTypeSymbol):
+            return 'str'
+
+        if isinstance(type_symbol, VoidTypeSymbol):
             return 'void'
-        elif isinstance(type_symbol, UnitTypeSymbol):
-            return 'double'
-        elif isinstance(type_symbol, NESTTimeTypeSymbol):
+
+        if isinstance(type_symbol, UnitTypeSymbol):
+            return type_symbol.unit.unit.to_string()
+
+        if isinstance(type_symbol, NESTTimeTypeSymbol):
             return 'nest::Time'
-        elif isinstance(type_symbol, ErrorTypeSymbol):
-            return 'ERROR'
-        else:
-            raise Exception('Unknown NEST type')
+
+        if isinstance(type_symbol, ErrorTypeSymbol):
+            return '<Error type>'
+
+        return str(type_symbol)

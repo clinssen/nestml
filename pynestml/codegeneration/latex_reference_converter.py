@@ -18,17 +18,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
 
-from pynestml.codegeneration.i_reference_converter import IReferenceConverter
-from pynestml.meta_model.ast_function_call import ASTFunctionCall
-from pynestml.meta_model.ast_variable import ASTVariable
-from pynestml.utils.ast_utils import ASTUtils
+from pynestml.codegeneration.reference_converter import ReferenceConverter
 from pynestml.symbols.symbol import SymbolKind
 from pynestml.symbols.predefined_units import PredefinedUnits
+from pynestml.utils.ast_utils import ASTUtils
 
 
-class LatexReferenceConverter(IReferenceConverter):
+class LatexReferenceConverter(ReferenceConverter):
     """
     ReferenceConverter for the LaTeX target.
     """
@@ -118,10 +117,9 @@ class LatexReferenceConverter(IReferenceConverter):
             "Omega": r"\\Omega"
         }
         for symbol_find, symbol_replace in symbols.items():
-            before = var_name
             var_name = re.sub(r"(?<![a-zA-Z])(" + symbol_find + ")(?![a-zA-Z])",
                               symbol_replace, var_name)  # "whole word" match
-            after = var_name
+
         return var_name
 
     def convert_function_call(self, function_call):
