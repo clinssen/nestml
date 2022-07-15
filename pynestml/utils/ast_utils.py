@@ -703,9 +703,14 @@ class ASTUtils:
            or not to_block:
             return []
 
+        def removesuffix(input_string, suffix):
+            if suffix and input_string.endswith(suffix):
+                return input_string[:-len(suffix)]
+            return input_string
+
         decls = ASTUtils.get_declarations_from_block(var_name, from_block)
         if var_name.endswith(var_name_suffix):
-            decls.extend(ASTUtils.get_declarations_from_block(var_name.removesuffix(var_name_suffix), from_block))
+            decls.extend(ASTUtils.get_declarations_from_block(removesuffix(var_name, var_name_suffix), from_block))
 
         if decls:
             Logger.log_message(None, -1, "Moving definition of " + var_name + " from synapse to neuron",
