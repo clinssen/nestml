@@ -28,7 +28,7 @@ from typing import Any, Dict, Mapping, List, Optional, Sequence, Union
 
 import os
 
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template, TemplateRuntimeError
 
 from pynestml.exceptions.invalid_path_exception import InvalidPathException
 from pynestml.exceptions.invalid_target_exception import InvalidTargetException
@@ -231,3 +231,6 @@ class CodeGenerator(WithOptions):
                                  model_name_escape_string="@MODULE_NAME@")
         code, message = Messages.get_module_generated(FrontendConfiguration.get_target_path())
         Logger.log_message(None, code, message, None, LoggingLevel.INFO)
+
+    def raise_helper(self, msg):
+        raise TemplateRuntimeError(msg)
