@@ -51,7 +51,14 @@ try:
     vt = nest.Create("volume_transmitter")
 
     try:
-        neuron = nest.Create('hh_psc_alpha_clopath')
+        neuron = nest.Create("hh_psc_alpha_clopath")
+    except Exception:
+        pass
+
+    try:
+        n = nest.Create("iaf_psc_exp", 2)
+        nest.Connect(n[0], n[1], syn_spec={"synapse_model": "jonke_synapse"})
+        synapse = nest.GetConnections(n)
     except Exception:
         pass
 
@@ -59,12 +66,14 @@ try:
         nest_version = "v2.20.2"
     elif "kernel_status" not in dir(nest):  # added in v3.1
         nest_version = "v3.0"
-    elif "prepared" in nest.GetKernelStatus().keys():  # "prepared" key was added after v3.3 release
-        nest_version = "master"
-    elif "tau_u_bar_minus" in neuron.get().keys():   # added in v3.3
-        nest_version = "v3.3"
     elif "tau_Ca" in vt.get().keys():   # removed in v3.2
         nest_version = "v3.1"
+    elif "Kplus" in synapse.get().keys():    # added after v3.4
+        nest_version = "master"
+    elif "prepared" in nest.GetKernelStatus().keys():  # added after v3.3 release
+        nest_version = "v3.4"
+    elif "tau_u_bar_minus" in neuron.get().keys():   # added in v3.3
+        nest_version = "v3.3"
     else:
         nest_version = "v3.2"
 
