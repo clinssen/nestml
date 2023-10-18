@@ -71,6 +71,9 @@ synapse stdp:
     onReceive(pre_spikes):
         pre_trace += 1
 
+        rport integer = get_rport()
+        println("rport = {rport}")
+
         # depress synapse
         w_ real = Wmax * ( w / Wmax  - ( alpha * lambda * ( w / Wmax )**mu_minus * post_trace ))
         w = max(Wmin, w_)

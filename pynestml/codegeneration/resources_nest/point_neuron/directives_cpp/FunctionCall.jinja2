@@ -14,6 +14,8 @@
 {%-         include "directives_cpp/AnalyticIntegrationStep_end.jinja2" %}
 {%-     endwith %}
 {%-     include "directives_cpp/ApplySpikesFromBuffers.jinja2" %}
+{%- elif ast.get_name() == "get_rport" %}
+get_rport();
 {%- else %}
 {{printer.print(ast)}};
 {%- endif %}

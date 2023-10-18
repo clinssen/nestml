@@ -90,6 +90,7 @@ class PredefinedFunctions:
     INTEGRATE_ODES = 'integrate_odes'
     CONVOLVE = 'convolve'
     DELIVER_SPIKE = 'deliver_spike'
+    GET_RPORT = 'get_rport'
     name2function = {}   # type: Mapping[str, FunctionSymbol]
 
     @classmethod
@@ -128,6 +129,7 @@ class PredefinedFunctions:
         cls.__register_integrated_odes_function()
         cls.__register_convolve()
         cls.__register_deliver_spike()
+        cls.__register_get_rport()
         return
 
     @classmethod
@@ -498,6 +500,16 @@ class PredefinedFunctions:
                                 return_type=PredefinedTypes.get_real_type(),
                                 element_reference=None, is_predefined=True)
         cls.name2function[cls.CONVOLVE] = symbol
+
+    @classmethod
+    def __register_get_rport(cls):
+        """
+        """
+        params = list()
+        symbol = FunctionSymbol(name="get_rport", param_types=params,
+                                return_type=PredefinedTypes.get_integer_type(),
+                                element_reference=None, is_predefined=True)
+        cls.name2function["get_rport"] = symbol
 
     @classmethod
     def get_function_symbols(cls):
