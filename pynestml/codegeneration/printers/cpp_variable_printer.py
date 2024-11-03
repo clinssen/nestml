@@ -34,11 +34,13 @@ class CppVariablePrinter(VariablePrinter):
         :param variable_name: a single name.
         :return: a string representation
         """
+        if "'" in variable_name:
+            import pdb;pdb.set_trace()
         differential_order = variable_name.count("\"")
         if differential_order > 0:
-            return variable_name.replace("\"", "").replace("$", "__DOLLAR") + "__" + "d" * differential_order
+            return variable_name.replace(".", "__DOT__").replace("\"", "").replace("$", "__DOLLAR") + "__" + "d" * differential_order
 
-        return variable_name.replace("$", "__DOLLAR")
+        return variable_name.replace(".", "__DOT__").replace("$", "__DOLLAR")
 
     def print_variable(self, node: ASTVariable) -> str:
         """
@@ -51,7 +53,7 @@ class CppVariablePrinter(VariablePrinter):
         if node.get_name() == PredefinedVariables.E_CONSTANT:
             return "2.718281828459045235360287471352"    # not defined in C++11 stdlib
 
-        if node.get_name() == PredefinedVariables.E_CONSTANT:
+        if node.get_name() == PredefinedVariables.PI_CONSTANT:
             return "M_PI"    # from <cmath>
 
         return CppVariablePrinter._print_cpp_name(node.get_complete_name())

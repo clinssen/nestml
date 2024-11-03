@@ -80,12 +80,19 @@ model iaf_psc_exp_neuron:
         I_e pA = 0 pA
 
     input:
-        exc_spikes <- excitatory spike
-        inh_spikes <- inhibitory spike
+        spike_in_port <- spike(weight real)
         I_stim pA <- continuous
 
     output:
         spike
+
+    onReceive(spike_in_port):
+        # route the incoming spike on the basis of the weight: less than zero means an inhibitory spike; greater than zero means an excitatory spike
+        # weight is a real number, and here interpreted as 1 corresponding to 1 pA
+        if spike_in_port.weight > 0:
+            I_syn_exc += spike_in_port.weight * pA
+        else:
+            I_syn_inh -= spike_in_port.weight * pA
 
     update:
         if refr_t > 0 ms:
@@ -94,12 +101,6 @@ model iaf_psc_exp_neuron:
         else:
             # neuron not refractory
             integrate_odes(I_syn_exc, I_syn_inh, V_m)
-
-    onReceive(exc_spikes):
-        I_syn_exc += exc_spikes * pA * s
-
-    onReceive(inh_spikes):
-        I_syn_inh += inh_spikes * pA * s
 
     onCondition(refr_t <= 0 ms and V_m >= V_th):
         # threshold crossing
