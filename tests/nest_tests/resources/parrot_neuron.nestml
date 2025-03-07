@@ -1,0 +1,12 @@
+# parrot neuron
+# ######################################################################################
+model parrot_neuron:
+    input:
+        spikes1 <- spike        # port for repeating spikes
+        spikes2 <- spike        # non-repeating spikes
+
+    output:
+        spike
+
+    onReceive(spikes1):
+        emit_spike()
