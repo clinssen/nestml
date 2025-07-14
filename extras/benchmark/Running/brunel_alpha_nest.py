@@ -26,7 +26,7 @@ Random balanced network (alpha synapses) connected with NEST
 This script simulates an excitatory and an inhibitory population on
 the basis of the network used in [1]_.
 
-When connecting the network, customary synapse models are used, which
+When connecting the network, custom synapse models are used, which
 allow for querying the number of created synapses. Using spike
 recorders, the average firing rates of the neurons in the populations
 are established. The building as well as the simulation time of the
@@ -506,9 +506,9 @@ print("Connecting devices")
 
 ###############################################################################
 # Definition of a synapse using ``CopyModel``, which expects the model name of
-# a pre-defined synapse, the name of the customary synapse and an optional
+# a pre-defined synapse, the name of the custom synapse and an optional
 # parameter dictionary. The parameters defined in the dictionary will be the
-# default parameter for the customary synapse. Here we define one synapse for
+# default parameter for the custom synapse. Here we define one synapse for
 # the excitatory and one for the inhibitory connections giving the
 # previously defined weights and equal delays.
 
