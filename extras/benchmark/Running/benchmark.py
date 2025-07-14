@@ -157,6 +157,7 @@ def render_sbatch_template(combination, filename):
         f.write(str(file))
         f.close()
 
+
 def start_strong_scaling_benchmark_threads(iteration):
     log(f"Strong Scaling Benchmark {iteration}")
 
@@ -191,6 +192,7 @@ def start_strong_scaling_benchmark_threads(iteration):
             log(f"\033[91m{combination['name']} failed\033[0m")
             log(f"\033[91m{result.stderr} failed\033[0m")
 
+
 def start_strong_scaling_benchmark_mpi(iteration):
     dirname = os.path.join(output_folder, STRONGSCALINGFOLDERNAME)
     combinations = [
@@ -219,6 +221,7 @@ def start_strong_scaling_benchmark_mpi(iteration):
         command = ["sbatch", f"{filename}"]
         result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+
 def start_weak_scaling_benchmark_threads(iteration):
     dirname = os.path.join(output_folder, WEAKSCALINGFOLDERNAME)
     combinations = [
@@ -233,7 +236,7 @@ def start_weak_scaling_benchmark_threads(iteration):
 
         command = ['bash', '-c', f'source {PATHTOSTARTFILE} && python3 {PATHTOFILE} --simulated_neuron {combination["neuronmodel"]} --network_scale {NETWORK_BASE_SCALE * combination["n_threads"]} --threads {combination["n_threads"]} --rng_seed {rng_seed} --iteration {iteration} --benchmarkPath {dirname}']
 
-        combined = combination["neuronmodel"]+","+str(combination["networksize"])
+        combined = combination["neuronmodel"] + "," + str(combination["networksize"])
         log(f"\033[93m{combined}\033[0m" if DEBUG else combined)
         result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -250,6 +253,7 @@ def start_weak_scaling_benchmark_threads(iteration):
         if result.returncode != 0:
             log(f"\033[91m{combination['neuronmodel']} failed\033[0m")
             log(f"\033[91m{result.stderr} failed\033[0m")
+
 
 def start_weak_scaling_benchmark_mpi(iteration):
     dirname = os.path.join(output_folder, WEAKSCALINGFOLDERNAME)
@@ -309,6 +313,7 @@ def post_process_data(sim_data: dict):
                 it_data["memory_benchmark"]["vmsize"] = vmsize_sum
                 it_data["memory_benchmark"]["vmpeak"] = vmpeak_sum
 
+
 def _plot_scaling_data(ax, sim_data: dict, file_prefix: str, abs_or_rel: str):
     assert abs_or_rel in ["abs", "rel"]
 
@@ -343,7 +348,7 @@ def _plot_scaling_data(ax, sim_data: dict, file_prefix: str, abs_or_rel: str):
             _y_std = y_std / 60
             _y = y / 60
 
-        ax.errorbar(x, _y, yerr=_y_std, label=legend[neuron], color=palette(colors[neuron]), linestyle='-',marker='o', markersize=4, ecolor='gray', capsize=2, linewidth=2)
+        ax.errorbar(x, _y, yerr=_y_std, label=legend[neuron], color=palette(colors[neuron]), linestyle='-', marker='o', markersize=4, ecolor='gray', capsize=2, linewidth=2)
 
         min_y = min(min_y, np.amin(_y))
         max_y = max(max_y, np.amax(_y))
@@ -353,6 +358,7 @@ def _plot_scaling_data(ax, sim_data: dict, file_prefix: str, abs_or_rel: str):
 
 def format_func(value, tick_number):
     return f'{int(value)}'
+
 
 def plot_scaling_data(sim_data_weak: dict, sim_data_strong: dict, file_prefix: str = ""):
     min_y, max_y = np.inf, -np.inf
@@ -410,13 +416,8 @@ def plot_scaling_data(sim_data_weak: dict, sim_data_strong: dict, file_prefix: s
             _ax.set_xticks(N_THREADS, N_THREADS)
 
     for _ax in ax[0, :]:   # hide decimal points, set simple decimal formatter for top two panels y axis
-        #formatter = matplotlib.ticker.ScalarFormatter(useOffset=False, useMathText=False)
         formatter = matplotlib.ticker.FuncFormatter(format_func)
-        #formatter.set_powerlimits((-100, 100))  # Avoid scaling by powers of ten
-        #formatter.set_scientific(False)
         _ax.yaxis.set_major_formatter(formatter)
-        #_ax.yaxis.set_minor_formatter(formatter)
-
 
     for _ax in ax.flatten():
         _ax.spines['top'].set_visible(False)
@@ -450,7 +451,7 @@ def plot_memory_scaling_benchmark(sim_data: dict, file_prefix: str):
 
         x = sorted(values.keys(), key=lambda k: int(k))
         rss = np.array([np.mean(
-            [(iteration_data["memory_benchmark"]["rss"] / 1024 / 1024)  for iteration_data in
+            [(iteration_data["memory_benchmark"]["rss"] / 1024 / 1024) for iteration_data in
              values[nodes].values()]) for nodes in x])
         rss_std = np.array([np.std(
             [(iteration_data["memory_benchmark"]["rss"] / 1024 / 1024) for iteration_data in
@@ -472,9 +473,7 @@ def plot_memory_scaling_benchmark(sim_data: dict, file_prefix: str):
 
         x = np.array([int(val) for val in x], dtype=int)
         for _ax, abs_or_rel in zip(ax, ["abs", "rel"]):
-            baseline_rss = np.array([np.mean(
-            [(iteration_data["memory_benchmark"]["rss"] / 1024 / 1024)  for iteration_data in
-             sim_data[BASELINENEURON][nodes].values()]) for nodes in x])
+            baseline_rss = np.array([np.mean([(iteration_data["memory_benchmark"]["rss"] / 1024 / 1024) for iteration_data in sim_data[BASELINENEURON][nodes].values()]) for nodes in x])
 
             if abs_or_rel == "rel":
                 _y = rss / baseline_rss
@@ -630,7 +629,7 @@ def read_isis_from_files(neuron_models):
             # loop across ranks
             rank = 0
             while True:
-                filename = "timings_strong_scaling_mpi/isi_distribution_[simulated_neuron=" + neuron_model + "]_[network_scale=" + str(MPI_WEAK_SCALE_NEURONS) + "]_[iteration=" + str(iteration) + "]_[nodes=" + str(nodes) + "]_[threads=" + str(threads) + "]_[rank=" + str(rank) + "]_isi_list.txt" # XXX update MPI_WEAK_SCALE_NEURONS
+                filename = "timings_strong_scaling_mpi/isi_distribution_[simulated_neuron=" + neuron_model + "]_[network_scale=" + str(MPI_WEAK_SCALE_NEURONS) + "]_[iteration=" + str(iteration) + "]_[nodes=" + str(nodes) + "]_[threads=" + str(threads) + "]_[rank=" + str(rank) + "]_isi_list.txt"
                 if not os.path.exists(os.path.join(output_folder, filename)):
                     break
 
@@ -788,4 +787,3 @@ if __name__ == "__main__":
     analyze_isi_data(data, bin_size)
     plot_isi_distributions(NEURONMODELS, data)
     print_isi_distributions_ks_distance(NEURONMODELS, data)
-

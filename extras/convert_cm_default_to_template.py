@@ -20,7 +20,7 @@
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This script converts the generic parts (cm_default.* and cm_tree.*) of the default compartmental model in NEST to a .jinja template. 
+This script converts the generic parts (cm_default.* and cm_tree.*) of the default compartmental model in NEST to a .jinja template.
 
 It is a helper tool for developers working concurrently on the compartmental models in NEST and NESTML. It should however be used with extreme caution, as it doesn't automatically update the compartmentcurrents.
 """
@@ -32,36 +32,38 @@ import argparse
 def get_replacement_patterns():
     repl_patterns = {
         # include guards
-        'CM_DEFAULT_H'          : 'CM_{cm_unique_suffix | upper }}_H',
-        'CM_TREE_H'             : 'CM_TREE_{{cm_unique_suffix | upper }}_H',
+        'CM_DEFAULT_H': 'CM_{cm_unique_suffix | upper }}_H',
+        'CM_TREE_H': 'CM_TREE_{{cm_unique_suffix | upper }}_H',
         # file names
-        'cm_default'            : '{{neuronSpecificFileNamesCmSyns[\"main\"]}}',
-        'cm_tree'               : '{{neuronSpecificFileNamesCmSyns[\"tree\"]}}',
+        'cm_default': '{{neuronSpecificFileNamesCmSyns[\"main\"]}}',
+        'cm_tree': '{{neuronSpecificFileNamesCmSyns[\"tree\"]}}',
         'cm_neuroncurrents': '{{neuronSpecificFileNamesCmSyns[\"neuroncurrents\"]}}',
         # class names
-        'CompTree'              : 'CompTree{{cm_unique_suffix}}',
-        'Compartment'           : 'Compartment{{cm_unique_suffix}}',
-        'CompartmentCurrents'   : 'CompartmentCurrents{{cm_unique_suffix}}',
+        'CompTree': 'CompTree{{cm_unique_suffix}}',
+        'Compartment': 'Compartment{{cm_unique_suffix}}',
+        'CompartmentCurrents': 'CompartmentCurrents{{cm_unique_suffix}}',
     }
     return repl_patterns
 
 
 def get_trailing_characters():
     trailing_characters = [
-        ' ', # declarations
-        '::', # function definition
-        '(', # constructor, destructor,...
-        '*', # pointer declarations
-        '&', # references
-        '.h', # includes
+        ' ',    # declarations
+        '::',    # function definition
+        '(',    # constructor, destructor,...
+        '*',    # pointer declarations
+        '&',    # references
+        '.h'    # includes
     ]
     return trailing_characters
+
 
 def get_leading_characters():
     leading_characters = [
         'class ',
     ]
     return leading_characters
+
 
 def get_excluded_substrings():
     excluded_substrings = {
@@ -86,7 +88,7 @@ def replace_with_exclusion(source_string, target_string, line):
         line.replace(source_string, target_string)
 
         for exclstr in get_excluded_substrings():
-            line.replace('#'*len(exclstr), exclstr)
+            line.replace('#' * len(exclstr), exclstr)
 
     else:
         line.replace(source_string, target_string)
@@ -119,7 +121,7 @@ def replace_in_file(source_path, target_path, source_name, target_name):
                     # temporarily changing their name into a pattern that does
                     # not occur in the replacement patterns
                     for excl_str, repl_char in get_excluded_substrings().items():
-                        line = line.replace(excl_str, repl_char*len(excl_str))
+                        line = line.replace(excl_str, repl_char * len(excl_str))
 
                     for trail_chr in get_trailing_characters():
                         line = line.replace(
@@ -134,7 +136,7 @@ def replace_in_file(source_path, target_path, source_name, target_name):
                         )
 
                     for excl_str, repl_char in get_excluded_substrings().items():
-                        line = line.replace(repl_char*len(excl_str), excl_str)
+                        line = line.replace(repl_char * len(excl_str), excl_str)
 
                 fout.write(line)
 
@@ -149,4 +151,3 @@ def convert_cm_default_to_templates(source_path, target_path):
 if __name__ == "__main__":
     cl_args = parse_command_line()
     convert_cm_default_to_templates(cl_args.source_path, cl_args.target_path)
-
