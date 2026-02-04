@@ -15,15 +15,10 @@ nestml-*/
 *.egg-info
 stash/
 *.orig
-
 __*
-
 dist/
-
 PyNESTML.egg-info/
-
 *.pyc
-
 !__init__.py
 !*.jinja2
 *.jar
