@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770225588583,
+  "lastUpdate": 1770226904971,
   "repoUrl": "https://github.com/clinssen/nestml",
   "entries": {
     "Benchmark": [
@@ -27,6 +27,33 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.18536383516880647",
             "extra": "mean: 3.0827422222000225 sec\nrounds: 5"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "clinssen",
+            "username": "clinssen"
+          },
+          "committer": {
+            "name": "clinssen",
+            "username": "clinssen"
+          },
+          "id": "5d4bcb29762d13246e4c576146f367bebbbdc1a9",
+          "message": "update gitignore",
+          "timestamp": "2026-02-04T17:29:08Z",
+          "url": "https://github.com/clinssen/nestml/pull/20/commits/5d4bcb29762d13246e4c576146f367bebbbdc1a9"
+        },
+        "date": 1770226904266,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/nest_continuous_benchmarking/test_nest_continuous_benchmarking.py::TestNESTContinuousBenchmarking::test_stdp_nn_synapse",
+            "value": 0.3710372230109894,
+            "unit": "iter/sec",
+            "range": "stddev: 0.11867476355545709",
+            "extra": "mean: 2.695147381400011 sec\nrounds: 5"
           }
         ]
       }
