@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772464629827,
+  "lastUpdate": 1772464826475,
   "repoUrl": "https://github.com/clinssen/nestml",
   "entries": {
     "Benchmark": [
@@ -110,6 +110,35 @@ window.BENCHMARK_DATA = {
             "unit": "iter/sec",
             "range": "stddev: 0.16403413822154575",
             "extra": "mean: 3.1590216055999916 sec\nrounds: 5"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "clinssen",
+            "username": "clinssen",
+            "email": "c.linssen@fz-juelich.de"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "6d492e2e3080875cf53c6d80badaf171cdad213d",
+          "message": "Secure benchmaks (#22)",
+          "timestamp": "2026-03-02T15:04:02Z",
+          "url": "https://github.com/clinssen/nestml/commit/6d492e2e3080875cf53c6d80badaf171cdad213d"
+        },
+        "date": 1772464825847,
+        "tool": "pytest",
+        "benches": [
+          {
+            "name": "tests/nest_continuous_benchmarking/test_nest_continuous_benchmarking.py::TestNESTContinuousBenchmarking::test_stdp_nn_synapse",
+            "value": 0.31432200818585865,
+            "unit": "iter/sec",
+            "range": "stddev: 0.16332263800265706",
+            "extra": "mean: 3.181450786000005 sec\nrounds: 5"
           }
         ]
       }
