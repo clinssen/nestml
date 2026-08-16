@@ -30,16 +30,19 @@ model izhikevich_tutorial_neuron:
         # NESTML syntax for variables: variable_name type = initial_value
 
     equations:
-        v' = (.04 * v * v / mV + 5 * v + (140 - u) * mV + (I_e * GOhm)) / ms
+        v' = (0.04 * v * v / mV + 5 * v + (140 - u) * mV + (I_stim * GOhm)) / ms
         # TODO: add an ODE for u
 
     parameters:
         a real = .02    # describes time scale of recovery variable
         # TODO: add remaining variables
 
+    internals:
+        unit_psp mV = 1 mV        # Unitary postsynaptic membrane potential
+
     input:
         spikes <- spike
-        I_e pA <- continuous
+        I_stim pA <- continuous
 
     output:
         spike
@@ -49,13 +52,10 @@ model izhikevich_tutorial_neuron:
 
     onReceive(spikes):
         # add synaptic current
-        v += spikes * mV * s
+        v += spikes * unit_psp * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
 
-    onCondition(v >= 30mV):
-        # TODO: implement threshold crossing check
+    onCondition(v >= 30 mV):
+        # TODO: implement threshold crossing statements
 
-        # use an if-condition block. The NESTML syntax looks like:
-        # if a >= b:
-        #     a += b
-        #     b = a
-        #     emit_spike()
+        # use the following predefined NESTML function to emit the spike:
+        # emit_spike()
