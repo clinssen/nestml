@@ -499,7 +499,7 @@ log_info("[NESTML synapse] \t\tplastic_region_address->history.pre_trace__for__s
 	if (s.delay_axonal + s.delay_dendritic > colour_delay) {
 	    int32_t weight = TYPECAST_TO_UINT32_T(state.w);   // XXX: TODO: the variable name ``w`` is hard-coded here
 	    synapse_dynamics_stdp_update_ring_buffers(ring_buffers, s, weight >> weight_shift[s.type]);
-        log_info("[NESTML synapse] \tadding weight to ring-buffer entry; weight = 0x%x", weight);
+        log_info("[NESTML synapse] \tadding weight to ring-buffer entry; weight_shift = %x, weight = 0x%x", weight_shift[s.type], weight);
     }
     else {
         skipped_synapses++;
