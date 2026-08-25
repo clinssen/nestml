@@ -321,6 +321,8 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
             synapse_weight_scales: NDArray[floating]) -> None:
 
         spec.comment("Writing plastic parameters")
+        spec.comment("Global weight scale = " + str(global_weight_scale))
+        spec.comment("synapse_weight_scales = " + str(synapse_weight_scales))
 
         # Switch focus to the region:
         spec.switch_write_focus(region)
