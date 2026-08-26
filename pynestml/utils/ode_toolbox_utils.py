@@ -61,5 +61,6 @@ class ODEToolboxUtils:
         return s_reformatted
 
     @classmethod
-    def is_ode_toolbox_v3_or_higher(cls, odetoolbox):
+    def is_ode_toolbox_v3_or_higher(cls, odetoolbox) -> bool:
+        r"""Returns True if ODE-toolbox version is version v3.0.0 or higher; False otherwise"""
         return "use_alternative_expM" in inspect.signature(odetoolbox.analysis).parameters.keys()
