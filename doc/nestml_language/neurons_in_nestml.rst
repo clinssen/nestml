@@ -219,14 +219,14 @@ The test for refractoriness can then be added in the ``onCondition`` block as fo
        refr_t = refr_T    # Start the refractoriness timer
        emit_spike()
 
-The disadvantage of this method is that it requires a call to the ``resolution()`` function, which is only supported by fixed-timestep simulators. To write the model in a more generic way, the refractoriness timer can alternatively be expressed as an ODE:
+The disadvantage of this method is that it requires a call to the ``resolution()`` function, which is only supported by fixed-timestep simulators, and furthermore the timer is always counting, even when the neuron is not refractory anymore. To write the model in a more generic way, the refractoriness timer can alternatively be expressed as an ODE, which represents the timer in continuous-time, counting down to zero at a rate of one (milli)second per (milli)second:
 
 .. code-block:: nestml
 
    equations:
-       refr_t' = -1 / s    # a timer counting back down to zero
+       refr_t' = -1
 
-Typically, the membrane potential should remain clamped to the reset or leak potential during the refractory period. It depends on the intended behavior of the model whether the synaptic currents and conductances also continue to be integrated or whether they are reset, and whether incoming spikes during the refractory period are taken into account or ignored.
+During the refractory period, the membrane potential should typically remain clamped to the reset or leak potential. It depends on the intended behavior of the model whether the synaptic currents and conductances also continue to be integrated or whether they are reset, and whether incoming spikes during the refractory period are taken into account or ignored.
 
 In order to hold the membrane potential at the reset voltage during refractoriness, it can be simply excluded from the integration call:
 
@@ -235,7 +235,7 @@ In order to hold the membrane potential at the reset voltage during refractorine
    equations:
        I_syn' = ...
        V_m' = ...
-       refr_t' = -1 / s    # Count down towards zero
+       refr_t' = -1
 
    update:
        if refr_t > 0 ms:
