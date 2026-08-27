@@ -42,23 +42,21 @@ class CSimpleExpressionPrinter(SimpleExpressionPrinter):
             except BaseException:
                 pass
 
-            if self._variable_printer.print(node.get_variable()) in ["1", "1.", "1.0"]:
-                return self._constant_printer.print_constant(factor * node.get_numeric_literal())
+            try:
+                factor = NESTUnitConverter.get_factor(node.unitType)
+            except BaseException:
+                pass
 
-            return self._constant_printer.print_constant(factor * node.get_numeric_literal()) + " * " + self._variable_printer.print(node.get_variable())
+            # if self._variable_printer.print(node.unitType) in ["1", "1.", "1.0"]:
+                # return self._constant_printer.print_constant(node.get_numeric_literal())
+
+            return self._constant_printer.print_constant(factor * node.get_numeric_literal())
 
         if node.is_inf_literal:
             return "INFINITY"
 
         if node.is_numeric_literal():
-            factor = 1
-            try:
-                variable = node.get_variable()
-                factor = NESTUnitConverter.get_factor(PredefinedUnits.get_unit(variable.get_complete_name()).get_unit())
-            except BaseException:
-                pass
-
-            return self._constant_printer.print_constant(factor * node.get_numeric_literal())
+            return self._constant_printer.print_constant(node.get_numeric_literal())
 
         if node.is_string():
             return str(node.get_string())

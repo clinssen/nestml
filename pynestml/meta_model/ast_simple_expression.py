@@ -158,7 +158,7 @@ class ASTSimpleExpression(ASTExpressionNode):
         Returns whether this is a numeric literal with a defined unit.
         :return: True if numeric literal with unit, otherwise False.
         """
-        return self.variable is not None and self.numeric_literal is not None
+        return self.unitType is not None and self.numeric_literal is not None
 
     def get_boolean_literal(self) -> Optional[bool]:
         """
