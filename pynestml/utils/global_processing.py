@@ -28,15 +28,15 @@ from pynestml.codegeneration.printers.constant_printer import ConstantPrinter
 from pynestml.codegeneration.printers.ode_toolbox_expression_printer import ODEToolboxExpressionPrinter
 from pynestml.codegeneration.printers.ode_toolbox_function_call_printer import ODEToolboxFunctionCallPrinter
 from pynestml.codegeneration.printers.ode_toolbox_variable_printer import ODEToolboxVariablePrinter
-
 from pynestml.codegeneration.printers.sympy_simple_expression_printer import SympySimpleExpressionPrinter
 from pynestml.meta_model.ast_expression import ASTExpression
 from pynestml.meta_model.ast_model import ASTModel
 from pynestml.meta_model.ast_simple_expression import ASTSimpleExpression
 from pynestml.utils.ast_global_information_collector import ASTGlobalInformationCollector
 from pynestml.utils.ast_utils import ASTUtils
+from pynestml.utils.ode_toolbox_utils import ODEToolboxUtils
 
-from odetoolbox import analysis
+import odetoolbox
 
 
 class GlobalProcessing:
@@ -104,7 +104,10 @@ class GlobalProcessing:
     def collect_raw_odetoolbox_output(cls, syn_info):
         """calls ode-toolbox for each ode individually and collects the raw output"""
         for ode_variable_name, ode_info in syn_info["ODEs"].items():
-            solver_result = analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True)
+            if ODEToolboxUtils.is_ode_toolbox_v3_or_higher(odetoolbox):
+                solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True, disable_singularity_mitigation=True)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
+            else:
+                solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True)
             syn_info["ODEs"][ode_variable_name]["ode_toolbox_output"] = solver_result
 
         return syn_info

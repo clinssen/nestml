@@ -30,8 +30,9 @@ from pynestml.utils.ast_utils import ASTUtils
 from pynestml.utils.logger import Logger, LoggingLevel
 from pynestml.utils.mechanism_processing import MechanismProcessing
 from pynestml.utils.messages import Messages
+from pynestml.utils.ode_toolbox_utils import ODEToolboxUtils
 
-from odetoolbox import analysis
+import odetoolbox
 
 
 class ReceptorProcessing(MechanismProcessing):
@@ -113,10 +114,18 @@ class ReceptorProcessing(MechanismProcessing):
                               kernel_buffer):
         odetoolbox_indict = cls.create_ode_indict(
             neuron, parameters_block, kernel_buffer)
-        full_solver_result = analysis(
-            odetoolbox_indict,
-            disable_stiffness_check=True,
-            log_level=FrontendConfiguration.logging_level)
+        if ODEToolboxUtils.is_ode_toolbox_v3_or_higher(odetoolbox):
+            full_solver_result = odetoolbox.analysis(
+                odetoolbox_indict,
+                disable_stiffness_check=True,
+                disable_singularity_mitigation=True,
+                log_level=FrontendConfiguration.logging_level)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
+        else:
+            full_solver_result = odetoolbox.analysis(
+                odetoolbox_indict,
+                disable_stiffness_check=True,
+                log_level=FrontendConfiguration.logging_level)
+
         analytic_solver = None
         analytic_solvers = [
             x for x in full_solver_result if x["solver"] == "analytical"]
