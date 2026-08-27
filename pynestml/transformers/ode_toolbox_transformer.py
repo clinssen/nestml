@@ -44,7 +44,7 @@ from pynestml.meta_model.ast_kernel import ASTKernel
 from pynestml.meta_model.ast_model import ASTModel
 from pynestml.transformers.transformer import Transformer
 from pynestml.utils.ast_utils import ASTUtils
-from pynestml.utils.logger import Logger
+from pynestml.utils.logger import Logger, LoggingLevel
 
 
 class ODEToolboxTransformer(Transformer):
