@@ -41,14 +41,23 @@ class PythonExpressionPrinter(ExpressionPrinter):
     def print(self, node: ASTNode) -> str:
         if isinstance(node, ASTExpression):
             if node.get_implicit_conversion_factor() and not node.get_implicit_conversion_factor() == 1:
-                return "(" + str(node.get_implicit_conversion_factor()) + " * (" + self.print_expression(node) + "))"
+                s = "(" + str(node.get_implicit_conversion_factor()) + " * (" + self.print_expression(node) + "))"
+                print("XXXXXXXXXXXX1 " + str(node) + ": " + s)
 
-            return self.print_expression(node)
+                return s
+            s = self.print_expression(node)
+            print("XXXXXXXXXXXX2 " + str(node) + ": " + s)
+            return s
 
-        if isinstance(node, ASTSimpleExpression) and node.is_numeric_literal_with_unit():
-            return "(" + str(NESTUnitConverter.get_factor(astropy.units.Unit(str(node.unitType)))) + " * (" + self._simple_expression_printer.print(node) + "))"
-
-        return self._simple_expression_printer.print(node)
+        # if isinstance(node, ASTSimpleExpression) and node.is_numeric_literal_with_unit():
+        #     s = "(" + str(NESTUnitConverter.get_factor(astropy.units.Unit(str(node.unitType)))) + " * (" + self._simple_expression_printer.print(node) + "))"
+        #     print("XXXXXXXXXXXX3 " + str(node) + ": " + s)
+        #     if str(node) == "1 s":
+        #         import pdb;pdb.set_trace()
+        #     return s
+        s=self._simple_expression_printer.print(node)
+        print("XXXXXXXXXXXX4 " + str(node) + ": " + s)
+        return s
 
     def print_expression(self, node: ASTExpressionNode) -> str:
         assert isinstance(node, ASTExpression)
