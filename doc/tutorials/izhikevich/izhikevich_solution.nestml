@@ -53,7 +53,7 @@ model izhikevich_tutorial_neuron:
 
     onReceive(spikes):
         # add synaptic current
-        v += unit_psp * spikes * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        v += unit_psp * spikes * 1 s
 
     onCondition(v >= 30 mV):
         # threshold crossing

@@ -40,4 +40,4 @@ model alpha_function_2nd_order_ode_neuron:
         integrate_odes(x, y)
 
     onReceive(fX):
-        x' += e * fX * 1E3 s / 1 ms    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        x' += e * fX * 1 s / 1 ms

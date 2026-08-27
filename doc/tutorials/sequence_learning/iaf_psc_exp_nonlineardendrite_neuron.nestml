@@ -87,7 +87,7 @@ model iaf_psc_exp_nonlineardendrite_neuron:
         spike
 
     onReceive(I_2):
-        I_dend$ += unit_psr * I_2 * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        I_dend$ += unit_psr * I_2 * 1 s
 
     update:
         # solve ODEs

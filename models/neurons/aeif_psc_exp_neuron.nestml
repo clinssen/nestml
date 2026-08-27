@@ -103,10 +103,10 @@ model aeif_psc_exp_neuron:
             integrate_odes(I_syn_exc, I_syn_inh, w, V_m)
 
     onReceive(exc_spikes):
-        I_syn_exc += unit_psc * exc_spikes * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        I_syn_exc += unit_psc * exc_spikes * 1 s
 
     onReceive(inh_spikes):
-        I_syn_inh += unit_psc * inh_spikes * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        I_syn_inh += unit_psc * inh_spikes * 1 s
 
     onCondition(V_m >= V_th):
         # threshold crossing

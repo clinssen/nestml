@@ -88,7 +88,7 @@ model izhikevich_neuron:
         integrate_odes()
 
         # Add synaptic input
-        V_m += unit_psp * spikes * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        V_m += unit_psp * spikes * 1 s
 
         # lower bound of membrane potential
         V_m = max(V_min, V_m)

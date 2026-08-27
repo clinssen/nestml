@@ -55,4 +55,4 @@ model test_delta_kernel_neuron:
         integrate_odes()
 
     onReceive(spikes_in):
-        z += unit_psp * spikes_in * 1E3 s    # XXX: TODO: factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
+        z += unit_psp * spikes_in * 1 s
