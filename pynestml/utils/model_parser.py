@@ -153,14 +153,7 @@ class ModelParser:
         for model in ast.get_model_list():
             model.accept(ASTSymbolTableVisitor())
             SymbolTable.add_model_scope(model.get_name(), model.get_scope())
-
-            model_copy = None
-            while not model.equals(model_copy):
-                model_copy = model.clone()
-                model.accept(UnitTypeFixerVisitor())
-                model.accept(ASTSymbolTableVisitor())
-                model.accept(ASTParentVisitor())
-
+            UnitTypeFixerVisitor.fix_model(model)
             Logger.set_current_node(model)
             model.accept(AssignImplicitConversionFactorsVisitor())
             Logger.set_current_node(None)

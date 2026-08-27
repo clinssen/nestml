@@ -22,6 +22,7 @@
 from pynestml.meta_model.ast_assignment import ASTAssignment
 from pynestml.meta_model.ast_declaration import ASTDeclaration
 from pynestml.meta_model.ast_expression import ASTExpression
+from pynestml.meta_model.ast_model import ASTModel
 from pynestml.meta_model.ast_node_factory import ASTNodeFactory
 from pynestml.meta_model.ast_simple_expression import ASTSimpleExpression
 from pynestml.meta_model.ast_unary_operator import ASTUnaryOperator
@@ -29,6 +30,7 @@ from pynestml.meta_model.ast_unit_type import ASTUnitType
 from pynestml.symbols.real_type_symbol import RealTypeSymbol
 from pynestml.symbols.symbol import SymbolKind
 from pynestml.utils.ast_utils import ASTUtils
+from pynestml.visitors.ast_parent_visitor import ASTParentVisitor
 from pynestml.visitors.ast_symbol_table_visitor import ASTSymbolTableVisitor
 from pynestml.visitors.ast_visitor import ASTVisitor
 
@@ -37,6 +39,16 @@ class UnitTypeFixerVisitor(ASTVisitor):
     r"""
     There can be ambiguities during parsing between what is a variable and what is a unit type. E.g. in an expression ``unit*unit**2*var*var/var``. During parsing, this whole expression gets recognised as an ``ASTUnitType``. This visitor takes variables out of ``ASTUnitType``s.
     """
+
+    @classmethod
+    def fix_model(cls, model: ASTModel):
+        # keep calling the UnitTypeFixerVisitor until no more changes are made. This is a bit of a hack, but the visitor "eats off" terms one-by-one from the right-hand side of expressions that needs conversion into ``ASTDataType``s.
+        model_copy = None
+        while not model.equals(model_copy):
+            model_copy = model.clone()
+            model.accept(UnitTypeFixerVisitor())
+            model.accept(ASTSymbolTableVisitor())
+            model.accept(ASTParentVisitor())
 
     def _split_off_unit_type_term(self, unit_type, parent_unit_type: ASTUnitType, node):
         assert unit_type.is_simple_unit() or unit_type.is_pow or unit_type.is_arithmetic_expression()
@@ -153,7 +165,6 @@ class UnitTypeFixerVisitor(ASTVisitor):
             parent_node = ASTUtils.find_parent_node_by_type(node, ASTAssignment)
             if parent_node:
                 # appears on the rhs of an assignment
-                # assert node.get_parent().rhs == node
 
                 if parent_unit_type.is_div:
                     binary_operator = ASTNodeFactory.create_ast_arithmetic_operator(is_div_op=True)
