@@ -46,7 +46,7 @@ class PythonExpressionPrinter(ExpressionPrinter):
             return self.print_expression(node)
 
         if isinstance(node, ASTSimpleExpression) and node.is_numeric_literal_with_unit():
-            return "(" + str(NESTUnitConverter.get_factor(astropy.units.Unit(str(node.unitType)))) + " * (" + s + "))"
+            return "(" + str(NESTUnitConverter.get_factor(astropy.units.Unit(str(node.unitType)))) + " * (" + self._simple_expression_printer.print(node) + "))"
 
         return self._simple_expression_printer.print(node)
 
