@@ -37,7 +37,6 @@ from pynestml.meta_model.ast_simple_expression import ASTSimpleExpression
 from pynestml.utils.ast_synapse_information_collector import ASTSynapseInformationCollector, ASTKernelInformationCollectorVisitor
 from pynestml.utils.ast_utils import ASTUtils
 from pynestml.utils.logger import Logger, LoggingLevel
-from pynestml.utils.ode_toolbox_utils import ODEToolboxUtils
 from pynestml.utils.string_utils import removesuffix
 
 import odetoolbox
@@ -105,10 +104,7 @@ class SynapseProcessing:
     def collect_raw_odetoolbox_output(cls, syn_info):
         """calls ode-toolbox for each ode individually and collects the raw output"""
         for ode_variable_name, ode_info in syn_info["ODEs"].items():
-            if ODEToolboxUtils.is_ode_toolbox_v3_or_higher(odetoolbox):
-                solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True, disable_singularity_mitigation=True)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
-            else:
-                solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True)
+            solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True, disable_singularity_mitigation=True)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
             syn_info["ODEs"][ode_variable_name]["ode_toolbox_output"] = solver_result
 
         return syn_info
@@ -297,17 +293,11 @@ class SynapseProcessing:
                               kernel_buffer):
         odetoolbox_indict = cls.create_ode_indict(
             neuron, parameters_block, kernel_buffer)
-        if ODEToolboxUtils.is_ode_toolbox_v3_or_higher(odetoolbox):
-            full_solver_result = odetoolbox.analysis(
-                odetoolbox_indict,
-                disable_stiffness_check=True,
-                disable_singularity_mitigation=True,
-                log_level=FrontendConfiguration.logging_level)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
-        else:
-            full_solver_result = odetoolbox.analysis(
-                odetoolbox_indict,
-                disable_stiffness_check=True,
-                log_level=FrontendConfiguration.logging_level)
+        full_solver_result = odetoolbox.analysis(
+            odetoolbox_indict,
+            disable_stiffness_check=True,
+            disable_singularity_mitigation=True,
+            log_level=FrontendConfiguration.logging_level)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
 
         analytic_solver = None
         analytic_solvers = [
