@@ -39,20 +39,16 @@ class PythonExpressionPrinter(ExpressionPrinter):
     """
 
     def print(self, node: ASTNode) -> str:
-
         if isinstance(node, ASTExpression):
             if node.get_implicit_conversion_factor() and not node.get_implicit_conversion_factor() == 1:
-                s = "(" + str(node.get_implicit_conversion_factor()) + " * (" + self.print_expression(node) + "))"
-                return s
+                return "(" + str(node.get_implicit_conversion_factor()) + " * (" + self.print_expression(node) + "))"
 
-            s= self.print_expression(node)
-            return s
+            return self.print_expression(node)
 
         if isinstance(node, ASTSimpleExpression) and node.is_numeric_literal_with_unit():
             return "(" + str(NESTUnitConverter.get_factor(astropy.units.Unit(str(node.unitType)))) + " * (" + s + "))"
 
-        s=self._simple_expression_printer.print(node)
-        return s
+        return self._simple_expression_printer.print(node)
 
     def print_expression(self, node: ASTExpressionNode) -> str:
         assert isinstance(node, ASTExpression)
