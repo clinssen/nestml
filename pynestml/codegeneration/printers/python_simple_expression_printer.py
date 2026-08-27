@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
+import astropy
+
 from pynestml.codegeneration.nest_unit_converter import NESTUnitConverter
 from pynestml.codegeneration.printers.simple_expression_printer import SimpleExpressionPrinter
 from pynestml.meta_model.ast_function_call import ASTFunctionCall
@@ -55,7 +57,7 @@ class PythonSimpleExpressionPrinter(SimpleExpressionPrinter):
                 pass
 
             try:
-                factor = NESTUnitConverter.get_factor(node.unitType)
+                factor = NESTUnitConverter.get_factor(astropy.units.Unit(str(node.unitType)))
             except BaseException:
                 pass
 
