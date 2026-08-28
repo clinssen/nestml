@@ -59,4 +59,4 @@ class TestAssignmentToUnitType:
 
         V_log = mm.get("events")["V"]
 
-        np.testing.assert_allclose(V_log[-1], 1000.)
+        np.testing.assert_allclose(V_log[-1], 1E6)

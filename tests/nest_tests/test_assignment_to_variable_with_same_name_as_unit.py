@@ -50,7 +50,7 @@ class TestAssignmentToVariableWithSameNameAsUnit:
         nest.Install("nestmlmodule")
 
         nrn = nest.Create("CoCoAssignmentToUnitType_nestml")
-        np.testing.assert_allclose(nrn.V, 250)
+        np.testing.assert_allclose(nrn.V, .25)
         mm = nest.Create("multimeter")
 
         nest.SetStatus(mm, {"record_from": ["V"]})
@@ -60,4 +60,4 @@ class TestAssignmentToVariableWithSameNameAsUnit:
         nest.Simulate(100.)
 
         V_log = mm.get("events")["V"]
-        np.testing.assert_allclose(V_log[-1], 1000 * np.e)
+        np.testing.assert_allclose(V_log[-1], 1E-6 * np.e)
