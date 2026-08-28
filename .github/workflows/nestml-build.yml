@@ -221,6 +221,12 @@ jobs:
           python -m pip install --upgrade pip pytest jupyterlab matplotlib pycodestyle scipy pandas
           python -m pip install -r requirements.txt
 
+      - name: Install Python dependencies
+        # if on "main" NEST branch: also test "main" branch of ODE-toolbox!
+        if: ${{ matrix.nest_branch == 'main' }}
+        run: |
+          python -m pip install --upgrade git+https://github.com/nest/ode-toolbox
+
       - name: Install NEST simulator
         run: |
           python -m pip install "cython<=3.0.10"
