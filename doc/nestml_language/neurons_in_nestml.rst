@@ -116,10 +116,10 @@ For example, say there is a spiking input port defined named ``spikes``. A decay
 
    equations:
        kernel G = exp(-t / tau_syn)
-       inline I_syn pA = convolve(G, spikes) * pA
+       inline I_syn pA = 1 pA * convolve(G, spikes)
        V_m' = -V_m / tau_m + I_syn / C_m
 
-Note that in this example, the intended physical unit (pA) was assigned by multiplying the scalar convolution result with the unit literal. By the definition of convolution, ``convolve(G, spikes)`` will have the unit of kernel ``G`` multiplied by the unit of ``spikes`` and unit of time, i.e., ``[G] * [spikes] * s``. Kernel functions in NESTML are always untyped and the unit of spikes is :math:`1/s` as discussed above. As a result, the unit of convolution is :math:`(1/s) * s`, a scalar quantity without a unit.
+Note that in this example, the intended physical unit (pA) was assigned by multiplying the scalar convolution result with the unitary postsynaptic current of 1 pA. By the definition of convolution, ``convolve(G, spikes)`` will have the unit of kernel ``G`` multiplied by the unit of ``spikes`` and unit of time, i.e., ``[G] * [spikes] * s``. Kernel functions in NESTML are always untyped and the unit of spikes is :math:`1/s` as discussed above. As a result, the unit of convolution is :math:`(1/s) * s`, a scalar quantity without a unit.
 
 The incoming spikes could have been equivalently handled with an ``onReceive`` event handler block:
 
@@ -133,7 +133,7 @@ The incoming spikes could have been equivalently handled with an ``onReceive`` e
        V_m' = -V_m / tau_m + I_syn / C_m
 
    onReceive(spikes):
-       I_syn += spikes * pA * s
+       I_syn += 1 pA * spikes * s
 
 Note that in this example, the intended physical unit (pA) was assigned by multiplying the type of the input port ``spikes`` (which is 1/s) by pA·s, resulting in a unit of pA for ``I_syn``.
 
@@ -160,7 +160,7 @@ For the sake of keeping the example simple, we assign a decaying exponential-ker
        kernel I_kernel1 = exp(-t / tau_syn1)
        kernel I_kernel2 = exp(-t / tau_syn2)
        kernel I_kernel3 = -exp(-t / tau_syn3)
-       inline I_syn pA = (convolve(I_kernel1, spikes1) - convolve(I_kernel2, spikes2) + convolve(I_kernel3, spikes3)) * pA
+       inline I_syn pA = 1 pA * (convolve(I_kernel1, spikes1) - convolve(I_kernel2, spikes2) + convolve(I_kernel3, spikes3))
        V_m' = -(V_m - E_L) / tau_m + (I_syn + I_stim1) / C_m
        V_d' = -(V_d - E_L) / tau_d + I_stim2 / C_m
 
@@ -182,10 +182,10 @@ The input ports can also be defined as vectors. For example,
            inh_spikes[3] <- inhibitory spike
 
        equations:
-           kernel I_kernel_exc = exp(-1 / tau_syn_exc * t)
-           kernel I_kernel_inh = exp(-1 / tau_syn_inh * t)
-           inline I_syn_exc pA = convolve(I_kernel_exc, exc_spikes[1]) * pA
-           inline I_syn_inh pA = convolve(I_kernel_inh, inh_spikes[1]) * pA
+           kernel I_kernel_exc = exp(-t / tau_syn_exc)
+           kernel I_kernel_inh = exp(-t / tau_syn_inh)
+           inline I_syn_exc pA = 1 pA * convolve(I_kernel_exc, exc_spikes[1])
+           inline I_syn_inh pA = 1 pA * convolve(I_kernel_inh, inh_spikes[1])
 
 
 In this example, the spiking input ports ``foo``, ``exc_spikes``, and ``inh_spikes`` are defined as vectors. The integer surrounded by ``[`` and ``]`` determines the size of the vector. The size of the input port must always be a positive-valued integer.

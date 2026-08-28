@@ -220,23 +220,25 @@ Physical units can have at most one of the following magnitude prefixes:
 | 10^-24   | yocto     | y               | 10^24    | yotta     | Y               |
 +----------+-----------+-----------------+----------+-----------+-----------------+
 
-For example, the following defines a possible unit:
+For example, the following is a possible unit:
 
 .. code-block:: nestml
 
-   mV*mV*nS**2/(mS*pA)
+   mV*nS**2*MOhm**-1*pA
 
-Units of the form ``<unit>**-1`` can also be expressed as ``1/<unit>``. For example
+Units of the form ``1/<unit>`` should be expressed as ``<unit>**-1``. For example
 
 .. code-block:: nestml
 
    (ms*mV)**-1
 
-is equivalent to
+or, equivalently
 
 .. code-block:: nestml
 
-   1/(ms*mV)
+   ms**-1*mV**-1
+
+both define the unit of :math:`\mathrm{ms}^{-1}\mathrm{mV}^{-1}`.
 
 
 Type and unit checks
@@ -794,6 +796,15 @@ For any two valid numeric expressions ``x``, ``y``, boolean expressions ``b``,\ 
 | ``?:``                                       | Ternary operator (return ``x`` if ``b`` is true, ``y`` otherwise) | ``b ? x : y``            |
 +----------------------------------------------+-------------------------------------------------------------------+--------------------------+
 
+Numeric literals
+~~~~~~~~~~~~~~~~
+
+Numeric literals with a physical type can appear as constants in any expression, in the form of a number, followed by a physical unit. For example:
+
+.. code-block:: nestml
+
+   V_m mV = I_syn * 55 MOhm
+
 
 Blocks
 ------
@@ -1093,10 +1104,10 @@ In case of higher-order ODEs of the form ``F(x'', x', x) = 0``, the solution ``x
 
    state:
      x  real    = 0
-     x' ms**-1  = 0 * ms**-1
+     x' ms**-1  = 0 ms**-1
 
    equations:
-     x'' = - 2 * x' / ms - x / ms**2
+     x'' = - 2 * x' / 1 ms - x / 1 ms**2
 
    update:
      integrate_odes(x)
