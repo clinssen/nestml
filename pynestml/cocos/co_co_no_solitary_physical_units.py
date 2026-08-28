@@ -62,6 +62,7 @@ class NoSolitaryPhysicalUnitsVisitor(ASTVisitor):
         symbol = node.get_scope().resolve_to_symbol(node.get_complete_name(), SymbolKind.VARIABLE)
         if symbol is None:
             # test if variable name can be resolved to a type
+            print("PredefinedUnits.is_unit(" + str(node) + ".get_complete_name()) = " + str(PredefinedUnits.is_unit(node.get_complete_name())))
             if PredefinedUnits.is_unit(node.get_complete_name()):
                 code, message = Messages.get_no_solitary_physical_units_allowed(node.get_complete_name())
                 Logger.log_message(error_position=node.get_source_position(), log_level=LoggingLevel.ERROR,

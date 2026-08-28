@@ -77,7 +77,7 @@ model expressionType_test:
         volts = volts > resist*amps ? volts : resist* amps
         force = foo(mass,distance,time)
         force = 1 kg * distance/(time**2)
-        force = kg*m/(s**2)
+        force = 1 kg*m/(s**2)
 
         # power operators
         bar1 = beta**expo2
