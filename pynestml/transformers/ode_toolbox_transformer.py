@@ -125,6 +125,7 @@ class ODEToolboxTransformer(Transformer):
         if ODEToolboxUtils.is_ode_toolbox_v3_or_higher(odetoolbox):
             # ODE-toolbox version 3 or higher
             solver_result = odetoolbox.analysis(odetoolbox_indict,
+                                                enable_cse=True,
                                                 disable_stiffness_check=True,
                                                 disable_analytic_solver=disable_analytic_solver,
                                                 disable_singularity_detection=self.get_option("disable_singularity_detection"),
