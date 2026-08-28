@@ -40,7 +40,6 @@ from pynestml.symbols.predefined_functions import PredefinedFunctions
 from pynestml.symbols.symbol import SymbolKind
 from pynestml.utils.ast_utils import ASTUtils
 from pynestml.utils.model_parser import ModelParser
-from pynestml.utils.ode_toolbox_utils import ODEToolboxUtils
 from pynestml.visitors.ast_parent_visitor import ASTParentVisitor
 from pynestml.visitors.ast_symbol_table_visitor import ASTSymbolTableVisitor
 from pynestml.visitors.ast_visitor import ASTVisitor
@@ -160,10 +159,7 @@ class MechsInfoEnricher:
         """calls ode-toolbox for each ode individually and collects the raw output"""
         for mechanism_name, mechanism_info in mechs_info.items():
             for ode_variable_name, ode_info in mechanism_info["ODEs"].items():
-                if ODEToolboxUtils.is_ode_toolbox_v3_or_higher(odetoolbox):
-                    solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True, disable_singularity_mitigation=True)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
-                else:
-                    solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True)
+                solver_result = odetoolbox.analysis(ode_info["ode_toolbox_input"], disable_stiffness_check=True, disable_singularity_mitigation=True)    # multiple conditional solvers returned from ODE-toolbox not yet supported by NESTML
                 mechs_info[mechanism_name]["ODEs"][ode_variable_name]["ode_toolbox_output"] = solver_result
 
         return mechs_info
