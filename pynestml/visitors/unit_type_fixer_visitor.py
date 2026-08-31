@@ -52,7 +52,7 @@ class UnitTypeFixerVisitor(ASTVisitor):
 
        42 pA/foo
 
-    will initially be parsed as a numeric literal with a unit type of "pA/foo". However, "foo" actually refers to a parameter in the model. This situation is further exacerbated by NESTML allowing variables to be defined with the same name an units; for instance, there could be a variable defined with the name "mV".
+    will initially be parsed as a numeric literal with a unit type of "pA/foo". However, "foo" actually refers to a parameter in the model. This situation is further exacerbated by NESTML allowing variables to be defined with the same name as units; for instance, there could be a variable defined with the name "mV".
 
     This visitor tries to resolve the rightmost term in an ASTUnitType as a variable. If it can be resolved, the term is split off, in this example resulting in the expression
 
