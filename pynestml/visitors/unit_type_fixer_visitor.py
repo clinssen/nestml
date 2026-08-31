@@ -38,6 +38,29 @@ from pynestml.visitors.ast_visitor import ASTVisitor
 class UnitTypeFixerVisitor(ASTVisitor):
     r"""
     There can be ambiguities during parsing between what is a variable and what is a unit type. E.g. in an expression ``unit*unit**2*var*var/var``. During parsing, this whole expression gets recognised as an ``ASTUnitType``. This visitor takes variables out of ``ASTUnitType``s.
+
+    For instance, given
+
+    .. code:: nestml
+
+       parameters:
+           foo real = 42
+
+    the expression
+
+    .. code:: nestml
+
+       42 pA/foo
+
+    will initially be parsed as a numeric literal with a unit type of "pA/foo". However, "foo" actually refers to a parameter in the model. This situation is further exacerbated by NESTML allowing variables to be defined with the same name an units; for instance, there could be a variable defined with the name "mV".
+
+    This visitor tries to resolve the rightmost term in an ASTUnitType as a variable. If it can be resolved, the term is split off, in this example resulting in the expression
+
+    .. code:: nestml
+
+       42 pA / foo
+
+    where the numeric literal has units "pA" and is subsequently divided by the variable "foo".
     """
 
     @classmethod

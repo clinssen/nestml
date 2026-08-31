@@ -54,6 +54,9 @@ model test_continuous_third_factor_in_modulatory_spikes_handler_neuron:
         # constant external input current
         I_e pA = 0 pA
 
+    internals:
+        unit_psc pA = 1 pA       # Unitary postsynaptic current amplitude
+
     input:
         exc_spikes <- excitatory spike
         inh_spikes <- inhibitory spike
@@ -71,10 +74,10 @@ model test_continuous_third_factor_in_modulatory_spikes_handler_neuron:
             integrate_odes(I_syn_exc, I_syn_inh, V_m)
 
     onReceive(exc_spikes):
-        I_syn_exc += exc_spikes * 1 pA * 1E3 s
+        I_syn_exc += unit_psc * exc_spikes * 1 s
 
     onReceive(inh_spikes):
-        I_syn_inh += inh_spikes * 1 pA * 1E3 s
+        I_syn_inh += unit_psc * inh_spikes * 1 s
 
     onCondition(refr_t <= 0 ms and V_m >= V_th):
         # threshold crossing

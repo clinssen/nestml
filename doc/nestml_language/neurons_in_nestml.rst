@@ -133,9 +133,9 @@ The incoming spikes could have been equivalently handled with an ``onReceive`` e
        V_m' = -V_m / tau_m + I_syn / C_m
 
    onReceive(spikes):
-       I_syn += 1 pA * spikes * s
+       I_syn += 1 pA * spikes * 1 s
 
-Note that in this example, the intended physical unit (pA) was assigned by multiplying the type of the input port ``spikes`` (which is 1/s) by pA·s, resulting in a unit of pA for ``I_syn``.
+Note that in this example, the intended physical unit (pA) was assigned by multiplying the type of the input port ``spikes`` (which is :math:`\mathrm{s}^{-1}`) by pA·s, resulting in a unit of pA for ``I_syn``.
 
 
 Multiple input ports

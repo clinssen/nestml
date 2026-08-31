@@ -68,7 +68,7 @@ class CoCoNoAssignmentToUnitVisitor(ASTVisitor):
         """
         symbol_as_type = node.get_scope().resolve_to_symbol(node.get_variable().get_complete_name(), SymbolKind.TYPE)
         if not symbol_as_type:
-            # the symbol cannot be resolved as a unit type, so the is definitely no assignment to a unit type here
+            # the symbol cannot be resolved as a unit type, so there is definitely no assignment to a unit type here
             return
 
         # the variable can be resolved as a unit type. But is it actually a declared as a variable in the model?

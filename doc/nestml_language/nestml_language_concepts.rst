@@ -241,6 +241,16 @@ or, equivalently
 both define the unit of :math:`\mathrm{ms}^{-1}\mathrm{mV}^{-1}`.
 
 
+Numeric literals with a physical unit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Numeric literals with a physical unit can appear as constants in any expression, in the form of a number, followed by a physical unit. For example:
+
+.. code-block:: nestml
+
+   V_m mV = I_syn * 55 MOhm
+
+
 Type and unit checks
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -795,15 +805,6 @@ For any two valid numeric expressions ``x``, ``y``, boolean expressions ``b``,\ 
 +----------------------------------------------+-------------------------------------------------------------------+--------------------------+
 | ``?:``                                       | Ternary operator (return ``x`` if ``b`` is true, ``y`` otherwise) | ``b ? x : y``            |
 +----------------------------------------------+-------------------------------------------------------------------+--------------------------+
-
-Numeric literals
-~~~~~~~~~~~~~~~~
-
-Numeric literals with a physical type can appear as constants in any expression, in the form of a number, followed by a physical unit. For example:
-
-.. code-block:: nestml
-
-   V_m mV = I_syn * 55 MOhm
 
 
 Blocks

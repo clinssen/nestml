@@ -148,14 +148,6 @@ class CoCosManager:
         CoCoNoAssignmentToUnit.check_co_co(model)
 
     @classmethod
-    def check_v_comp_requirement(cls, neuron: ASTModel):
-        """
-        In compartmental case, checks if v_comp variable was defined
-        :param neuron: a single neuron object
-        """
-        CoCoVCompDefined.check_co_co(neuron)
-
-    @classmethod
     def check_compartmental_neuron_model(cls, neuron: ASTModel) -> None:
         """
         collects all relevant information for the different compartmental mechanism classes for later code-generation
