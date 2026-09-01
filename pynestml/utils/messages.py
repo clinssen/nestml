@@ -1220,6 +1220,7 @@ class Messages:
 
         return MessageCode.NOT_ALLOWED_TO_ASSIGN_TO_A_UNIT_TYPE, message
 
+    @classmethod
     def get_unknown_neuron_synapse_pair_model(cls, model_type: str, model_name: str) -> Tuple[MessageCode, str]:
         message = "Unknown " + model_type + " model \"" + model_name + "\" in neuron_synapse_pairs."
 
