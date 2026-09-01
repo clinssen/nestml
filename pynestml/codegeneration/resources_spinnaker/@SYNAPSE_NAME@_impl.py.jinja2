@@ -280,12 +280,14 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
             return False
 {%- endfor %}
 
+{#
 {%- if "paired_neuron" in metadata[astnode.name].keys() and metadata[astnode.name]["paired_neuron"] is not none %}
 {%-     for sym in metadata[astnode.name]["paired_neuron"].get_parameter_symbols() %}
         if self._nestml_model_variables["{{ sym.get_symbol_name() }}"] != synapse_dynamics._nestml_model_variables["{{ sym.get_symbol_name() }}"]:
             return False
 {%-     endfor %}
 {%- endif %}
+#}
 
         return True
 
