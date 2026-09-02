@@ -431,7 +431,8 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
 {%- for state_var_sym in synapse.get_state_symbols() %}
 {%-     set state_var_idx = loop.index0 %}
 {%-     if state_var_sym.name == "w" %}  {# XXXX use codegen opts for "w" instead #}
-            plastic_plastic[connection_idx * n_state_variables + {{ state_var_idx }}] = float_to_s16_15(connections["weight"][connection_idx] * numpy.array(ring_buffer_weight_scales)[connections["synapse_type"]][connection_idx])
+            plastic_plastic[connection_idx * n_state_variables + {{ state_var_idx }}] = float_to_s16_15(connections["weight"][connection_idx])    # note that we are not applying the weight scale here! This is intentional; NESTML weights are always stored as an S16.15 (note that they are still scaled when written to the postsynaptic neuron's input buffers)
+            # plastic_plastic[connection_idx * n_state_variables + {{ state_var_idx }}] = float_to_s16_15(connections["weight"][connection_idx] * numpy.array(ring_buffer_weight_scales)[connections["synapse_type"]][connection_idx])
             print("[NESTML synapse] XXXX: ring_buffer_weight_scales = " + str(numpy.array(ring_buffer_weight_scales)[connections["synapse_type"]][connection_idx]))
 {%-     else %}
             # XXX: what about other initial values, can they be put into/extracted from ConnectionsArray? Otherwise, do we use printing initial values directly from the NESTML model?
@@ -543,7 +544,10 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
         connections = numpy.zeros(data_fixed.size, dtype=NUMPY_CONNECTORS_DTYPE)
         connections["source"] = numpy.concatenate([numpy.repeat(i, fp_size[i]) for i in range(len(fp_size))])
         connections["target"] = data_fixed & neuron_id_mask
-        connections["weight"] = s16_15_to_float(numpy.concatenate([pp[:size * 4 * n_state_variables].view(uint32)[::n_state_variables] for pp, size in zip(pp_without_headers, fp_size)]).astype(uint32)) / numpy.array(ring_buffer_weight_scales)[synapse_type]
+        connections["weight"] = s16_15_to_float(numpy.concatenate([pp[:size * 4 * n_state_variables].view(uint32)[::n_state_variables] for pp, size in zip(pp_without_headers, fp_size)]).astype(uint32))    # note that we are not applying the weight scale here! This is intentional; NESTML weights are always stored as an S16.15 (note that they are still scaled when written to the postsynaptic neuron's input buffers)
+        # connections["weight"] = s16_15_to_float(numpy.concatenate([pp[:size * 4 * n_state_variables].view(uint32)[::n_state_variables] for pp, size in zip(pp_without_headers, fp_size)]).astype(uint32)) / numpy.array(ring_buffer_weight_scales)[synapse_type]
+
+
         print("[NESTML synapse] XXXX: ring_buffer_weight_scales = " + str(numpy.array(ring_buffer_weight_scales)[synapse_type]))
         connections["delay"] = data_fixed >> (n_neuron_id_bits + n_synapse_type_bits)
 
