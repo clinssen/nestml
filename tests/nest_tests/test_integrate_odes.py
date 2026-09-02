@@ -241,7 +241,6 @@ class TestIntegrateODEs:
         Tests that spikes appearing on the right-hand side of ODEs are only integrated when integrate_odes() on that variable was called.
         """
         resolution = 0.1
-        simtime = 15.
         NESTTools.set_nest_verbosity("ALL")
         nest.ResetKernel()
         nest.SetKernelStatus({"resolution": resolution})
