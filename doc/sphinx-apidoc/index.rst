@@ -5,13 +5,13 @@ The NESTML modeling language
    :width: 324px
    :height: 307px
    :align: right
-   :target: nestml_language/neurons_in_nestml.html
+   :target: models_library/index.html#neuron-models
 
 .. figure:: https://raw.githubusercontent.com/nest/nestml/main/doc/fig/synapse_illustration.svg
    :width: 326px
    :height: 203px
    :align: right
-   :target: nestml_language/synapses_in_nestml.html
+   :target: models_library/index.html#synapse-models
 
 NESTML is a domain-specific language for hybrid dynamical systems, in particular neuron and synapse models. The toolchain automatically generates code for these models, allowing them to be used in brain simulations on several platforms (see :ref:`Running NESTML`).
 

@@ -5,8 +5,7 @@ NESTML language documentation
    :maxdepth: 1
 
    nestml_language_concepts
-   neurons_in_nestml
-   synapses_in_nestml
+   application_notes
 
 NESTML is a domain-specific language for the specification of hybrid dynamical systems: those that combine continuous-time dynamics, often expressed as ordinary differential equations (ODEs), with discrete-time dynamics, which model instantaneous events such as neuronal spikes. NESTML was originally developed as a modelling language for the individual neurons and synapses that constitute a neural network, but is a completely generic language for any hybrid dynamical system. The language is agnostic about the numerical methods used for simulating the model, such as which numerical (ODE) solver is used; this is instead determined when code is generated for the model (see the section :ref:`Running NESTML`).
 
