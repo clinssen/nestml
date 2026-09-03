@@ -58,7 +58,7 @@ model aeif_psc_exp_neuron:
         V_m' = (-g_L * (V_bounded - E_L) + I_spike + I_syn_exc - I_syn_inh - w + I_e + I_stim) / C_m
         w' = (a * (V_bounded - E_L) - w) / tau_w
 
-        refr_t' = -1e3 * ms/s    # refractoriness is implemented as an ODE, representing a timer counting back down to zero. XXX: TODO: This should simply read ``refr_t' = -1 / s`` (see https://github.com/nest/nestml/issues/984)
+        refr_t' = -1    # refractoriness is implemented as an ODE, representing a timer counting back down to zero, at a rate of one (milli)second per (milli)second
 
     parameters:
         # membrane parameters
@@ -103,12 +103,10 @@ model aeif_psc_exp_neuron:
             integrate_odes(I_syn_exc, I_syn_inh, w, V_m)
 
     onReceive(exc_spikes):
-        psc pA = unit_psc * sift(exc_spikes, t)    # obtain the postsynaptic current by integrating area under the curve of the spike
-        I_syn_exc += psc
+        I_syn_exc += unit_psc * get_weight(exc_spikes, t)
 
     onReceive(inh_spikes):
-        psc pA = unit_psc * sift(inh_spikes, t)    # obtain the postsynaptic current by integrating area under the curve of the spike
-        I_syn_inh += psc
+        I_syn_inh += unit_psc * get_weight(inh_spikes, t)
 
     onCondition(V_m >= V_th):
         # threshold crossing

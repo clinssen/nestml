@@ -73,7 +73,7 @@ model iaf_psc_exp_neuron:
         I_syn_exc' = -I_syn_exc / tau_syn_exc
         I_syn_inh' = -I_syn_inh / tau_syn_inh
         V_m' = -(V_m - E_L) / tau_m + (I_syn_exc - I_syn_inh + I_e + I_stim) / C_m
-        refr_t' = -1e3 * ms/s    # refractoriness is implemented as an ODE, representing a timer counting back down to zero. XXX: TODO: This should simply read ``refr_t' = -1 / s`` (see https://github.com/nest/nestml/issues/984)
+        refr_t' = -1    # refractoriness is implemented as an ODE, representing a timer counting back down to zero, at a rate of one (milli)second per (milli)second
 
     parameters:
         C_m pF = 250 pF           # Capacitance of the membrane
@@ -92,19 +92,12 @@ model iaf_psc_exp_neuron:
         unit_psc pA = 1 pA        # Unitary postsynaptic current amplitude
 
     input:
-        spike_in_port <- spike
+        exc_spikes <- spike
+        inh_spikes <- spike
         I_stim pA <- continuous
 
     output:
         spike
-
-    onReceive(spike_in_port):
-        # route the incoming spike on the basis of the sign of the postsynaptic current: less than zero means an inhibitory spike; greater than zero means an excitatory spike
-        psc pA = unit_psc * sift(spike_in_port, t)    # obtain the postsynaptic current by integrating area under the curve of the spike
-        if psc > 0 pA:
-            I_syn_exc += psc
-        else:
-            I_syn_inh -= psc
 
     update:
         if refr_t > 0 ms:
@@ -113,6 +106,12 @@ model iaf_psc_exp_neuron:
         else:
             # neuron not refractory
             integrate_odes(I_syn_exc, I_syn_inh, V_m)
+
+    onReceive(exc_spikes):
+        I_syn_exc += unit_psc * get_weight(exc_spikes, t)
+
+    onReceive(inh_spikes):
+        I_syn_inh += unit_psc * get_weight(inh_spikes, t)
 
     onCondition(refr_t <= 0 ms and V_m >= V_th):
         # threshold crossing
