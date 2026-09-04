@@ -30,7 +30,7 @@ model izhikevich_tutorial_neuron:
         # NESTML syntax for variables: variable_name type = initial_value
 
     equations:
-        v' = (.04 * v * v / mV + 5 * v + (140 - u) * mV + (I_e * GOhm)) / ms
+        v' = (.04 * v * v / 1 mV + 5 * v + (140 - u) * 1 mV + (I_e * 1 GOhm)) / 1 ms
         # TODO: add an ODE for u
 
     parameters:
@@ -52,9 +52,9 @@ model izhikevich_tutorial_neuron:
 
     onReceive(spikes):
         # add synaptic current
-        v += unit_psp * sift(spikes, t)
+        v += unit_psp * get_weight(spikes, t)
 
-    onCondition(v >= 30mV):
+    onCondition(v >= 30 mV):
         # TODO: implement threshold crossing check
 
         # use an if-condition block. The NESTML syntax looks like:

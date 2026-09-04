@@ -124,13 +124,23 @@ namespace nest
     // add state variables to recordables map
 {%-     if has_state_vectors %}
 {%-         for variable in recordable_state_variables %}
-{%-             if not variable.has_vector_parameter() %}
+{%-             set variable_symbol = variable.get_scope().resolve_to_symbol(variable.get_complete_name(), SymbolKind.VARIABLE) %}
+{%-             if not variable.has_vector_parameter() and not isinstance(variable_symbol.get_type_symbol(), IntegerTypeSymbol) %}
     insert("{{variable.get_complete_name()}}", host.get_data_access_functor( {{ neuronName }}::State_::{{ printer_no_origin.print(utils.get_state_variable_by_name(astnode, variable.get_complete_name())).upper() }} ));
 {%-             endif %}
 {%-         endfor %}
 {%-     else %}
 {%-         for variable in recordable_state_variables %}
+
+
+{%-     set variable_symbol = variable.get_scope().resolve_to_symbol(variable.get_complete_name(), SymbolKind.VARIABLE) %}
+
+{%-    if isinstance(variable_symbol.get_type_symbol(), IntegerTypeSymbol) %}
+    insert_({{names_namespace}}::_{{ variable.get_complete_name() }}, &{{ neuronName }}::integer_get_{{ printer_no_origin.print(variable) }});
+{%- else %}
     insert_({{names_namespace}}::_{{ variable.get_complete_name() }}, &{{ neuronName }}::get_{{ printer_no_origin.print(variable) }});
+{%-     endif %}
+
 {%-         endfor %}
 {%-     endif %}
 {%- endif %}
@@ -908,6 +918,15 @@ void {{ neuronName }}::update(nest::Time const & origin, const long from, const 
 {%-     endfor %}
 {%- endif %}
 
+{%- for spike_updates_for_port in spike_updates.values() %}
+{%-     for ast in spike_updates_for_port -%}
+{%-         if "__X__" in ast.get_variable().get_name() %}    {#- convolutions only #}
+{%-             include "directives_cpp/Assignment.jinja2" %}
+{%-         endif %}
+{%-     endfor %}
+{%- endfor %}
+
+
 {%  if paired_synapses is defined %}
 {%-     for paired_synapse, paired_synapse_original_model in zip(paired_synapses, paired_synapse_original_models) %}
 {%-         if uses_numeric_solver and purely_numeric_state_variables_moved %}
@@ -930,18 +949,11 @@ void {{ neuronName }}::update(nest::Time const & origin, const long from, const 
 {%- endif %}
 
     /**
-     * spike updates due to convolutions
-    **/
 
 {{ printer._expression_printer._simple_expression_printer._variable_printer.set_buffers_to_zero(False) }}
 {{ printer._expression_printer._simple_expression_printer._variable_printer.set_cpp_variable_suffix(" ") }}  {# prevent printing origin #}
-{%  filter indent(4) %}
-{%-     include "directives_cpp/ApplySpikesFromBuffers.jinja2" %}
-{%- endfilter %}
 {{ printer._expression_printer._simple_expression_printer._variable_printer.set_cpp_variable_suffix("") }}
 {{ printer._expression_printer._simple_expression_printer._variable_printer.set_buffers_to_zero(True) }}
-
-    /**
      * Begin NESTML generated code for the onCondition block(s)
     **/
 {% if neuron.get_on_condition_blocks() %}
@@ -1092,7 +1104,7 @@ std::cout << "[neuron " << this << "] Writing history at time " << nest::Time(ne
 {%-     endfor %}
     );
 {%- endif %}
-}
+  }
 
 {%- if use_gap_junctions %}
   // if not called_from_wfr_update perform constant extrapolation and reset last_y_values

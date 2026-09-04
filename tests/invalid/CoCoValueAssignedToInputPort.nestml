@@ -33,4 +33,4 @@ model CoCoValueAssignedToInputPort:
         spike_in_port <- spike
 
     update:
-        spike_in_port = 10 / s
+        spikeInh = 1 s**-1

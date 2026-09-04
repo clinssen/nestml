@@ -1044,7 +1044,7 @@ The unit of the Dirac delta function follows from its definition. Consider the s
 
    f(T) = \int f(t) \delta(t - T) dt
 
-Here :math:`f(t)` is a continuous function of :math:`t`, the value of which is selected at time :math:`t = T`. As the unit of :math:`f()` must be the same on both the left and the right-hand side, the unit of :math:`\delta(t) dt` must be equal to 1. Therefore, the unit of :math:`\delta(t)` must be equal to the inverse of the unit of :math:`t`, that is, the delta function has units :math:`\text{s}^{-1}`. Therefore, all the incoming spikes defined in the input block will implicitly have the unit :math:`\text{s}^{-1}`. 
+Here :math:`f(t)` is a continuous function of :math:`t`, the value of which is selected at time :math:`t = T`. As the unit of :math:`f()` must be the same on both the left and the right-hand side, the unit of :math:`\delta(t) dt` must be equal to 1. Therefore, the unit of :math:`\delta(t)` must be equal to the inverse of the unit of :math:`t`, that is, the delta function has units :math:`\text{s}^{-1}`. Therefore, all the incoming spikes defined in the input block will implicitly have the unit :math:`\text{s}^{-1}`.
 
 In the more general case, a delta function can be weighted by a real number :math:`w`. This weights the area under the delta function. Additionally, spikes can occur at different times :math:`t_k` for :math:`k=0,1,2,\ldots`. A spiking input port can therefore be represented as a sum of weighted delta functions occurring at times :math:`t_k`:
 
@@ -1124,7 +1124,7 @@ Typically, the statements in the ``onReceive`` block integrate the delta functio
 
    \int_{t}^{t + \Delta t} f(\tau) \delta(\tau - t) d\tau = f(t)
 
-for any :math:`\Delta t > 0`. In NESTML, the sifting property can be expressed by using the ``sift()`` function. The function to be sifted is passed as the first argument, and the second argument is the time of the delta pulse which carries out the sifting:
+for any :math:`\Delta t > 0`. In NESTML, the sifting property can be expressed by using the ``get_weight()`` function. The function to be sifted is passed as the first argument, and the second argument is the time of the delta pulse which carries out the sifting:
 
 .. math::
 
@@ -1144,7 +1144,7 @@ If the input port spike train :math:`\mathrm{spikes\_pre}(t)` is passed as the f
                                      \end{array}
                               \right.
 
-That is, the NESTML ``sift()`` function extracts the weight of the spike occurring at the time of its second argument. The unit of the result of the ``sift()`` function is a scalar.
+That is, the NESTML ``get_weight()`` function extracts the weight of the spike occurring at the time of its second argument. The unit of the result of the ``get_weight()`` function is a scalar.
 
 For example, to increment a real number ``x`` by the weight of an incoming spike when a spike is received, one can write:
 
@@ -1154,7 +1154,7 @@ For example, to increment a real number ``x`` by the weight of an incoming spike
        x real = 0
 
    onReceive(spikes_pre):    # when incoming spike at time t is received, do the following:
-       spike_weight real = sift(spikes_pre, t)   # weight of the spike occurring at time t
+       spike_weight real = get_weight(spikes_pre, t)   # weight of the spike occurring at time t
        x += spike_weight    # increment x by the weight of the spike
 
 Integration across time causes the :math:`\text{s}^{-1}` unit of the spike train to drop out, so that what remains is a scalar value (the weight of the spike). If :math:`x` is defined as a real number, the units on the left- and right-hand side are thus consistent.
@@ -1173,16 +1173,16 @@ If a particular physical unit is desired for the increment, for example, millivo
        in_spikes <- spike
 
    onReceive(spikes_pre):
-       V_m += unit_psp * sift(spikes_pre, t)
+       V_m += unit_psp * get_weight(spikes_pre, t)
 
-In ``onReceive`` blocks, a spiking input port may not appear outside of a ``sift()`` call. For example, the following is not allowed:
+In ``onReceive`` blocks, a spiking input port may not appear outside of a ``get_weight()`` call. For example, the following is not allowed:
 
 .. code-block:: nestml
 
    onReceive(in_spikes):
        V_m += unit_psp * in_spikes    # error!
 
-The second parameter of the ``sift()`` function is only allowed to be the current time (the time at the spike event) ``t``.
+The second parameter of the ``get_weight()`` function is only allowed to be the current time (the time at the spike event) ``t``.
 
 To specify in which sequence the event handlers should be called in case multiple events are received at the exact same time, the ``priority`` parameter can be used, which can be given an integer value, where a larger value means higher priority (handled earlier). For example:
 
