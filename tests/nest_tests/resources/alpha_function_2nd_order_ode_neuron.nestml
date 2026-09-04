@@ -25,20 +25,20 @@
 #
 model alpha_function_2nd_order_ode_neuron:
     state:
-        x real = 0
-        x' ms**-1 = 0 * ms**-1
+        x  real = 0
+        x' ms**-1  = 0 ms**-1
         y real = 0
 
     input:
         fX <- spike
 
     equations:
-        x'' = -2 * x' / ms - x / ms**2
-        y' = (-y + 42) / s
+        x'' = -2 * x' / 1 ms - x / 1 ms**2
+        y' = (-y + 42) / 1E3 s
 
     update:
         integrate_odes(x, y)
 
     onReceive(fX):
-        spike_weight real = sift(fX, t)
-        x' += e * spike_weight / ms
+        spike_weight real = get_weight(fX, t)
+        x' += e * spike_weight / 1 ms

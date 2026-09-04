@@ -34,9 +34,7 @@ from .{{synapse.get_name()}} import Synapse_{{synapse.get_name()}}
 
 
 class TestSimulator:
-    def test_simulator(self):
-        t_stop = 100.
-
+    def test_simulator(self, t_stop=100.):
         simulator = Simulator()
 
         sg_exc = simulator.add_neuron(SpikeGenerator(interval=10.))
@@ -46,7 +44,7 @@ class TestSimulator:
         if "exc_spikes" in simulator.neurons[neuron].get_spiking_input_ports():
             simulator.connect(sg_exc, neuron, "exc_spikes", w=1000.)
             simulator.connect(sg_inh, neuron, "inh_spikes", w=4000.)
-        else:
+        elif "spikes" in simulator.neurons[neuron].get_spiking_input_ports():
             simulator.connect(sg_exc, neuron, "spike_in_port", w=1000.)
 {%-     if not "izhikevich" in neuron.get_name() %}
             simulator.connect(sg_inh, neuron, "spike_in_port", w=-4000.)

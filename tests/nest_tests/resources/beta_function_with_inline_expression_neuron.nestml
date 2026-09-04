@@ -55,5 +55,5 @@ model beta_function_with_inline_expression_neuron:
   update:
     integrate_odes()
 
-  onReceive(weighted_input_spikes):
-    x_ += unit_psc * (1 / tau2 - 1 / tau1) * sift(spike_in_port, t)
+  onReceive(spike_in_port):
+    x_ += unit_psc * (1 / tau2 - 1 / tau1) * get_weight(spike_in_port, t)
