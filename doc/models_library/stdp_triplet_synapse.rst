@@ -13,7 +13,7 @@ Nearest-neighbour variant of pre- and postsynaptic spike coupling.
 
 Traditional STDP models express the weight change as a function of pairs of pre- and postsynaptic spikes, but these fall short in accounting for the frequency dependence of weight changes. To improve the fit between model and empirical data, [4]_ propose a "triplet" rule, which considers sets of three spikes, that is, two pre and one post, or one pre and two post.
 
-.. figure:: https://www.jneurosci.org/content/jneuro/26/38/9673/F1.large.jpg?width=800&height=600&carousel=1
+.. figure:: https://raw.githubusercontent.com/nest/nestml/main/doc/fig/stdp_triplet_synapse.png
 
    Figure 1 from [4]_.
 
@@ -55,15 +55,15 @@ The weight update rules can then be expressed in terms of the traces and paramet
 
    onReceive(post_spikes):
         potentiate synapse
-       w_ real = w + tr_r1 * ( A2_plus + A3_plus * tr_o2 )
+       w_ real = w + tr_r1 * (A2_plus + A3_plus * tr_o2)
        w = min(Wmax, w_)
 
    onReceive(pre_spikes):
         depress synapse
-       w_ real = w  -  tr_o1 * ( A2_minus + A3_minus * tr_r2 )
+       w_ real = w  -  tr_o1 * (A2_minus + A3_minus * tr_r2)
        w = max(Wmin, w_)
 
-        deliver spike to postsynaptic partner
+       # deliver spike to postsynaptic partner
        emit_spike(w)
 
 Note that in this particular STDP synapse model, the weight is not allowed to be negative. In case an inhibitory STDP synapse needs to be modeled, this model (with weight >= 0 at all times) can be connected to a postsynaptic neuron at its appropriate (inhibitory) input port. The sign of the postsynaptic response is thus handled in the postsynaptic neuron. In principle, an STDP synapse model can be defined that allows for negative weights, but in this case, care should be taken to prevent the sign of the weight from changing during learning, as a biological synapse cannot simply switch from one type to another, say, from glutamatergic to GABAergic.
@@ -89,16 +89,16 @@ Parameters
     :header: "Name", "Physical unit", "Default value", "Description"
     :widths: auto
 
-    
-    "tau_plus", "ms", "16.8 ms", "time constant for tr_r1"    
-    "tau_x", "ms", "101 ms", "time constant for tr_r2"    
-    "tau_minus", "ms", "33.7 ms", "time constant for tr_o1"    
-    "tau_y", "ms", "125 ms", "time constant for tr_o2"    
-    "A2_plus", "real", "7.5e-10", ""    
-    "A3_plus", "real", "0.0093", ""    
-    "A2_minus", "real", "0.007", ""    
-    "A3_minus", "real", "0.00023", ""    
-    "Wmax", "nS", "100 nS", ""    
+
+    "tau_plus", "ms", "16.8 ms", "time constant for tr_r1"
+    "tau_x", "ms", "101 ms", "time constant for tr_r2"
+    "tau_minus", "ms", "33.7 ms", "time constant for tr_o1"
+    "tau_y", "ms", "125 ms", "time constant for tr_o2"
+    "A2_plus", "real", "7.5e-10", ""
+    "A3_plus", "real", "0.0093", ""
+    "A2_minus", "real", "0.007", ""
+    "A3_minus", "real", "0.00023", ""
+    "Wmax", "nS", "100 nS", ""
     "Wmin", "nS", "0 nS", ""
 
 
@@ -109,11 +109,11 @@ State variables
     :header: "Name", "Physical unit", "Default value", "Description"
     :widths: auto
 
-    
-    "w", "nS", "1 nS", "Synaptic weight"    
-    "tr_r1", "real", "0.0", ""    
-    "tr_r2", "real", "0.0", ""    
-    "tr_o1", "real", "0.0", ""    
+
+    "w", "nS", "1 nS", "Synaptic weight"
+    "tr_r1", "real", "0.0", ""
+    "tr_r2", "real", "0.0", ""
+    "tr_o1", "real", "0.0", ""
     "tr_o2", "real", "0.0", ""
 Source code
 +++++++++++

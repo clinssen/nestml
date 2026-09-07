@@ -1141,9 +1141,9 @@ for any :math:`\Delta t > 0`. In NESTML, the sifting property can be expressed b
        V_m' = -V_m / tau_m + I_syn / C_m
 
    onReceive(spikes):
-       I_syn += spikes * pA * s
+       I_syn += unit_psc * spikes * 1 s
 
-Note that in this example, the intended physical unit (pA) was assigned by multiplying the type of the input port ``spikes`` (which is 1/s) by pA·s, resulting in a unit of pA for ``I_syn``.
+Note that in this example, the intended physical unit (pA) was assigned by multiplying the type of the input port ``spikes`` (which is 1/s) by ``unit_psc``, which is in pA, and by seconds (s), resulting in an overall unit of pA for ``I_syn``.
 
 To specify in which sequence the event handlers should be called in case multiple events are received at the exact same time, the ``priority`` parameter can be used, which can be given an integer value, where a larger value means higher priority (handled earlier). For example:
 
