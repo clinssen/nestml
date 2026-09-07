@@ -11,7 +11,7 @@ Experiments have shown that synaptic strength changes as a function of the preci
 
 .. figure:: https://raw.githubusercontent.com/nest/nestml/main/doc/fig/Asymmetric-STDP-learning-window-Spike-timing-window-of-STDP-for-the-induction-of.png
 
-   Asymmetric STDP learning window. Spike-timing window of STDP for the induction of synaptic potentiation and depression characterized in hippocampal cultures. Data points from Bi and Poo (1998), represent the relative change in the amplitude of EPSC after repetitive correlated activity of pre-post spike pairs. The potentiation window (right of the vertical axis) and depression window (left of the vertical axis) are fitted by an exponential function $A^\pm\exp(-|\Delta t|/\tau^\pm)$, with parameters $A^+ = 0.86$, $A^- = -0.25$, $\tau^+ = 19 \text{ms}$, and $\tau^- = 34 \text{ms}$. Adopted from Bi and Wang (2002).
+   Asymmetric STDP learning window. Spike-timing window of STDP for the induction of synaptic potentiation and depression characterized in hippocampal cultures. Data points from Bi and Poo (1998), represent the relative change in the amplitude of EPSC after repetitive correlated activity of pre-post spike pairs. The potentiation window (right of the vertical axis) and depression window (left of the vertical axis) are fitted by an exponential function :math:`A^\pm\exp(-|\Delta t|/\tau^\pm)`, with parameters :math:`A^+ = 0.86`, :math:`A^- = -0.25`, :math:`\tau^+ = 19 \text{ms}`, and :math:`\tau^- = 34 \text{ms}`. Adopted from Bi and Wang (2002).
 
 We will define the theoretical model following [3]_.
 
