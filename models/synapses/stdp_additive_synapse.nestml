@@ -71,7 +71,7 @@ model stdp_synapse:
         mu_minus real = 1           # weight dependence exponent for acausal updates
 
         Wmin real = 0. [[Wmin >= 0]]             # minimum absolute value of synaptic weight
-        Wmax real = 100. [[Wmax >= 0]]           # maximum absolute value of synaptic weight
+        Wmax real = 1000. [[Wmax >= 0]]           # maximum absolute value of synaptic weight
 
     equations:
         pre_trace' = -pre_trace / tau_tr_pre

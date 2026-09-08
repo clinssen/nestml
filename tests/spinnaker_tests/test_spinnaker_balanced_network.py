@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-#
-# test_spinnaker_balanced_network.py
-#
+
+# test_spinnaker_stdp_window.py
+
 # This file is part of NEST.
-#
+
 # Copyright (C) 2004 The NEST Initiative
-#
+
 # NEST is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
-#
+
 # NEST is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
+
 
 from fileinput import filename
 import os
@@ -50,7 +51,6 @@ from analyze_sample_profile import analyze_latest_profiles
 
 # Keep False until the built-in STDP implementation
 # is confirmed.
-use_builtin_stdp = True
 
 
 def compute_cv(spike_train):
@@ -317,6 +317,7 @@ def plot_raster(results):
         f"balanced_network_N{results['n_neurons']}_g{results['g']}_core{results['neurons_per_core']}_"
         f"implementation{results['implementation']}_{results['timestamp']}.pdf"
     )
+    plt.close("all")
 
 def plot_results(results):
 
@@ -360,24 +361,24 @@ class TestSpiNNakerBalancedNetwork:
 
 
 
-    def run_balanced_network(self, use_nestml_neuron, use_nestml_synapse):
+    def run_balanced_network(self, use_nestml_neuron, use_nestml_synapse, use_static_synapses: bool):
         from python_models8.neuron.implementations.stdp_synapse_nestml_impl import stdp_synapse_nestmlDynamics as stdp_synapse_nestml
         from python_models8.neuron.builds.iaf_psc_exp_neuron_nestml import iaf_psc_exp_neuron_nestml
 
-        t_sim = 1000    # total time to simulator for [ms]
+        t_sim = 2000    # total time to simulator for [ms]
         p_conn = .1    # connection probability
         rate_ext_input = 50.    # external input rate (eta parameter) [s⁻¹]
-        n_neurons = 50
+        n_neurons = 64
         n_exc = int(round(n_neurons * 0.8))
         n_inh = int(round(n_neurons * 0.2))
         g = 10.    # the ratio between excitation and inhibition
                 # try -10 for asynchronous irregular activity. Try -1 for population-wide activity bursts
-        neurons_per_core=16
+        neurons_per_core = 8
 
         #Setup
         p.setup(timestep=1.0)
-
-        p.set_number_of_neurons_per_core( p.SpikeSourcePoisson, 4)
+        p.reset()
+        p.set_number_of_neurons_per_core(p.SpikeSourcePoisson, 4)
 
         # Implementation name
         if use_nestml_neuron and use_nestml_synapse:
@@ -481,76 +482,85 @@ class TestSpiNNakerBalancedNetwork:
 
 
         # Exc and Inh Connections
-        delays_exc = RandomDistribution("normal_clipped", mu=1.5, sigma=0.75, low=1.0, high=1.6)
-        weights_exc = RandomDistribution("normal_clipped", mu=weight_exc, sigma=0.1, low=0.0, high=np.inf)
-        conn_exc = p.FixedProbabilityConnector(p_conn)
+        #delays_exc = RandomDistribution("normal_clipped", mu=1.5, sigma=0.75, low=1.0, high=1.6)
+        #weights_exc = RandomDistribution("normal_clipped", mu=weight_exc, sigma=0.1, low=0.0, high=np.inf)
+        delays_exc = 1.
+        weights_exc = weight_exc
+        #conn_exc = p.FixedProbabilityConnector(p_conn)
 
-        delays_inh = RandomDistribution("normal_clipped", mu=0.75, sigma=0.375, low=1.0, high=1.6)
-        weights_inh = RandomDistribution("normal_clipped", mu=abs(weight_inh), sigma=0.1, low=0, high=np.inf)
-        conn_inh = p.FixedProbabilityConnector(p_conn)
+        #delays_inh = RandomDistribution("normal_clipped", mu=0.75, sigma=0.375, low=1.0, high=1.6)
+        #weights_inh = RandomDistribution("normal_clipped", mu=abs(weight_inh), sigma=0.1, low=0, high=np.inf)
+        delays_inh = 1.
+        weights_inh = weight_inh
+        #conn_inh = p.FixedProbabilityConnector(p_conn)
 
         # STDP synapses
         if use_nestml_synapse:
-            stdp_ee = stdp_synapse_nestml(weight=weights_exc, delay=delays_exc)
-            stdp_ei = stdp_synapse_nestml(weight=weights_exc, delay=delays_exc)
-            stdp_ie = p.StaticSynapse(weight=weights_inh, delay=delays_inh)
-            stdp_ii = p.StaticSynapse(weight=weights_inh, delay=delays_inh)
+            stdp_ie = p.StaticSynapse(weight=np.abs(weights_inh), delay=delays_inh)
+            stdp_ii = p.StaticSynapse(weight=np.abs(weights_inh), delay=delays_inh)
+            if use_static_synapses:
+                stdp_ee = p.StaticSynapse(weight=weights_exc, delay=delays_exc)
+                stdp_ei = p.StaticSynapse(weight=weights_exc, delay=delays_exc)
+            else:
+                stdp_ee = stdp_synapse_nestml(weight=weights_exc, delay=delays_exc)
+                stdp_ei = stdp_synapse_nestml(weight=weights_exc, delay=delays_exc)
 
-            print("STDP VARIABLES:")
-            print(stdp_ee._nestml_model_variables)
+                print("STDP VARIABLES:")
+                print(stdp_ee._nestml_model_variables)
 
-            stdp_ee._nestml_model_variables["lambda"] = learning_rate
+                stdp_ee._nestml_model_variables["lambda"] = learning_rate
 
-            # for stdp_model in [stdp_ee, stdp_ei, stdp_ie, stdp_ii]:
-
-            #     stdp_model._nestml_model_variables["lambda"] = learning_rate
-            #     stdp_model._nestml_model_variables["tau_tr_pre"] = tau_pre_trace
-            #     stdp_model._nestml_model_variables["tau_tr_post"] = tau_post_trace
-            #     stdp_model._nestml_model_variables["Wmin"] = Wmin_exc
-            #     stdp_model._nestml_model_variables["Wmax"] = Wmax_exc
-            print("STDP lambda:", stdp_ee._nestml_model_variables["lambda"])
+                # for stdp_model in [stdp_ee, stdp_ei, stdp_ie, stdp_ii]:
+                #     stdp_model._nestml_model_variables["lambda"] = learning_rate
+                #     stdp_model._nestml_model_variables["tau_tr_pre"] = tau_pre_trace
+                #     stdp_model._nestml_model_variables["tau_tr_post"] = tau_post_trace
+                #     stdp_model._nestml_model_variables["Wmin"] = Wmin_exc
+                #     stdp_model._nestml_model_variables["Wmax"] = Wmax_exc
+                print("STDP lambda:", stdp_ee._nestml_model_variables["lambda"])
 
             # Recurrent projections
-            projection_ee=p.Projection(pop_exc, pop_exc, conn_exc, synapse_type=stdp_ee, receptor_type=receptor_name_exc)
-            projection_ei=p.Projection(pop_exc, pop_inh, conn_exc, synapse_type=stdp_ei, receptor_type=receptor_name_exc)
-            projection_ii=p.Projection(pop_inh, pop_inh, conn_inh, synapse_type=stdp_ii, receptor_type=receptor_name_inh)
-            projection_ie=p.Projection(pop_inh, pop_exc, conn_inh, synapse_type=stdp_ie, receptor_type=receptor_name_inh)
+            projection_ee=p.Projection(pop_exc, pop_exc, p.FixedProbabilityConnector(p_conn), synapse_type=stdp_ee, receptor_type=receptor_name_exc)
+            projection_ei=p.Projection(pop_exc, pop_inh, p.FixedProbabilityConnector(p_conn), synapse_type=stdp_ei, receptor_type=receptor_name_exc)
+            projection_ii=p.Projection(pop_inh, pop_inh, p.FixedProbabilityConnector(p_conn), synapse_type=stdp_ii, receptor_type=receptor_name_inh)
+            projection_ie=p.Projection(pop_inh, pop_exc, p.FixedProbabilityConnector(p_conn), synapse_type=stdp_ie, receptor_type=receptor_name_inh)
 
         else: 
-        # Built-in additive STDP
+            # Built-in additive STDP
+            if use_static_synapses:
+               synapse_exc = p.StaticSynapse(weight=weights_exc, delay=delays_exc)
+            else:
 
-            timing_rule = p.SpikePairRule(
-                tau_plus=tau_pre_trace,
-                tau_minus=tau_post_trace,
-                A_plus=learning_rate,
-                A_minus=learning_rate
-            )
+                timing_rule = p.SpikePairRule(
+                    tau_plus=tau_pre_trace,
+                    tau_minus=tau_post_trace,
+                    A_plus=learning_rate,
+                    A_minus=learning_rate
+                )
 
-            weight_rule_exc = p.AdditiveWeightDependence(
-                w_min=Wmin_exc,
-                w_max=Wmax_exc
-            )
+                weight_rule_exc = p.AdditiveWeightDependence(
+                    w_min=Wmin_exc,
+                    w_max=Wmax_exc
+                )
 
-            weight_rule_inh = p.AdditiveWeightDependence(
-                w_min=Wmin_inh,
-                w_max=Wmax_inh
-            )
-
-
-            synapse_exc = p.STDPMechanism(
-                timing_dependence=timing_rule,
-                weight_dependence=weight_rule_exc,
-                weight=weights_exc,
-                delay=delays_exc
-            )
-
-            synapse_inh = p.StaticSynapse(weight=weights_inh, delay=delays_inh)
+                weight_rule_inh = p.AdditiveWeightDependence(
+                    w_min=Wmin_inh,
+                    w_max=Wmax_inh
+                )
 
 
-            projection_ee=p.Projection(pop_exc, pop_exc, conn_exc, synapse_type=synapse_exc, receptor_type=receptor_name_exc)
-            projection_ei=p.Projection(pop_exc, pop_inh, conn_exc, synapse_type=synapse_exc, receptor_type=receptor_name_exc)
-            projection_ii=p.Projection(pop_inh, pop_inh, conn_inh, synapse_type=synapse_inh, receptor_type=receptor_name_inh)
-            projection_ie=p.Projection(pop_inh, pop_exc, conn_inh, synapse_type=synapse_inh, receptor_type=receptor_name_inh)
+                synapse_exc = p.STDPMechanism(
+                    timing_dependence=timing_rule,
+                    weight_dependence=weight_rule_exc,
+                    weight=weights_exc,
+                    delay=delays_exc
+                )
+
+            synapse_inh = p.StaticSynapse(weight=np.abs(weights_inh), delay=delays_inh)
+
+            projection_ee=p.Projection(pop_exc, pop_exc, p.FixedProbabilityConnector(p_conn), synapse_type=synapse_exc, receptor_type=receptor_name_exc)
+            projection_ei=p.Projection(pop_exc, pop_inh, p.FixedProbabilityConnector(p_conn), synapse_type=synapse_exc, receptor_type=receptor_name_exc)
+            projection_ii=p.Projection(pop_inh, pop_inh, p.FixedProbabilityConnector(p_conn), synapse_type=synapse_inh, receptor_type=receptor_name_inh)
+            projection_ie=p.Projection(pop_inh, pop_exc, p.FixedProbabilityConnector(p_conn), synapse_type=synapse_inh, receptor_type=receptor_name_inh)
 
 
 
@@ -567,9 +577,31 @@ class TestSpiNNakerBalancedNetwork:
         pop_inh.record("spikes")
         pop_exc.record("spikes")
 
+
+        w_ref = projection_ee.get("weight", format="float")
+
         start_time = time.perf_counter()
         p.run(t_sim)
         execution_time = time.perf_counter() - start_time
+
+        w_final = projection_ee.get("weight", format="float")    # get the weight at the end of the simulation
+        np.testing.assert_allclose(w_ref, w_final)
+
+
+        
+        """for i in range(10):
+            w_final = projection_ee.get("weight", format="float")    # get the weight at the end of the simulation
+
+
+            p.run(t_sim / 10)
+
+
+            #print("At i = " + str(i) + ":")
+            #print(np.unique(w_final))
+            np.testing.assert_allclose(w_ref, w_final)"""
+
+
+
 
         pop_exc_spikes = pop_exc.get_data("spikes")
         pop_inh_spikes = pop_inh.get_data("spikes")
@@ -642,75 +674,71 @@ class TestSpiNNakerBalancedNetwork:
         Run reference and NESTML, compare their results,
         save results and generate plots.
         """
+        use_static_synapses = False
+        experiments_to_run = ["reference", "nestml"]
+#        experiments_to_run = ["nestml", "reference"]
+        results = {}
 
-        # if use_builtin_stdp:
-        #     reference = self.run_balanced_network(
-        #         use_nestml_neuron=False,
-        #         use_nestml_synapse=False
-        #     )
-        
-        # else:
-        #     reference = None
+        for experiment in experiments_to_run:
+
+            if experiment == "reference":
+                results["reference"] = self.run_balanced_network(
+                    use_nestml_neuron=False,
+                    use_nestml_synapse=False,
+                    use_static_synapses=use_static_synapses)
+
+            elif experiment == "builtin_neuron_nestml_stdp":
+                results["builtin_neuron_nestml_stdp"] = self.run_balanced_network(
+                    use_nestml_neuron=False,
+                    use_nestml_synapse=True, 
+                    use_static_synapses=use_static_synapses
+                )
+
+            elif experiment == "nestml_neuron_builtin_stdp":
+                results["nestml_neuron_builtin_stdp"] = self.run_balanced_network(
+                        use_nestml_neuron=True,
+                        use_nestml_synapse=False, 
+                    use_static_synapses=use_static_synapses
+                    )
+
+            elif experiment == "nestml":
+                results["nestml"] = self.run_balanced_network(
+                    use_nestml_neuron=True,
+                    use_nestml_synapse=True, 
+                    use_static_synapses=use_static_synapses
+                )
 
 
-        builtin_neuron_nestml_stdp = self.run_balanced_network(
-            use_nestml_neuron=False,
-            use_nestml_synapse=False
-        )
-
-
-        # if use_builtin_stdp:
-        #     nestml_neuron_builtin_stdp = self.run_balanced_network(
-        #             use_nestml_neuron=True,
-        #             use_nestml_synapse=False
-        #         )
-        # else:
-        #     nestml_neuron_builtin_stdp = None
-
-
-        # nestml = self.run_balanced_network(
-        #     use_nestml_neuron=True,
-        #     use_nestml_synapse=True
-        # )
-
-        results = {
-            # "reference": reference,
-            "builtin_neuron_nestml_stdp": builtin_neuron_nestml_stdp,
-            # "nestml_neuron_builtin_stdp": nestml_neuron_builtin_stdp,
-            # "nestml": nestml
-        }
+        reference = results.get("reference")
 
         if reference is not None:
-
-            comparisons = compare_results(
-                reference,
-                results
-            )
+            comparisons = compare_results(reference, results)
         else:
             comparisons = {}
 
         print_results(results, comparisons)
-
         save_results_to_csv(results)
 
         if reference is not None:
 
-            save_comparisons_to_csv(
-                reference,
-                comparisons
-            )
+            save_comparisons_to_csv(reference, comparisons)
 
         plot_results(results)
 
+        analyze_latest_profiles()
+
         return results, comparisons
 
-    # Pytest
 
     def test_spinnaker_balanced_network(self):
 
         results, comparisons = self.run_experiment()
 
         # Basic checks
+
+        FIRING_RATE_ATOL = .4    # [spikes/s]
+        np.testing.assert_allclose(results["reference"]["exc_firing_rate"], results["nestml"]["exc_firing_rate"], rtol=0, atol=FIRING_RATE_ATOL)
+        np.testing.assert_allclose(results["reference"]["inh_firing_rate"], results["nestml"]["inh_firing_rate"], rtol=0, atol=FIRING_RATE_ATOL)
 
         for name, result in results.items():
 
@@ -736,3 +764,4 @@ class TestSpiNNakerBalancedNetwork:
                 assert comparison["exc_relative_difference"] < exc_rate_tolerance
                 assert comparison["inh_relative_difference"] < inh_rate_tolerance
                 assert comparison["cv_absolute_difference"] < cv_tolerance
+

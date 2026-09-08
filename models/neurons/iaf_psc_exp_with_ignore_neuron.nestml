@@ -93,6 +93,7 @@ model iaf_psc_exp_neuron:
 
     input:
         exc_spikes <- spike
+        inh_spikes <- spike
         ignore_spikes <- spike
         I_stim pA <- continuous
 
@@ -109,6 +110,9 @@ model iaf_psc_exp_neuron:
 
     onReceive(exc_spikes):
         I_syn_exc += unit_psc * exc_spikes * s
+
+    onReceive(inh_spikes):
+        I_syn_inh += unit_psc * inh_spikes * s
 
     onCondition(refr_t <= 0 ms and V_m >= V_th):
         # threshold crossing

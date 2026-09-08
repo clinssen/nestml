@@ -209,12 +209,17 @@ void on_receive_block_{{ blk.port_name }}(neuron_state_t *state, neuron_input_t 
 
 //log_info("[NESTML neuron] parameter->unit_psc = 0x%x\n", parameter->unit_psc);
 {% endif %}
-{#
+/*
+// XXX: TODO: hard-coded override!!!!!
 {%          filter indent(4, True) -%}
 {%-             include "directives_cpp/StmtsBody.jinja2" %}
 {%-         endfilter %}
-#}
+*/
+{%- if "exc" in blk.port_name %}
     state->I_syn_exc += input->inputs[EXC_SPIKES];
+{%- elif "inh" in blk.port_name %}
+    state->I_syn_inh += input->inputs[INH_SPIKES];
+{%- endif %}
 
 {% if "exc" in blk.port_name %}
 //log_info("[NESTML neuron] after update: state->I_syn_exc = %k\n", state->I_syn_exc);
@@ -233,7 +238,9 @@ static void neuron_impl_add_inputs(
     neuron_input_t *input = &neuron->input;
 
     // store the inputs for the next state update
-log_info("[NESTML neuron] neuron_impl_add_inputs, weight = 0x%x = %k\n", weights_this_timestep, weights_this_timestep);
+#ifdef DEBUG
+    log_info("[NESTML neuron] neuron_impl_add_inputs, weight = 0x%x = %k\n", weights_this_timestep, weights_this_timestep);
+#endif
     input->inputs[synapse_type_index] += weights_this_timestep;
 }
 
