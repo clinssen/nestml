@@ -56,17 +56,17 @@ Physical units
 
 A physical unit in NESTML can be either a base physical unit or a derived physical unit. The following table lists the seven base units as defined in `the SI standard <https://en.wikipedia.org/wiki/International_System_of_Units>`__.
 
-+-----------+--------+---------------------+
-| Name      | Symbol | Quantity            |
-|===========|========|=====================|
-| meter     | m      | length              |
-| kilogram  | kg     | mass                |
-| second    | s      | time                |
-| Ampère    | A      | electric current    |
-| Kelvin    | K      | temperature         |
-| mole      | mol    | amount of substance |
-| candela   | cd     | luminous intensity  |
-+-----------+--------+---------------------+
+========  ======  ===================
+Name      Symbol  Quantity
+========  ======  ===================
+meter     m       length
+kilogram  kg      mass
+second    s       time
+Ampère    A       electric current
+Kelvin    K       temperature
+mole      mol     amount of substance
+candela   cd      luminous intensity
+========  ======  ===================
 
 Any other physical unit can be expressed as a combination of these seven units. For this, the operators ``*`` (multiplication), ``/`` (division of real numbers), ``//`` (integer division), ``**`` (power) and ``()`` (parentheses) can be used (see below for examples).
 
