@@ -33,7 +33,7 @@ Internally, differential equations are analyzed by the associated `ODE-toolbox <
    :hidden:
    :maxdepth: 1
 
-   nestml_language/index
+   nestml_language
    installation
    running/index
    models_library/index
@@ -50,11 +50,12 @@ Internally, differential equations are analyzed by the associated `ODE-toolbox <
       :align: center
 
 
-Tutorials
-#########
+How to use NESTML
+#################
+
+For examples of how to use NESTML and NESTML models, see the :ref:`Tutorials` below. For further application hints, please also refer to the `NESTML unit tests <https://github.com/nest/nestml/tree/main/tests>`_ and the :ref:`Models library`.
 
 .. include:: tutorials/tutorials_list.rst
-
 
 .. include:: getting_help.rst
 
