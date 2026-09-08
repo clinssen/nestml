@@ -84,15 +84,15 @@ model izhikevich_neuron:
         unit_psp mV = 1 mV      # Unitary postsynaptic membrane potential
 
     input:
-        spikes <- spike
+        spike_in_port <- spike
         I_stim pA <- continuous
 
     output:
         spike
 
-    onReceive(spikes):
+    onReceive(spike_in_port):
         # Add synaptic input
-        V_m += unit_psp * get_weight(spikes, t)
+        V_m += unit_psp * get_weight(spike_in_port, t)
 
         # enforce lower bound of membrane potential
         V_m = max(V_min, V_m)
