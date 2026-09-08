@@ -98,4 +98,4 @@ class ASTOnReceiveBlock(ASTNode):
         if not isinstance(other, ASTOnReceiveBlock):
             return False
 
-        return self.get_stmts_body().equals(other.get_stmts_body()) and self.input_port.equals(other.input_port)
+        return self.get_stmts_body().equals(other.get_stmts_body()) and self.input_port_variable.equals(other.input_port_variable)

@@ -24,12 +24,12 @@ from typing import List
 import ntpath
 import re
 
-from pynestml.cocos.co_cos_manager import CoCosManager
 from pynestml.frontend.frontend_configuration import FrontendConfiguration
 from pynestml.generated.PyNestMLParserVisitor import PyNestMLParserVisitor
 from pynestml.meta_model.ast_expression import ASTExpression
 from pynestml.meta_model.ast_node_factory import ASTNodeFactory
 from pynestml.meta_model.ast_parameter import ASTParameter
+from pynestml.symbols.predefined_functions import PredefinedFunctions
 from pynestml.utils.ast_source_location import ASTSourceLocation
 from pynestml.utils.logger import Logger
 from pynestml.utils.port_signal_type import PortSignalType
@@ -309,7 +309,7 @@ class ASTBuilderVisitor(PyNestMLParserVisitor):
                 args.append(self.visit(arg))
         elif ctx.expression() is not None:
             args.append(self.visit(ctx.expression()))
-        if name.upper() == "SIFT":
+        if name.upper() == PredefinedFunctions.GET_WEIGHT:
             args[0].set_implicit_conversion_factor(1E3)    # XXX: TODO: the factor 1E3 should be removed; see https://github.com/nest/nestml/issues/984
 
         node = ASTNodeFactory.create_ast_function_call(callee_name=name, args=args,

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# replace_sift_with_buffer_transformer.py
+# replace_get_weight_with_buffer_transformer.py
 #
 # This file is part of NEST.
 #
@@ -40,14 +40,14 @@ from pynestml.transformers.transformer import Transformer
 from pynestml.visitors.ast_visitor import ASTVisitor
 
 
-class ReplaceSiftWithBufferTransformer(Transformer):
+class ReplaceGetWeightWithBufferTransformer(Transformer):
     r"""
     Replace occurrences of ``get_weight(spike_in_port, t)`` with ``spike_in_port`` for code generation.
     """
 
-    class SiftRewriterVisitor(ASTVisitor):
+    class GetWeightRewriterVisitor(ASTVisitor):
         def visit_function_call(self, node: ASTFunctionCall):
-            if node.get_name() == PredefinedFunctions.SIFT:
+            if node.get_name() == PredefinedFunctions.GET_WEIGHT:
                 parent = node.get_parent()
                 parent.function_call = None
                 parent.variable = node.args[0].variable
@@ -63,6 +63,6 @@ class ReplaceSiftWithBufferTransformer(Transformer):
                   metadata: Dict[str, Dict[str, Any]]) -> Iterable[ASTModel]:
 
         for model in models:
-            model.accept(self.SiftRewriterVisitor())
+            model.accept(self.GetWeightRewriterVisitor())
 
         return models
