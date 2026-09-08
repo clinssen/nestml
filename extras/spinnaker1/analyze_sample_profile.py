@@ -234,7 +234,6 @@ def plot_distribution(reference_cores, nestml_cores, profile_path):
 
     plt.figure(figsize=(8, 6))
     plt.boxplot([reference_values, nestml_values], tick_labels=["Reference", "NESTML"])
-    import pdb;pdb.set_trace()
     plt.ylabel("Mean active time [%]")
     plt.title("Distribution of Core Activity")
     plt.tight_layout()
