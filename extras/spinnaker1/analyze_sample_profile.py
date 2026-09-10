@@ -51,6 +51,16 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Enable grid lines globally for all plots
+plt.rcParams['axes.grid'] = True
+
+# Optional: Set grid aesthetic defaults (style, opacity, line width)
+plt.rcParams['grid.linestyle'] = '--'
+plt.rcParams['grid.alpha'] = 0.7
+plt.rcParams['grid.linewidth'] = 0.8
+
+
+
 
 REPORT_DIR = Path(__file__).resolve().parents[2] / "reports"
 PROFILE_NAME = "sample_profile.json"
