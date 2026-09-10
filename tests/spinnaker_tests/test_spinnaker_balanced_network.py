@@ -368,17 +368,18 @@ class TestSpiNNakerBalancedNetwork:
         t_sim = 2000    # total time to simulator for [ms]
         p_conn = .1    # connection probability
         rate_ext_input = 50.    # external input rate (eta parameter) [s⁻¹]
-        n_neurons = 64
+        n_neurons = 256
         n_exc = int(round(n_neurons * 0.8))
         n_inh = int(round(n_neurons * 0.2))
         g = 10.    # the ratio between excitation and inhibition
                 # try -10 for asynchronous irregular activity. Try -1 for population-wide activity bursts
-        neurons_per_core = 8
+        neurons_per_core = 16  # was: 8
+        poisson_generators_per_core = 16   # was: 4
 
         #Setup
         p.setup(timestep=1.0)
         p.reset()
-        p.set_number_of_neurons_per_core(p.SpikeSourcePoisson, 4)
+        p.set_number_of_neurons_per_core(p.SpikeSourcePoisson, poisson_generators_per_core)
 
         # Implementation name
         if use_nestml_neuron and use_nestml_synapse:
@@ -395,8 +396,7 @@ class TestSpiNNakerBalancedNetwork:
 
 
         if use_nestml_neuron:
-
-            neuron_model = iaf_psc_exp_neuron_nestml()
+            neuron_model_type = iaf_psc_exp_neuron_nestml
 
             receptor_name_exc = "exc_spikes"
             receptor_name_inh = "inh_spikes"
@@ -415,8 +415,7 @@ class TestSpiNNakerBalancedNetwork:
 
 
         else:
-
-            neuron_model = p.IF_curr_exp
+            neuron_model_type = p.IF_curr_exp
 
             receptor_name_exc = "excitatory"
             receptor_name_inh = "inhibitory"
@@ -432,6 +431,14 @@ class TestSpiNNakerBalancedNetwork:
                 "tau_syn_I": 2,
                 "tau_refrac": 2
             }
+
+        p.set_number_of_neurons_per_core(neuron_model_type, neurons_per_core)
+
+        if use_nestml_neuron:
+            neuron_model = iaf_psc_exp_neuron_nestml()
+        else:
+            neuron_model = p.IF_curr_exp
+
 
         # Inıtial Weights
         weight_exc = 1E3 * 0.5
@@ -462,7 +469,6 @@ class TestSpiNNakerBalancedNetwork:
 
 
 
-        # p.set_number_of_neurons_per_core(neuron_model, neurons_per_core)
 
     
         # excitatory and inhibitory populations
