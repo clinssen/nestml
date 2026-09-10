@@ -336,11 +336,11 @@ class TestSpiNNakerBalancedNetwork:
 
     @pytest.fixture(autouse=True,
                     scope="module")
-    
     def generate_code(self):
         codegen_opts = {"neuron_synapse_pairs": [{"neuron": "iaf_psc_exp_neuron",
                                                   "synapses": {"stdp_synapse": {"post_ports": ["post_spikes"]}}}],
-                        "weight_variable": {"stdp_synapse": "w"}}
+                        "weight_variable": {"stdp_synapse": "w"},
+                        "use_exp_luts": True}
 
         files = [
             os.path.join("models", "neurons", "iaf_psc_exp_with_ignore_neuron.nestml"),

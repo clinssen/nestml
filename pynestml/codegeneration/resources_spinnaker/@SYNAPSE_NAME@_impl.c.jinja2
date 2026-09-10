@@ -57,6 +57,14 @@ plasticity_weight_region_data_t *plasticity_weight_region_data;
 
 extern uint32_t skipped_synapses;
 
+{%- if use_exp_luts %}
+// exponential look-up tables
+{%-     for exp_lut in exp_luts %}
+static int16_lut *{{ exp_lut }};
+{%-     endfor %}
+{%- endif %}
+
+
 
 
 // plasticity multiply shift array, in DTCM

@@ -15,7 +15,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,6 +26,7 @@ except ImportError:
     # Fallback for Python 3.8 - 3.11
     from typing_extensions import override
 
+from pynestml.codegeneration.printers.expression_printer import ExpressionPrinter
 from pynestml.codegeneration.printers.function_call_printer import FunctionCallPrinter
 from pynestml.meta_model.ast_function_call import ASTFunctionCall
 from pynestml.symbols.predefined_functions import PredefinedFunctions
@@ -36,6 +37,11 @@ class SpinnakerCFunctionCallPrinter(FunctionCallPrinter):
     r"""
     Printer for ASTFunctionCall in C SpiNNaker API  syntax.
     """
+
+    @override
+    def __init__(self, expression_printer: ExpressionPrinter, use_exp_luts: bool = False):
+        super().__init__(expression_printer)
+        self.use_exp_luts = use_exp_luts
 
     @override
     def print_function_call(self, node: ASTFunctionCall) -> str:
@@ -115,7 +121,25 @@ class SpinnakerCFunctionCallPrinter(FunctionCallPrinter):
             return "MIN({!s}, {!s})"
 
         if function_name == PredefinedFunctions.EXP:
-            return "expk({!s})"
+            if self.use_exp_luts:
+                if len(function_call.get_args()) != 1:
+                    raise Exception("exp() should have exactly one argument!")
+
+                if not function_call.get_args()[0].get_binary_operator():
+                    raise Exception("exp() argument should be of the form -a/b!")
+
+                if not function_call.get_args()[0].get_binary_operator().is_div_op:
+                    raise Exception("exp() argument should be of the form -a/b!")
+
+                if not function_call.get_args()[0].get_lhs().unary_operator.is_unary_minus:
+                    raise Exception("exp() argument should be of the form -a/b!")
+
+                lhs = function_call.get_args()[0].get_lhs().get_expression()
+                lut_name = "lut_" + function_call.get_args()[0].get_rhs().get_variable().name
+
+                return "maths_lut_exponential_decay(" + self._expression_printer.print(lhs) + ", " + lut_name + ")"
+            else:
+                return "expk({!s})"
 
         if function_name == PredefinedFunctions.LN:
             return "logk({!s})"

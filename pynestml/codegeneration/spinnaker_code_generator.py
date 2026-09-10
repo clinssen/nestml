@@ -30,6 +30,7 @@ except ImportError:
 
 import copy
 import os
+import re
 
 from pynestml.codegeneration.code_generator import CodeGenerator
 from pynestml.codegeneration.code_generator_utils import CodeGeneratorUtils
@@ -69,6 +70,11 @@ from pynestml.visitors.ast_symbol_table_visitor import ASTSymbolTableVisitor
 
 
 class CustomNESTCodeGenerator(NESTCodeGenerator):
+    @override
+    def __init__(self, options: Optional[Mapping[str, Any]] = None):
+        self._default_options["use_exp_luts"] = False
+        super().__init__(options)
+
     def setup_printers(self, for_neuron: bool = True):
         self._constant_printer = ConstantPrinter()
 
@@ -80,15 +86,18 @@ class CustomNESTCodeGenerator(NESTCodeGenerator):
         else:
             # for synapse
             self._nest_variable_printer = SpinnakerSynapseCVariablePrinter(expression_printer=None, with_origin=True, with_vector_parameter=True)
-        self._nest_function_call_printer = SpinnakerCFunctionCallPrinter(None)
-        self._nest_function_call_printer_no_origin = SpinnakerCFunctionCallPrinter(None)
+
 
         if for_neuron:
+            self._nest_function_call_printer = SpinnakerCFunctionCallPrinter(None)
+            self._nest_function_call_printer_no_origin = SpinnakerCFunctionCallPrinter(None)
             self._printer = CppExpressionPrinter(
             simple_expression_printer=CSimpleExpressionPrinter(variable_printer=self._nest_variable_printer,
                                                                constant_printer=self._constant_printer,
                                                                function_call_printer=self._nest_function_call_printer))
         else:
+            self._nest_function_call_printer = SpinnakerCFunctionCallPrinter(None, use_exp_luts=self.get_option("use_exp_luts"))
+            self._nest_function_call_printer_no_origin = SpinnakerCFunctionCallPrinter(None, use_exp_luts=self.get_option("use_exp_luts"))
             self._printer = SpiNNakerCppExpressionPrinter(
             simple_expression_printer=CSimpleExpressionPrinter(variable_printer=self._nest_variable_printer,
                                                                constant_printer=self._constant_printer,
@@ -161,6 +170,18 @@ class CustomNESTCodeGenerator(NESTCodeGenerator):
         namespace["pre_header"] = metadata[astnode.name]["pre_header"]
         if "post_header" in metadata[astnode.name].keys():
             namespace["post_header"] = metadata[astnode.name]["post_header"]
+        namespace["use_exp_luts"] = self.get_option("use_exp_luts")
+
+
+        exp_exprs = list()
+        exp_exprs.append(list(metadata[metadata[astnode.name]["pre_header"].name]["analytic_solver"]["propagators"].values())[0])
+        exp_exprs.append(list(metadata[metadata[astnode.name]["post_header"].name]["analytic_solver"]["propagators"].values())[0])
+
+        exp_luts = list()
+        for exp_expr in exp_exprs:
+            exp_luts.append("lut_" + re.search(r"/([^)]+)\)", exp_expr).group(1))
+
+        namespace["exp_luts"] = exp_luts
 
         return namespace
 
@@ -202,21 +223,35 @@ class CustomPythonStandaloneCodeGenerator(PythonStandaloneCodeGenerator):
             self._nest_variable_printer = SpiNNakerPythonVariablePrinter(expression_printer=None, with_origin=False,
                                                             with_vector_parameter=True)
 
-        self._nest_function_call_printer = SpinnakerPythonFunctionCallPrinter(None)
-        self._nest_function_call_printer_no_origin = SpinnakerPythonFunctionCallPrinter(None)
 
-        self._printer = PythonExpressionPrinter(simple_expression_printer=SpinnakerPythonSimpleExpressionPrinter(
-            variable_printer=self._nest_variable_printer,
-            constant_printer=self._constant_printer,
-            function_call_printer=self._nest_function_call_printer))
-        self._nest_variable_printer._expression_printer = self._printer
-        self._nest_function_call_printer._expression_printer = self._printer
-        self._nest_printer = PythonStandalonePrinter(expression_printer=self._printer)
+
 
         if for_neuron:
+            self._nest_function_call_printer = SpinnakerPythonFunctionCallPrinter(None)
+            self._nest_function_call_printer_no_origin = SpinnakerPythonFunctionCallPrinter(None)
+
+            self._printer = PythonExpressionPrinter(simple_expression_printer=SpinnakerPythonSimpleExpressionPrinter(
+                variable_printer=self._nest_variable_printer,
+                constant_printer=self._constant_printer,
+                function_call_printer=self._nest_function_call_printer))
+            self._nest_variable_printer._expression_printer = self._printer
+            self._nest_function_call_printer._expression_printer = self._printer
+            self._nest_printer = PythonStandalonePrinter(expression_printer=self._printer)
+
             self._nest_variable_printer_no_origin = PythonVariablePrinter(None, with_origin=False,
                                                                       with_vector_parameter=False)
         else:
+            self._nest_function_call_printer = SpinnakerPythonFunctionCallPrinter(None)
+            self._nest_function_call_printer_no_origin = SpinnakerPythonFunctionCallPrinter(None)
+
+            self._printer = PythonExpressionPrinter(simple_expression_printer=SpinnakerPythonSimpleExpressionPrinter(
+                variable_printer=self._nest_variable_printer,
+                constant_printer=self._constant_printer,
+                function_call_printer=self._nest_function_call_printer))
+            self._nest_variable_printer._expression_printer = self._printer
+            self._nest_function_call_printer._expression_printer = self._printer
+            self._nest_printer = PythonStandalonePrinter(expression_printer=self._printer)
+
             self._nest_variable_printer_no_origin = SpiNNakerPythonVariablePrinter(None, with_origin=False,
                                                                       with_vector_parameter=False)
 
@@ -258,6 +293,7 @@ class SpiNNakerCodeGenerator(CodeGenerator):
     codegen_cpp: Optional[NESTCodeGenerator] = None
 
     _default_options = {
+        "use_exp_luts": False,
 
         "delay_variable": {},
         "weight_variable": {},
@@ -303,6 +339,7 @@ class SpiNNakerCodeGenerator(CodeGenerator):
         options_cpp["nest_version"] = "<not available>"
         options_cpp["templates"]["module_templates"] = self._options["templates"]["module_templates"]
         options_cpp["templates"]["path"] = self._options["templates"]["path"]
+        options_cpp["use_exp_luts"] = self._options["use_exp_luts"]
         self.codegen_cpp = CustomNESTCodeGenerator(options_cpp)
 
         options_py = copy.deepcopy(PythonStandaloneCodeGenerator._default_options)
