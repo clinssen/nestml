@@ -44,10 +44,10 @@ class TestSimulator:
         if "exc_spikes" in simulator.neurons[neuron].get_spiking_input_ports():
             simulator.connect(sg_exc, neuron, "exc_spikes", w=1000.)
             simulator.connect(sg_inh, neuron, "inh_spikes", w=4000.)
-        elif "spikes" in simulator.neurons[neuron].get_spiking_input_ports():
-            simulator.connect(sg_exc, neuron, "spike_in_port", w=1000.)
+        elif "input_spikes" in simulator.neurons[neuron].get_spiking_input_ports():
+            simulator.connect(sg_exc, neuron, "input_spikes", w=1000.)
 {%-     if not "izhikevich" in neuron.get_name() %}
-            simulator.connect(sg_inh, neuron, "spike_in_port", w=-4000.)
+            simulator.connect(sg_inh, neuron, "input_spikes", w=-4000.)
 {%-     endif %}
 {% endfor %}
 

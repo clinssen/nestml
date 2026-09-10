@@ -25,6 +25,7 @@ import copy
 import re
 import sympy
 
+from pynestml.codegeneration.nest_unit_converter import NESTUnitConverter
 from pynestml.codegeneration.printers.ast_printer import ASTPrinter
 from pynestml.codegeneration.printers.cpp_variable_printer import CppVariablePrinter
 from pynestml.codegeneration.printers.nestml_simple_expression_printer_units_as_factors import NESTMLSimpleExpressionPrinterUnitsAsFactors
@@ -2110,11 +2111,11 @@ class ASTUtils:
             for var_name, expr in solver_dict["initial_values"].items():
                 # overwrite is allowed because initial values might be repeated between numeric and analytic solver
                 if cls.variable_in_kernels(var_name, kernels):
-                    spike_in_port_name = var_name.split("__X__")[1]
-                    spike_in_port_name = spike_in_port_name.split("__d")[0]
-                    spike_in_port = ASTUtils.get_input_port_by_name(model.get_input_blocks(), spike_in_port_name)
+                    input_spikes_name = var_name.split("__X__")[1]
+                    input_spikes_name = input_spikes_name.split("__d")[0]
+                    input_spikes = ASTUtils.get_input_port_by_name(model.get_input_blocks(), input_spikes_name)
                     type_str = "real"
-                    if spike_in_port:
+                    if input_spikes:
                         differential_order: int = len(re.findall("__d", var_name))
                         if differential_order:
                             type_str = "(s**-" + str(differential_order) + ")"
@@ -2470,8 +2471,8 @@ class ASTUtils:
                 node.accept(visitor)
 
     @classmethod
-    def nestml_input_port_to_nest_rport(cls, astnode: ASTModel, spike_in_port: ASTInputPort):
-        return ASTUtils.nestml_spiking_input_port_to_nest_rport_dict(astnode)[spike_in_port]
+    def nestml_input_port_to_nest_rport(cls, astnode: ASTModel, input_spikes: ASTInputPort):
+        return ASTUtils.nestml_spiking_input_port_to_nest_rport_dict(astnode)[input_spikes]
 
     @classmethod
     def port_name_printer(cls, variable: ASTVariable) -> str:

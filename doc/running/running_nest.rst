@@ -462,11 +462,12 @@ For instance, if spikes arriving at the same port are handled differently accord
        unit_psc pA = 1 pA        # Unitary postsynaptic current amplitude
 
    input:
-       spike_in_port <- spike
+       input_spikes <- spike
 
-   onReceive(spike_in_port):
+   onReceive(input_spikes):
+       psc pA = unit_psc * get_weight(input_spikes, t)    # compute the magnitude of the postsynaptic response
+
        # route the incoming spike on the basis of the weight: less than zero means an inhibitory spike; greater than zero means an excitatory spike
-       psc pA = unit_psc * get_weight(spike_in_port, t)    # obtain the postsynaptic current by integrating area under the curve of the spike
        if psc > 0:
            I_syn_exc += psc
        else:
@@ -482,16 +483,16 @@ However, if two separate ports are used (and weights are subsequently processed 
        unit_psc pA = 1 pA        # Unitary postsynaptic current amplitude
 
    input:
-       spike_in_port_exc <- spike
-       spike_in_port_inh <- spike
+       input_spikes_exc <- spike
+       input_spikes_inh <- spike
 
-   onReceive(spike_in_port_exc):
-        I_syn_exc += unit_psc * get_weight(spike_in_port_exc, t)
+   onReceive(input_spikes_exc):
+        I_syn_exc += unit_psc * get_weight(input_spikes_exc, t)
 
-   onReceive(spike_in_port_inh):
-        I_syn_inh += unit_psc * get_weight(spike_in_port_inh, t)
+   onReceive(input_spikes_inh):
+        I_syn_inh += unit_psc * get_weight(input_spikes_inh, t)
 
-In this case, the ``linear_time_invariant_spiking_input_ports`` option can be used to specify that both ``spike_in_port_exc`` and ``spike_in_port_inh`` are LTI ports, for better runtime performance.
+In this case, the ``linear_time_invariant_spiking_input_ports`` option can be used to specify that both ``input_spikes_exc`` and ``input_spikes_inh`` are LTI ports, for better runtime performance.
 
 
 

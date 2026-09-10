@@ -1158,11 +1158,11 @@ inline void {{neuronName}}::get_status(DictionaryDatum&__d) const
   Dictionary __receptor_types;
 {%-     endif %}
 
-{%- for spike_in_port_name, rport in utils.nestml_spiking_input_port_to_nest_rport_dict(astnode).items() %}
+{%- for input_spikes_name, rport in utils.nestml_spiking_input_port_to_nest_rport_dict(astnode).items() %}
 {%-     set ns = namespace(rport=rport) %}
-{%-     set port = utils.get_input_port_by_name(astnode.get_input_blocks(), spike_in_port_name.split("__VEC_IDX__")[0]) %}
+{%-     set port = utils.get_input_port_by_name(astnode.get_input_blocks(), input_spikes_name.split("__VEC_IDX__")[0]) %}
 {%-     set port_symbol = astnode.get_scope().resolve_to_symbol(port.name, SymbolKind.VARIABLE) %}
-    {{ write_in_dictionary.WriteInDictionary("__receptor_types", "long", spike_in_port_name.upper(), rport, true) }}
+    {{ write_in_dictionary.WriteInDictionary("__receptor_types", "long", input_spikes_name.upper(), rport, true) }}
 {%- endfor %}
     {{ write_in_dictionary.WriteInDictionary("__d", "DictionaryDatum", "receptor_types", "__receptor_types", true) }}
 

@@ -50,7 +50,7 @@ class TestLinearTimeInvariantInputPortOptimisation:
         target_path = "nestmlmodule"
         logging_level = "DEBUG"
         suffix = "_nestml"
-        codegen_opts = {"linear_time_invariant_spiking_input_ports": ["spike_in_port"]}
+        codegen_opts = {"linear_time_invariant_spiking_input_ports": ["input_spikes"]}
 
         generate_nest_target(input_path, target_path,
                              module_name=TestLinearTimeInvariantInputPortOptimisation.module_name,

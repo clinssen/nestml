@@ -42,10 +42,10 @@ model fir_filter:
         h[N] real = 1.   # filter coefficients
 
     input:
-        spike_in_port <- spike
+        input_spikes <- spike
 
-    onReceive(spike_in_port):
-        spike_in_buffer += get_weight(spike_in_port, t)
+    onReceive(input_spikes):
+        spike_in_buffer += get_weight(input_spikes, t)
 
     update:
         # circular buffer for input spike count per timestep

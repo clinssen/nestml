@@ -42,7 +42,7 @@ from pynestml.visitors.ast_visitor import ASTVisitor
 
 class ReplaceGetWeightWithBufferTransformer(Transformer):
     r"""
-    Replace occurrences of ``get_weight(spike_in_port, t)`` with ``spike_in_port`` for code generation.
+    Replace occurrences of ``get_weight(input_spikes, t)`` with ``input_spikes`` for code generation.
     """
 
     class GetWeightRewriterVisitor(ASTVisitor):
