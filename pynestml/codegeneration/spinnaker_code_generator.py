@@ -172,7 +172,6 @@ class CustomNESTCodeGenerator(NESTCodeGenerator):
             namespace["post_header"] = metadata[astnode.name]["post_header"]
         namespace["use_exp_luts"] = self.get_option("use_exp_luts")
 
-
         exp_exprs = list()
         exp_exprs.append(list(metadata[metadata[astnode.name]["pre_header"].name]["analytic_solver"]["propagators"].values())[0])
         exp_exprs.append(list(metadata[metadata[astnode.name]["post_header"].name]["analytic_solver"]["propagators"].values())[0])
@@ -201,6 +200,11 @@ class CustomNESTCodeGenerator(NESTCodeGenerator):
         return namespace
 
 class CustomPythonStandaloneCodeGenerator(PythonStandaloneCodeGenerator):
+    @override
+    def __init__(self, options: Optional[Mapping[str, Any]] = None):
+        self._default_options["use_exp_luts"] = False
+        super().__init__(options)
+
     def _get_model_namespace(self, astnode: ASTModel, metadata: Dict[str, Dict[str, Any]]) -> Dict:
         namespace = super()._get_model_namespace(astnode, metadata)
         if "neuron" in astnode.name.split("__with_")[0]:
@@ -276,6 +280,18 @@ class CustomPythonStandaloneCodeGenerator(PythonStandaloneCodeGenerator):
     def _get_synapse_model_namespace(self, astnode: ASTModel, metadata: Dict[str, Dict[str, Any]]) -> Dict:
         namespace = super()._get_synapse_model_namespace(astnode, metadata)
         namespace["pre_header"] = metadata[astnode.name]["pre_header"]
+        namespace["use_exp_luts"] = self.get_option("use_exp_luts")
+
+        exp_exprs = list()
+        exp_exprs.append(list(metadata[metadata[astnode.name]["pre_header"].name]["analytic_solver"]["propagators"].values())[0])
+        exp_exprs.append(list(metadata[metadata[astnode.name]["post_header"].name]["analytic_solver"]["propagators"].values())[0])
+
+        exp_luts = list()
+        for exp_expr in exp_exprs:
+            exp_luts.append("lut_" + re.search(r"/([^)]+)\)", exp_expr).group(1))
+
+        namespace["exp_luts"] = exp_luts
+
         if "post_header" in metadata[astnode.name].keys():
             namespace["post_header"] = metadata[astnode.name]["post_header"]
 
@@ -352,6 +368,7 @@ class SpiNNakerCodeGenerator(CodeGenerator):
         options_py["nest_version"] = "<not available>"
         options_py["templates"]["module_templates"] = []
         options_py["templates"]["path"] = self._options["templates"]["path"]
+        options_py["use_exp_luts"] = self._options["use_exp_luts"]
 
         options_py["delay_variable"] = self._options["delay_variable"]
         options_py["weight_variable"] = self._options["weight_variable"]

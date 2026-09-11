@@ -74,6 +74,8 @@ from spynnaker.pyNN.models.neuron.synapse_dynamics.abstract_generate_on_machine 
 from spynnaker.pyNN.models.neuron.synapse_dynamics.synapse_dynamics_neuromodulation import SynapseDynamicsNeuromodulation
 from spynnaker.pyNN.models.neuron.synapse_dynamics.synapse_dynamics_weight_changable import SynapseDynamicsWeightChangable
 from spynnaker.pyNN.models.neuron.synapse_dynamics.synapse_dynamics_weight_changer import SynapseDynamicsWeightChanger
+from spynnaker.pyNN.models.neuron.plasticity.stdp.common import get_exp_lut_array
+
 
 if TYPE_CHECKING:
     from spynnaker.pyNN.models.neural_projections import (
@@ -203,6 +205,17 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
         if self.__dendritic_delay_fraction != 1.0:
             raise NotImplementedError("All delays must be dendritic!")
 
+{%- if use_exp_luts %}
+        # exponential look-up tables
+        ts = SpynnakerDataView.get_simulation_time_step_ms()
+
+{%-     for exp_lut in exp_luts %}
+        print("Creating exp look-up table for variable {{ exp_lut.removeprefix("lut_").split("__for__")[0] }} with time constant: " + str(self._nestml_model_variables["{{ exp_lut.removeprefix("lut_").split("__for__")[0] }}"]))
+        self.__{{ exp_lut }} = get_exp_lut_array(ts, self._nestml_model_variables["{{ exp_lut.removeprefix("lut_").split("__for__")[0] }}"])
+{%-     endfor %}
+{%- endif %}
+
+
     @overrides(AbstractPlasticSynapseDynamics.merge)
     def merge(self, synapse_dynamics: AbstractSynapseDynamics) -> AbstractSynapseDynamics:
         print("[NESTML synapse] trying to merge with: " + str(type(synapse_dynamics)))
@@ -312,6 +325,12 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
         if self.__neuromodulation:
             raise NotImplementedError
 
+{%- if use_exp_luts %}
+        # exponential look-up tables
+{%-     for exp_lut in exp_luts %}
+        size += len(self.__{{ exp_lut }})    # XXX: why no BYTES_PER_SHORT?
+{%-     endfor %}
+{%- endif %}
         print("[NESTML synapse] get_parameters_sdram_usage_in_bytes(n_neurons = " + str(n_neurons) + ", n_synapse_types = " + str(n_synapse_types) + ") = " + str(size) + " bytes")
 
         return size
@@ -336,6 +355,14 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
                 data=float_to_s16_15(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]),
                 data_type=DataType.INT32)
 {%- endfor %}
+
+{%- if use_exp_luts %}
+        # exponential look-up tables
+{%-     for exp_lut in exp_luts %}
+        spec.write_array(self.__{{ exp_lut }})
+{%-     endfor %}
+{%- endif %}
+
 
     @overrides(AbstractPlasticSynapseDynamics.get_n_words_for_plastic_connections)
     def get_n_words_for_plastic_connections(self, n_connections: int) -> int:
