@@ -215,7 +215,7 @@ endif ()
 # Get, if NEST is build as a (mostly) static application. If yes, also only build
 # static library.
 execute_process(
-    COMMAND ${NEST_CONFIG} --static-libraries
+    COMMAND ${NEST_CONFIG} --static-linking
     RESULT_VARIABLE RES_VAR
     OUTPUT_VARIABLE NEST_STATIC_LIB
     OUTPUT_STRIP_TRAILING_WHITESPACE
