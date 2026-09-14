@@ -328,7 +328,7 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
 {%- if use_exp_luts %}
         # exponential look-up tables
 {%-     for exp_lut in exp_luts %}
-        size += len(self.__{{ exp_lut }})    # XXX: why no BYTES_PER_SHORT?
+        size += BYTES_PER_WORD * len(self.__{{ exp_lut }})  # length will be returned by counting the number of uint32 words
 {%-     endfor %}
 {%- endif %}
         print("[NESTML synapse] get_parameters_sdram_usage_in_bytes(n_neurons = " + str(n_neurons) + ", n_synapse_types = " + str(n_synapse_types) + ") = " + str(size) + " bytes")
