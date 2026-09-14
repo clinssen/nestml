@@ -44,7 +44,7 @@ along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 #include "{{ synapseName }}_impl.h"
 
 // uncomment the next line to enable printing of detailed debug information
-//#define DEBUG
+#define DEBUG
 
 // uncomment the next line to enable printing of very detailed debug information (could overflow ITCM)
 //#define PLOT_DETAILED_STATE
@@ -163,7 +163,7 @@ bool synapse_dynamics_initialise(
         return false;
     }
 
-    for (uint32_t s = 0; s < 1; s++, config++) {  // XXX: only permit one synapse type for now
+    for (uint32_t s = 0; s < n_synapse_types; s++, config++) {
 {%- for sym in synapse.get_parameter_symbols() + synapse.get_internal_symbols() %}
 {%-     if (not sym.name == "__h") and (not sym.name.startswith("__P")) %}
         plasticity_weight_region_data[s].{{ sym.get_symbol_name() }} = config->{{ sym.get_symbol_name() }};
@@ -174,13 +174,29 @@ bool synapse_dynamics_initialise(
 {%- endfor %}
     }
 
+    log_info("[NESTML synapse] starting LUT copy\n");
 {%- if use_exp_luts %}
 // exponential look-up tables
+//  address_t lut_address = &config[1];
   address_t lut_address = config;
+
+
+    int16_lut *sdram_lut;
+    uint32_t size;
+
+
 {%-     for exp_lut in exp_luts %}
+
+    sdram_lut = (int16_lut *) *address;
+    size = sizeof(int16_lut) + (sdram_lut->size * sizeof(int16_t));
+    log_info("[NESTML synapse] lut_address = %x, size = %u\n", lut_address, size);
+
+
+
   {{ exp_lut }} = maths_copy_int16_lut(&lut_address);
 {%-     endfor %}
 {%- endif %}
+    log_info("[NESTML synapse] LUT copy done\n");
 
 
     post_event_history = post_events_init_buffers(n_neurons);
@@ -302,10 +318,6 @@ static void post_spike_on_receive(synapse_state_t *state, uint32_t time, synapse
 {%-     endfor %}
 {%- endif %}
 
-#ifdef DEBUG
-    log_info("[NESTML synapse] \tpre_trace__for__stdp_synapse_nestml__tmp = %k\n", pre_trace__for__stdp_synapse_nestml__tmp);
-#endif
-
 {%- filter indent(4, True) %}
 {%- if spiking_post_ports is defined %}
 
@@ -376,7 +388,6 @@ static void process_plastic_synapse(synapse_row_plastic_data_t *plastic_region_a
 
 #ifdef DEBUG
     log_info("[NESTML synapse] In process_plastic_synapse(time = %d, last_pre_time = %d, dendritic_delay = %x)", pre_spike_time, last_pre_time, s.delay_dendritic);
-    log_info("[NESTML synapse] \tpre_trace__for__stdp_synapse_nestml__tmp = %k = 0x%x\n", pre_trace__for__stdp_synapse_nestml__tmp, pre_trace__for__stdp_synapse_nestml__tmp);
 #endif
 
     uint32_t post_delay = s.delay_dendritic;
