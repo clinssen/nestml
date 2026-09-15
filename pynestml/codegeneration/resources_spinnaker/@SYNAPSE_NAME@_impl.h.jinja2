@@ -79,9 +79,11 @@ along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
+#define TYPECAST_TO_ACCUM(x)    ((accum)(x))
+#define TYPECAST_TO_UINT32_T(x) ((uint32_t)(x))
 
-#define TYPECAST_TO_ACCUM(x) *((accum*)(&(x)))
-#define TYPECAST_TO_UINT32_T(x) *((uint32_t*)(&(x)))
+#define TYPECAST_TO_ACCUM_ALT(x) *((accum*)(&(x)))
+#define TYPECAST_TO_UINT32_T_ALT(x) *((uint32_t*)(&(x)))
 
 
 
@@ -206,7 +208,7 @@ static inline synapse_state_t synapse_structure_get_update_state(
     update_state.weight_region = &plasticity_weight_region_data[synapse_type];
 
 {%- for sym in synapse.get_state_symbols() %}
-    update_state.{{ sym.get_symbol_name() }} = TYPECAST_TO_ACCUM(synaptic_word.{{ sym.get_symbol_name() }});
+    update_state.{{ sym.get_symbol_name() }} = TYPECAST_TO_ACCUM_ALT(synaptic_word.{{ sym.get_symbol_name() }});
 //    log_info("[NESTML synapse] \t{{ sym.get_symbol_name() }} = %k (raw: 0x%x)\n", synaptic_word.{{ sym.get_symbol_name() }}, update_state.{{ sym.get_symbol_name() }});
 //    log_info("[NESTML synapse] \t{{ sym.get_symbol_name() }} = %k (raw: 0x%x)\n", update_state.{{ sym.get_symbol_name() }}, synaptic_word.{{ sym.get_symbol_name() }});
 {%- endfor %}
@@ -308,7 +310,7 @@ static uint32_t plastic_saturation_count = 0;
 synapse_state_t synapse_word_to_state_t(const synapse_word_t const *synapse_word, const size_t synapse_word_len) {
     return (synapse_state_t) {
 {%- for sym in synapse.get_state_symbols() %}
-       .{{ sym.get_symbol_name() }} = TYPECAST_TO_ACCUM(synapse_word->{{ sym.get_symbol_name() }}),    // use the typecast to copy bit-for-bit. If we don't do this, the compiler will do a data conversion, discarding and shifting the fractional bits.
+       .{{ sym.get_symbol_name() }} = TYPECAST_TO_ACCUM_ALT(synapse_word->{{ sym.get_symbol_name() }}),    // use the typecast to copy bit-for-bit. If we don't do this, the compiler will do a data conversion, discarding and shifting the fractional bits.
 {%- endfor %}
        .weight_region = NULL
     };
@@ -317,7 +319,7 @@ synapse_state_t synapse_word_to_state_t(const synapse_word_t const *synapse_word
 
 void state_t_to_synapse_word(const synapse_state_t *state, synapse_word_t *synapse_word, const size_t synapse_word_len) {
 {%- for sym in synapse.get_state_symbols() %}
-    synapse_word->{{ sym.get_symbol_name() }} = TYPECAST_TO_UINT32_T(state->{{ sym.get_symbol_name() }});    // use the typecast to copy bit-for-bit. If we don't do this, the compiler will do a data conversion, discarding and shifting the fractional bits.
+    synapse_word->{{ sym.get_symbol_name() }} = TYPECAST_TO_UINT32_T_ALT(state->{{ sym.get_symbol_name() }});    // use the typecast to copy bit-for-bit. If we don't do this, the compiler will do a data conversion, discarding and shifting the fractional bits.
 //    log_info("[NESTML synapse] ~~~~~~~~~~~~~ assigning 0x%x to 0x%x", state->{{ sym.get_symbol_name() }}, synapse_word->{{ sym.get_symbol_name() }});
 {%- endfor %}
 }

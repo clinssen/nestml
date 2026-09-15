@@ -137,7 +137,7 @@ class SpinnakerCFunctionCallPrinter(FunctionCallPrinter):
                 lhs = function_call.get_args()[0].get_lhs().get_expression()
                 lut_name = "lut_" + function_call.get_args()[0].get_rhs().get_variable().name
 
-                return "maths_lut_exponential_decay(" + self._expression_printer.print(lhs) + ", " + lut_name + ")"
+                return "(TYPECAST_TO_ACCUM(maths_lut_exponential_decay(" + self._expression_printer.print(lhs) + ", " + lut_name + ")) >> 11)"
             else:
                 return "expk({!s})"
 

@@ -411,7 +411,6 @@ class SpiNNakerCodeGenerator(CodeGenerator):
                     ASTUtils.add_declarations_to_internals(model, metadata[model.name]["analytic_solver"]["propagators"])
 
                     for var_name, update_expr_ast in metadata[model.name]["analytic_solver"]["update_expressions_ast"].items():
-                        print("XXXXXXX update expr = " + str(update_expr_ast))
                         update_expr_ast.update_scope(model.get_scope())
                         update_expr_ast.accept(ASTSymbolTableVisitor())
 

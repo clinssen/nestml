@@ -74,8 +74,9 @@ from spynnaker.pyNN.models.neuron.synapse_dynamics.abstract_generate_on_machine 
 from spynnaker.pyNN.models.neuron.synapse_dynamics.synapse_dynamics_neuromodulation import SynapseDynamicsNeuromodulation
 from spynnaker.pyNN.models.neuron.synapse_dynamics.synapse_dynamics_weight_changable import SynapseDynamicsWeightChangable
 from spynnaker.pyNN.models.neuron.synapse_dynamics.synapse_dynamics_weight_changer import SynapseDynamicsWeightChanger
+{%- if use_exp_luts %}
 from spynnaker.pyNN.models.neuron.plasticity.stdp.common import get_exp_lut_array
-
+{%- endif %}
 
 if TYPE_CHECKING:
     from spynnaker.pyNN.models.neural_projections import (
@@ -348,18 +349,22 @@ class {{ synapseName }}Dynamics(AbstractPlasticSynapseDynamics):
         # Switch focus to the region:
         spec.switch_write_focus(region)
 
+        for syn_type_idx in range(len(synapse_weight_scales)):
 {%- for sym in synapse.get_parameter_symbols() + synapse.get_internal_symbols() %}
+{%-     if sym.get_symbol_name() != "__h" %}
         # write value for parameter "{{ sym.get_symbol_name() }}"
-        print("[NESTML synapse] writing value for parameter {{ sym.get_symbol_name() }}: " + str(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]) + " ==== encoded --> " + str(hex(float_to_s16_15(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]))))
-        spec.write_value(
-                data=float_to_s16_15(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]),
-                data_type=DataType.INT32)
+            print("[NESTML synapse] synapse type = " + str(syn_type_idx) + ": writing value for parameter {{ sym.get_symbol_name() }}: " + str(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]) + " ==== encoded --> " + str(hex(float_to_s16_15(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]))))
+            spec.write_value(
+                    data=float_to_s16_15(self._nestml_model_variables["{{ sym.get_symbol_name() }}"]),
+                    data_type=DataType.INT32)
+{%-     endif %}
 {%- endfor %}
 
 {%- if use_exp_luts %}
         # exponential look-up tables
 {%-     for exp_lut in exp_luts %}
         spec.write_array(self.__{{ exp_lut }})
+        print("[NESTML synapse] writing LUT: " + str(self.__{{ exp_lut }}))
 {%-     endfor %}
 {%- endif %}
 

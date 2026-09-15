@@ -44,7 +44,7 @@ along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 #include "{{ synapseName }}_impl.h"
 
 // uncomment the next line to enable printing of detailed debug information
-#define DEBUG
+//#define DEBUG
 
 // uncomment the next line to enable printing of very detailed debug information (could overflow ITCM)
 //#define PLOT_DETAILED_STATE
@@ -158,7 +158,7 @@ bool synapse_dynamics_initialise(
     plasticity_weight_region_data_t *config = (plasticity_weight_region_data_t*)address;
     plasticity_weight_region_data = spin1_malloc(sizeof(plasticity_weight_region_data_t) * n_synapse_types);
 
-    if (plasticity_weight_region_data == NULL) {
+  if (plasticity_weight_region_data == NULL) {
         log_error("Could not initialise weight region data");
         return false;
     }
@@ -168,18 +168,16 @@ bool synapse_dynamics_initialise(
 {%-     if (not sym.name == "__h") and (not sym.name.startswith("__P")) %}
         plasticity_weight_region_data[s].{{ sym.get_symbol_name() }} = config->{{ sym.get_symbol_name() }};
 #ifdef DEBUG
-//        log_info("\t[NESTML synapse] \tSynapse type %u: Parameter {{ sym.get_symbol_name() }}, Raw value: %x, Value: %k", s, plasticity_weight_region_data[s].{{ sym.get_symbol_name() }}, plasticity_weight_region_data[s].{{ sym.get_symbol_name() }});
+        log_info("\t[NESTML synapse] \tSynapse type %u: Parameter {{ sym.get_symbol_name() }}, Raw value: %x, Value: %k", s, plasticity_weight_region_data[s].{{ sym.get_symbol_name() }}, plasticity_weight_region_data[s].{{ sym.get_symbol_name() }});
 #endif
 {%-     endif %}
 {%- endfor %}
-    }
+  }
 
-    log_info("[NESTML synapse] starting LUT copy\n");
 {%- if use_exp_luts %}
 // exponential look-up tables
-//  address_t lut_address = &config[1];
-  address_t lut_address = config;
-
+  address_t lut_address = (address_t)(config);
+// log_info("[NESTML synapse] lut_address2 = %x\n", lut_address);
 
     int16_lut *sdram_lut;
     uint32_t size;
@@ -187,16 +185,29 @@ bool synapse_dynamics_initialise(
 
 {%-     for exp_lut in exp_luts %}
 
-    sdram_lut = (int16_lut *) *address;
+//    sdram_lut = (int16_lut *) lut_address;
+//    sdram_lut = (int16_lut *)(config + 1);
+    sdram_lut = (int16_lut *)(config);
+//log_info("[NESTML synapse] lut_address3 = %x\n", sdram_lut);
     size = sizeof(int16_lut) + (sdram_lut->size * sizeof(int16_t));
-    log_info("[NESTML synapse] lut_address = %x, size = %u\n", lut_address, size);
+  //  log_info("[NESTML synapse] lut_address = %x, raw size = %u\n", lut_address, sdram_lut->size);
+    //log_info("[NESTML synapse] lut_address = %x, raw shift = %u\n", lut_address, sdram_lut->shift);
+    //log_info("[NESTML synapse] lut_address = %x, size = %u\n", lut_address, size);
 
+/*
+for (uint32_t foo = 0; foo < sdram_lut->size; ++foo) {
+ if (foo > 78) break;
+    const uint32_t lut_value = *(((uint32_t*)lut_address) + foo);
+    log_info("[NESTML synapse]       lut_address = %u, value = 0x%x\n", foo, lut_value);
+}
+*/
 
 
   {{ exp_lut }} = maths_copy_int16_lut(&lut_address);
+//{{ exp_lut }} = NULL;
 {%-     endfor %}
+   // log_info("[NESTML synapse] LUT copy done\n");
 {%- endif %}
-    log_info("[NESTML synapse] LUT copy done\n");
 
 
     post_event_history = post_events_init_buffers(n_neurons);
@@ -303,6 +314,12 @@ static void post_spike_on_receive(synapse_state_t *state, uint32_t time, synapse
     log_info("[NESTML synapse] \theader.pre_trace__for__stdp_synapse_nestml = %k\n", plastic_region_address->history.pre_trace__for__stdp_synapse_nestml);
     log_info("[NESTML synapse] \t__h = %k\n", __h);
 #endif
+
+{%- if use_exp_luts %}
+//log_info("[NESTML synapse] getting value from LUT: %u\n", maths_lut_exponential_decay(__h, lut_tau_tr_pre__for__stdp_synapse_nestml));
+//log_info("[NESTML synapse] getting value from LUT: %k\n", TYPECAST_TO_ACCUM(maths_lut_exponential_decay(__h, lut_tau_tr_pre__for__stdp_synapse_nestml)) >> 11);
+//log_info("[NESTML synapse] getting value from LUT: %k\n", expk(_kdivk(-__h, plasticity_weight_region_data->tau_tr_pre)));
+{%- endif %}
 
 {%-     for sym in metadata[synapse.name]["pre_header"].get_internal_symbols() %}
 {%-         if sym.get_symbol_name().startswith("__P") %}
@@ -540,7 +557,7 @@ log_info("[NESTML synapse] \t\tplastic_region_address->history.pre_trace__for__s
 	**/
 
 	if (s.delay_axonal + s.delay_dendritic > colour_delay) {
-	    int32_t weight = TYPECAST_TO_UINT32_T(state.w);   // XXX: TODO: the variable name ``w`` is hard-coded here
+	    int32_t weight = TYPECAST_TO_UINT32_T_ALT(state.w);   // XXX: TODO: the variable name ``w`` is hard-coded here
 	    synapse_dynamics_stdp_update_ring_buffers(ring_buffers, s, weight >> weight_shift[s.type]);
 #ifdef DEBUG
         log_info("[NESTML synapse] \tadding weight to ring-buffer entry; weight_shift = %x, weight = 0x%x", weight_shift[s.type], weight);
