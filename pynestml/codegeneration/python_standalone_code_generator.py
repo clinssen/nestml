@@ -19,12 +19,14 @@
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional
 
 from pynestml.codegeneration.printers.constant_printer import ConstantPrinter
 from pynestml.codegeneration.printers.python_expression_printer import PythonExpressionPrinter
 from pynestml.codegeneration.printers.python_stepping_function_function_call_printer import PythonSteppingFunctionFunctionCallPrinter
 from pynestml.codegeneration.printers.python_stepping_function_variable_printer import PythonSteppingFunctionVariablePrinter
+from astropy import units as u
+
 from pynestml.codegeneration.python_code_generator_utils import PythonCodeGeneratorUtils
 from pynestml.meta_model.ast_model import ASTModel
 from pynestml.codegeneration.nest_code_generator import NESTCodeGenerator
@@ -51,6 +53,11 @@ class PythonStandaloneCodeGenerator(NESTCodeGenerator):
             - **neuron**: A list of neuron model jinja templates.
         - **module_templates**: A list of the jinja templates or a relative path to a directory containing the templates related to generating the module/package.
     - **solver**: A string identifying the preferred ODE solver. ``"analytic"`` for propagator solver preferred; fallback to numeric solver in case ODEs are not analytically solvable. Use ``"numeric"`` to disable analytic solver.
+    - **numeric_solver**: The numeric solver to use. Currently, only ``"rk45"`` (``scipy.integrate.solve_ivp()`` with method ``"RK45"``) is supported.
+    - **numeric_solver_rtol**: Relative error tolerance for the numeric solver (passed to ``scipy.integrate.solve_ivp()`` as ``rtol``).
+    - **numeric_solver_atol**: Absolute error tolerance for the numeric solver (passed to ``scipy.integrate.solve_ivp()`` as ``atol``). As all quantities are expressed in SI units, the default is chosen to be very small, so that it is well below typical magnitudes of, for instance, currents (pA, i.e. 1E-12 A) and conductances (nS, i.e. 1E-9 S).
+
+    All quantities are expressed in SI units in the generated code (see ``resources_python_standalone/unit_system.json``); in particular, the simulation timestep and all times are in seconds.
     """
 
     _default_options = {
@@ -66,6 +73,8 @@ class PythonStandaloneCodeGenerator(NESTCodeGenerator):
         },
         "solver": "analytic",
         "numeric_solver": "rk45",
+        "numeric_solver_rtol": 1E-3,
+        "numeric_solver_atol": 1E-18,
         "neuron_synapse_pairs": [],
         "weight_variable": {}
     }
@@ -117,9 +126,26 @@ class PythonStandaloneCodeGenerator(NESTCodeGenerator):
         self._gsl_function_call_printer._expression_printer = self._gsl_printer
         self._gsl_variable_printer._expression_printer = self._gsl_printer
 
+    def _get_module_namespace(self, neurons: List[ASTModel], synapses: List[ASTModel], metadata: Dict[str, Dict[str, Any]]) -> Dict:
+        namespace = super()._get_module_namespace(neurons, synapses, metadata)
+
+        # the unit of time used in the generated code (seconds, unless a different unit system was selected)
+        time_unit = u.s
+        for model in list(neurons) + list(synapses):
+            if model.get_name() in metadata.keys() and "unit_system" in metadata[model.get_name()].keys():
+                time_unit = metadata[model.get_name()]["unit_system"].get_time_unit()
+                break
+
+        namespace["time_unit"] = time_unit.to_string()
+        namespace["seconds_to_time_unit"] = u.s.to(time_unit)
+
+        return namespace
+
     def _get_model_namespace(self, astnode: ASTModel, metadata: Dict[str, Dict[str, Any]]) -> Dict:
         namespace = super()._get_model_namespace(astnode, metadata)
         namespace["python_codegen_utils"] = PythonCodeGeneratorUtils
         namespace["gsl_printer"] = self._gsl_printer
+        namespace["numeric_solver_rtol"] = self.get_option("numeric_solver_rtol")
+        namespace["numeric_solver_atol"] = self.get_option("numeric_solver_atol")
 
         return namespace

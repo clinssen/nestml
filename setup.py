@@ -69,7 +69,8 @@ setup(
                                "codegeneration/resources_genn/*.jinja2",
                                "codegeneration/resources_genn/directives_cpp/*.jinja2",
                                "codegeneration/resources_nest_gpu/point_neuron/*.jinja2",
-                               "codegeneration/resources_nest_gpu/point_neuron/directives/*.jinja2"]},
+                               "codegeneration/resources_nest_gpu/point_neuron/directives/*.jinja2",
+                               "codegeneration/resources_*/unit_system.json"]},
     data_files=data_files,
     entry_points={
         "console_scripts": [

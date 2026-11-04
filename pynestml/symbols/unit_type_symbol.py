@@ -137,8 +137,8 @@ class UnitTypeSymbol(TypeSymbol):
 
     def attempt_magnitude_cast(self, other):
         if self.differs_only_in_magnitude(other):
+            # the units are mutually convertible, but require a factor unequal to 1 (e.g. mV and V). The factor will be inserted into the model by the NonDimensionalisationTransformer.
             factor = UnitTypeSymbol.get_conversion_factor(other.astropy_unit, self.astropy_unit)
-            other.referenced_object.set_implicit_conversion_factor(factor)
             code, message = Messages.get_implicit_magnitude_conversion(self, other, factor)
             Logger.log_message(code=code, message=message,
                                error_position=self.referenced_object.get_source_position(),

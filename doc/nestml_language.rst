@@ -245,6 +245,93 @@ or, equivalently
 both define the unit of :math:`\mathrm{ms}^{-1}\mathrm{mV}^{-1}`.
 
 
+Physical quantities
+~~~~~~~~~~~~~~~~~~~
+
+Instead of a physical unit, the data type of a variable, parameter, inline expression, continuous-time input port, or function parameter or return value can be given as a physical *quantity*, such as time, voltage or electrical conductance. This is the recommended way to declare dimensional variables, because the unit in which the value is ultimately expressed (for instance, millivolts or volts) is determined by the target platform (see :ref:`Physical units in generated code`), and not by the model. For example:
+
+.. code-block:: nestml
+
+   state:
+       V_m "electrical potential" = -70 mV
+       refr_t time = 0 ms
+
+   parameters:
+       g_L "electrical conductance" = 16.7 nS
+       firing_rate frequency = 10 Hz
+
+The names of quantities are those defined by astropy (see https://docs.astropy.org/en/stable/units/physical_types.html), for instance: ``time``, ``frequency``, ``"electrical potential"``, ``"electrical current"``, ``"electrical conductance"``, ``"electrical resistance"``, ``"electrical capacitance"``, ``"electrical charge"``, ``"amount of substance"``, ``temperature``, ``length`` and ``mass``. If the name of a quantity contains spaces, it has to be written in double quotation marks.
+
+Quantities can be combined in the same way as units, using the operators ``*``, ``/`` and ``**``, and parentheses:
+
+.. code-block:: nestml
+
+   parameters:
+       a 1 / time = 0.02 ms**-1
+       k "electrical capacitance" / "electrical potential" / time = 8 pF/mV/ms
+
+Quantities can only be used as data types. Numeric literals always need to be written with a unit (``-70 mV``, rather than ``-70 "electrical potential"``).
+
+For type checking, a quantity is equivalent to the SI unit of that quantity; for example, ``"electrical potential"`` is equivalent to ``V``. Declaring a variable with a unit (such as ``V_m mV = -70 mV``) remains supported. However, note that the prefix of the unit only determines the physical dimension of the variable, but not the unit in which its value is expressed in generated code; for that, see the next section.
+
+
+Physical units in generated code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before code is generated, all physical units are removed from the model by the ``NonDimensionalisationTransformer``. This transformer converts all values into real numbers, expressed in the units of the *unit system* of the selected target platform. For example, NEST Simulator expresses time in milliseconds, voltages in millivolts, currents in picoamperes and conductances in nanosiemens, whereas the Python-standalone target uses SI units (seconds, volts, amperes, siemens, and so on). All conversion factors that are needed to combine values with different units are inserted into the expressions of the model explicitly, as multiplications by real-valued constants, so that the generated code only deals with real numbers. For instance, with the NEST unit system,
+
+.. code-block:: nestml
+
+   parameters:
+       tau "time" = 0.01 s
+       I_e "electrical current" = 1 nA
+
+   update:
+       V_m += I_e * 1 GOhm
+
+becomes
+
+.. code-block:: nestml
+
+   parameters:
+       tau real = 10.0         # [ms]
+       I_e real = 1000.0       # [pA]
+
+   update:
+       V_m += I_e * 1.0        # [pA * GOhm = mV]
+
+The unit in which each variable is expressed in generated code is printed in comments in the generated code. In NEST Simulator, these are also the units in which parameters and state variables should be set and read via the PyNEST API.
+
+The unit system of each target platform is defined in a JSON file named ``unit_system.json`` in the resources directory of that target (for example, ``pynestml/codegeneration/resources_nest/unit_system.json``). It contains a mapping from quantity names to unit names, for instance:
+
+.. code-block:: json
+
+   {
+       "time": "ms",
+       "electrical potential": "mV",
+       "electrical current": "pA",
+       "electrical conductance": "nS",
+       "electrical capacitance": "pF",
+       "electrical resistance": "GOhm",
+       "frequency": "Hz",
+       "amount of substance": "mmol"
+   }
+
+Quantities that do not appear in the unit system are expressed by combining the units of the quantities in their definition, so that, for instance, a variable of type ``"electrical potential" / time`` is expressed in mV/ms in NEST Simulator. If no unit can be found in this way, the SI unit is used.
+
+A different unit system can be selected by passing the code generator option ``unit_system``, either as the path to a JSON file, or as a dictionary, for example:
+
+.. code-block:: python
+
+   generate_target(..., codegen_opts={"unit_system": {"time": "ms", "electrical potential": "mV"}})
+
+Time is handled like any other quantity. The unit system of a target platform specifies the unit of time used by the simulator: the values of the predefined variable ``t`` and of the functions ``resolution()`` and ``timestep()`` are expressed in this unit. The derivative of a variable is expressed in the unit of the variable, divided by the unit of time; for instance, in NEST Simulator, the derivative of a membrane potential is expressed in mV/ms.
+
+As explained in :ref:`Spiking input ports`, an incoming spike train has units of 1/s. In event handlers, the value of a spiking input port is (by convention) equal to the weight of the incoming spike, divided by 1 s, so that ``spikes * 1 s`` is equal to the spike weight. In equations, an incoming spike causes an instantaneous jump in each variable whose derivative depends on the spike train, which is equal to the spike weight times the coefficient of the spike train in the derivative (as the area under the Dirac delta pulse is equal to one). A convolution with the delta kernel ``delta(t)`` is dimensionless; because the parameter of the function ``delta()`` is in ms, this convolution is equal to the spike train multiplied by 1 ms. These conventions hold independently of the selected unit system.
+
+The model as it was before the transformation is retained in the metadata of the model (under the key ``"original_model"``), and the unit in which each variable is expressed can be obtained from its symbol by calling ``get_physical_unit()``.
+
+
 Numeric literals with a physical unit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -562,10 +649,10 @@ The following functions are predefined in NESTML and can be used out of the box.
      - Convert a time into a number of simulation steps. See the section :ref:`Handling of time` for more information.
    * - ``resolution``
      -
-     - In the ``update`` block, or in initialising expressions, returns the current timestep taken in milliseconds. See the section :ref:`Handling of time` for more information.
+     - In the ``update`` block, or in initialising expressions, returns the current timestep taken (of type ``ms``; in generated code, the value is expressed in the unit of time of the target platform, for instance, milliseconds in NEST Simulator). See the section :ref:`Handling of time` for more information.
    * - ``timestep``
      -
-     - In the ``update`` block, returns the current timestep taken in milliseconds. See the section :ref:`Handling of time` for more information.
+     - In the ``update`` block, returns the current timestep taken (of type ``ms``; in generated code, the value is expressed in the unit of time of the target platform, for instance, milliseconds in NEST Simulator). See the section :ref:`Handling of time` for more information.
 
 
 Predefined variables and constants

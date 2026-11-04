@@ -51,7 +51,7 @@
 #
 model iaf_psc_delta_fixed_timestep_neuron:
     state:
-        V_m mV = E_L     # Membrane potential
+        V_m "electrical potential" = E_L    # Membrane potential
         refr_counter integer = 0    # Refractory period timer
 
     equations:
@@ -59,22 +59,22 @@ model iaf_psc_delta_fixed_timestep_neuron:
         V_m' = -(V_m - E_L) / tau_m + (I_e + I_stim) / C_m
 
     parameters:
-        tau_m ms = 10 ms             # Membrane time constant
-        C_m pF = 250 pF              # Capacity of the membrane
-        refr_T ms = 2 ms             # Duration of refractory period
-        E_L mV = -70 mV              # Resting membrane potential
-        V_reset mV = -70 mV          # Reset potential of the membrane
-        V_th mV = -55 mV             # Spike threshold
+        tau_m time = 10 ms                         # Membrane time constant
+        C_m "electrical capacitance" = 250 pF      # Capacity of the membrane
+        refr_T time = 2 ms                         # Duration of refractory period
+        E_L "electrical potential" = -70 mV        # Resting membrane potential
+        V_reset "electrical potential" = -70 mV    # Reset potential of the membrane
+        V_th "electrical potential" = -55 mV       # Spike threshold
 
-        I_e pA = 0 pA                # constant external input current
+        I_e "electrical current" = 0 pA    # constant external input current
 
     internals:
         refr_counts integer = steps(refr_T)
-        unit_psp mV = 1 mV    # Unitary postsynaptic potential amplitude
+        unit_psp "electrical potential" = 1 mV    # Unitary postsynaptic potential amplitude
 
     input:
         spikes <- spike
-        I_stim pA <- continuous
+        I_stim "electrical current" <- continuous
 
     output:
         spike

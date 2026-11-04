@@ -162,8 +162,8 @@ class {{neuronName}}Impl(AbstractNeuronImpl):
 {%- for sym in neuron.get_state_symbols() %}
 {%- with type_symbol = sym.get_type_symbol() %}
         if variable == "{{sym.get_symbol_name()}}":
-{%- if type_symbol.is_instance_of(UnitTypeSymbol)%}
-            return "{{sym.get_type_symbol().astropy_unit}}"
+{%- if sym.print_physical_unit() %}
+            return "{{ sym.print_physical_unit() }}"
 {%- else %}
             return ""
 {%- endif%}
@@ -218,8 +218,8 @@ class {{neuronName}}Impl(AbstractNeuronImpl):
 {%- for sym in neuron.get_state_symbols() %}
 {%- with type_symbol = sym.get_type_symbol() %}
         if variable == "{{sym.get_symbol_name()}}":
-{%- if type_symbol.is_instance_of(UnitTypeSymbol)%}
-            return "{{sym.get_type_symbol().astropy_unit}}"
+{%- if sym.print_physical_unit() %}
+            return "{{ sym.print_physical_unit() }}"
 {%- else %}
             return ""
 {%- endif%}
@@ -229,8 +229,8 @@ class {{neuronName}}Impl(AbstractNeuronImpl):
 {%- for sym in neuron.get_parameter_symbols() %}
 {%- with type_symbol = sym.get_type_symbol() %}
         if variable == "{{sym.get_symbol_name()}}":
-{%- if type_symbol.is_instance_of(UnitTypeSymbol)%}
-            return "{{sym.get_type_symbol().astropy_unit}}"
+{%- if sym.print_physical_unit() %}
+            return "{{ sym.print_physical_unit() }}"
 {%- else %}
             return ""
 {%- endif%}
@@ -240,8 +240,8 @@ class {{neuronName}}Impl(AbstractNeuronImpl):
 {%- for sym in neuron.get_spike_input_ports() %}
 {%- with type_symbol = sym.get_type_symbol() %}
         if variable == "{{sym.get_symbol_name()}}":
-{%- if type_symbol.is_instance_of(UnitTypeSymbol)%}
-            return "{{sym.get_type_symbol().astropy_unit}}"
+{%- if sym.print_physical_unit() %}
+            return "{{ sym.print_physical_unit() }}"
 {%- else %}
             return ""
 {%- endif%}
@@ -251,8 +251,8 @@ class {{neuronName}}Impl(AbstractNeuronImpl):
 {%- for sym in neuron.get_continuous_input_ports() %}
 {%- with type_symbol = sym.get_type_symbol() %}
         if variable == "{{sym.get_symbol_name()}}":
-{%- if type_symbol.is_instance_of(UnitTypeSymbol)%}
-            return "{{sym.get_type_symbol().astropy_unit}}"
+{%- if sym.print_physical_unit() %}
+            return "{{ sym.print_physical_unit() }}"
 {%- else %}
             return ""
 {%- endif%}
@@ -262,8 +262,8 @@ class {{neuronName}}Impl(AbstractNeuronImpl):
 {%- for sym in neuron.get_internal_symbols() %}
 {%- with type_symbol = sym.get_type_symbol() %}
         if variable == "{{sym.get_symbol_name()}}":
-{%- if type_symbol.is_instance_of(UnitTypeSymbol)%}
-            return "{{sym.get_type_symbol().astropy_unit}}"
+{%- if sym.print_physical_unit() %}
+            return "{{ sym.print_physical_unit() }}"
 {%- else %}
             return ""
 {%- endif%}

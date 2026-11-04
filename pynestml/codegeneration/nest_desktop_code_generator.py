@@ -32,6 +32,7 @@ import pynestml
 from pynestml.codegeneration.code_generator import CodeGenerator
 from pynestml.codegeneration.code_generator_utils import CodeGeneratorUtils
 from pynestml.codegeneration.python_standalone_target_tools import PythonStandaloneTargetTools
+from pynestml.transformers.non_dimensionalisation_transformer import get_default_unit_system_path
 from pynestml.frontend.frontend_configuration import FrontendConfiguration
 from pynestml.meta_model.ast_model import ASTModel
 
@@ -79,6 +80,11 @@ class NESTDesktopCodeGenerator(CodeGenerator):
         namespace["nestml_version"] = pynestml.__version__
         namespace["neuronName"] = neuron.get_name()
         namespace["neuron"] = neuron
-        namespace["parameters"], namespace["state"] = PythonStandaloneTargetTools.get_neuron_numerical_initial_values(neuron.file_path)
+        # obtain the numerical values in the same unit system as was used to non-dimensionalise the model
+        unit_system = get_default_unit_system_path("NEST_DESKTOP")
+        if neuron.get_name() in metadata.keys() and "unit_system" in metadata[neuron.get_name()].keys():
+            unit_system = metadata[neuron.get_name()]["unit_system"].to_dict()
+
+        namespace["parameters"], namespace["state"] = PythonStandaloneTargetTools.get_neuron_numerical_initial_values(neuron.file_path, unit_system=unit_system)
 
         return namespace

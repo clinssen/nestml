@@ -64,10 +64,10 @@
 model iaf_psc_exp_neuron:
 
     state:
-        V_m mV = E_L    # Membrane potential
-        refr_t ms = 0 ms    # Refractory period timer
-        I_syn_exc pA = 0 pA
-        I_syn_inh pA = 0 pA
+        V_m "electrical potential" = E_L    # Membrane potential
+        refr_t time = 0 ms    # Refractory period timer
+        I_syn_exc "electrical current" = 0 pA
+        I_syn_inh "electrical current" = 0 pA
 
     equations:
         I_syn_exc' = -I_syn_exc / tau_syn_exc
@@ -76,25 +76,25 @@ model iaf_psc_exp_neuron:
         refr_t' = -1    # refractoriness is implemented as an ODE, representing a timer counting back down to zero, at a rate of one (milli)second per (milli)second
 
     parameters:
-        C_m pF = 250 pF           # Capacitance of the membrane
-        tau_m ms = 10 ms          # Membrane time constant
-        tau_syn_inh ms = 2 ms     # Time constant of inhibitory synaptic current
-        tau_syn_exc ms = 2 ms     # Time constant of excitatory synaptic current
-        refr_T ms = 2 ms          # Duration of refractory period
-        E_L mV = -70 mV           # Resting potential
-        V_reset mV = -70 mV       # Reset value of the membrane potential
-        V_th mV = -55 mV          # Spike threshold potential
+        C_m "electrical capacitance" = 250 pF      # Capacitance of the membrane
+        tau_m time = 10 ms                         # Membrane time constant
+        tau_syn_inh time = 2 ms                    # Time constant of inhibitory synaptic current
+        tau_syn_exc time = 2 ms                    # Time constant of excitatory synaptic current
+        refr_T time = 2 ms                         # Duration of refractory period
+        E_L "electrical potential" = -70 mV        # Resting potential
+        V_reset "electrical potential" = -70 mV    # Reset value of the membrane potential
+        V_th "electrical potential" = -55 mV       # Spike threshold potential
 
         # constant external input current
-        I_e pA = 0 pA
+        I_e "electrical current" = 0 pA
 
     internals:
-        unit_psc pA = 1 pA        # Unitary postsynaptic current amplitude
+        unit_psc "electrical current" = 1 pA    # Unitary postsynaptic current amplitude
 
     input:
         exc_spikes <- excitatory spike
         inh_spikes <- inhibitory spike
-        I_stim pA <- continuous
+        I_stim "electrical current" <- continuous
 
     output:
         spike

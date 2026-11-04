@@ -1,6 +1,6 @@
 {%- for variable in symbols %}
 {%- set name = variable.get_symbol_name() %}
-{%- set type_symbol = variable.get_type_symbol().print_symbol() %}
+{%- set type_symbol = variable.print_physical_unit() or variable.get_type_symbol().print_symbol() %}
 {%- set default_value = vars[variable.get_symbol_name()] %}
 {%- set last = loop.last %}
     {

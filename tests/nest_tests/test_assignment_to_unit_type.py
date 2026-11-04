@@ -59,4 +59,4 @@ class TestAssignmentToUnitType:
 
         V_log = mm.get("events")["V"]
 
-        np.testing.assert_allclose(V_log[-1], 1E6)
+        np.testing.assert_allclose(V_log[-1], 1E3)    # V is expressed in mV in NEST, so after the assignment V = 1 V, its value is 1000

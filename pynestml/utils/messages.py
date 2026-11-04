@@ -159,6 +159,7 @@ class MessageCode(Enum):
     NOT_ALLOWED_TO_ASSIGN_TO_A_UNIT_TYPE = 131
     VARIABLE_USED_AS_A_UNIT = 132
     NO_SOLITARY_PHYSICAL_UNITS = 133
+    QUANTITY_USED_AS_UNIT_OF_LITERAL = 134
     NEST_RANDOM_FUNCTIONS_LEGALLY_USED = 114
 
 
@@ -821,6 +822,16 @@ class Messages:
         """
         message = "Unknown type or unit literal: \"" + provided_type_str + "\""
         return MessageCode.UNKNOWN_TYPE, message
+
+    @classmethod
+    def get_quantity_used_as_unit_of_literal(cls, literal_str: str, quantity_str: str) -> Tuple[MessageCode, str]:
+        """
+        A physical quantity (such as "time") was used in place of a unit (such as "ms") in a numeric literal.
+        :param literal_str: the numeric literal, as a string
+        :param quantity_str: the name of the quantity
+        """
+        message = "Physical quantity \"" + quantity_str + "\" used as the unit of numeric literal \"" + literal_str + "\"; quantities can only be used as data types, and numeric literals need to be specified with a unit (for instance, \"10 ms\" rather than \"10 time\")"
+        return MessageCode.QUANTITY_USED_AS_UNIT_OF_LITERAL, message
 
     @classmethod
     def astdatatype_type_symbol_could_not_be_derived(cls) -> Tuple[MessageCode, str]:

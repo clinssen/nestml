@@ -22,7 +22,6 @@
 import os
 import pytest
 
-from pynestml.codegeneration.nest_unit_converter import NESTUnitConverter
 from pynestml.symbol_table.symbol_table import SymbolTable
 from pynestml.symbols.predefined_functions import PredefinedFunctions
 from pynestml.symbols.predefined_types import PredefinedTypes
@@ -30,10 +29,12 @@ from pynestml.symbols.predefined_units import PredefinedUnits
 from pynestml.symbols.predefined_variables import PredefinedVariables
 from pynestml.symbols.symbol import SymbolKind
 from pynestml.symbols.unit_type_symbol import UnitTypeSymbol
+from pynestml.transformers.non_dimensionalisation_transformer import get_default_unit_system_path
 from pynestml.utils.ast_source_location import ASTSourceLocation
 from pynestml.utils.logger import Logger, LoggingLevel
 from pynestml.utils.messages import MessageCode
 from pynestml.utils.model_parser import ModelParser
+from pynestml.utils.unit_system import UnitSystem
 from pynestml.visitors.ast_visitor import ASTVisitor
 
 
@@ -55,8 +56,8 @@ class ExpressionTestVisitor(ASTVisitor):
                   " Equal ? " + str(_equals)
 
         if isinstance(_expr.type, UnitTypeSymbol):
-            message += " Neuroscience Factor: " + \
-                       str(NESTUnitConverter.get_factor(_expr.type.astropy_unit))
+            message += " Unit in NEST Simulator: " + \
+                       str(UnitSystem.from_json_file(get_default_unit_system_path("NEST")).get_target_unit(_expr.type.astropy_unit))
 
         Logger.log_message(error_position=node.get_source_position(), code=MessageCode.TYPE_MISMATCH,
                            message=message, log_level=LoggingLevel.INFO)

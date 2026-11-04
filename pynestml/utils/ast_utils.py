@@ -2103,16 +2103,9 @@ class ASTUtils:
             for var_name, expr in solver_dict["initial_values"].items():
                 # overwrite is allowed because initial values might be repeated between numeric and analytic solver
                 if cls.variable_in_kernels(var_name, kernels):
-                    spike_in_port_name = var_name.split("__X__")[1]
-                    spike_in_port_name = spike_in_port_name.split("__d")[0]
-                    spike_in_port = ASTUtils.get_input_port_by_name(model.get_input_blocks(), spike_in_port_name)
+                    # the model has already been non-dimensionalised (see NonDimensionalisationTransformer), so all variables are real-valued
                     type_str = "real"
-                    if spike_in_port:
-                        differential_order: int = len(re.findall("__d", var_name))
-                        if differential_order:
-                            type_str = "(s**-" + str(differential_order) + ")"
-
-                    expr = "0 " + type_str    # for kernels, "initial value" returned by ode-toolbox is actually the increment value; the actual initial value is 0 (property of the convolution)
+                    expr = "0"    # for kernels, "initial value" returned by ode-toolbox is actually the increment value; the actual initial value is 0 (property of the convolution)
                     if not cls.declaration_in_state_block(model, var_name):
                         cls.add_declaration_to_state_block(model, var_name, expr, type_str)
 
@@ -2397,10 +2390,9 @@ class ASTUtils:
 
         variable_name = CppVariablePrinter._print_cpp_name(variable.get_complete_name())
         symbol = variable.get_scope().resolve_to_symbol(variable_name, SymbolKind.VARIABLE)
-        if isinstance(symbol.get_type_symbol(), UnitTypeSymbol):
-            return symbol.get_type_symbol().unit.unit.to_string()
 
-        return ""
+        # the unit in which the value of the variable is expressed (after non-dimensionalisation, this is retained in the declaration of the variable)
+        return symbol.print_physical_unit()
 
     @classmethod
     def _find_port_in_dict(cls, rport_to_port_map: Dict[int, List[VariableSymbol]], port: VariableSymbol) -> int:

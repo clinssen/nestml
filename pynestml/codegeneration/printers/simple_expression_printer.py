@@ -50,6 +50,13 @@ class SimpleExpressionPrinter(ASTPrinter, metaclass=ABCMeta):
         self._constant_printer = constant_printer
         self._function_call_printer = function_call_printer
 
+    @staticmethod
+    def _raise_physical_unit_found_error(node: ASTSimpleExpression) -> None:
+        r"""
+        Printers for target languages (C++, Python, etc.) expect that all physical units have been removed from the model by the NonDimensionalisationTransformer, so that only real numbers remain. This function raises an exception if a physical unit is encountered nevertheless.
+        """
+        raise Exception("Encountered the physical unit in the expression \"" + str(node) + "\" while printing code. Physical units should have been removed from the model by the NonDimensionalisationTransformer before code generation.")
+
     @abstractmethod
     def print_simple_expression(self, node: ASTSimpleExpression) -> str:
         """Print a simple expression.

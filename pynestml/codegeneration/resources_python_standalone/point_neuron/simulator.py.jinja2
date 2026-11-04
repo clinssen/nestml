@@ -60,10 +60,10 @@ class Simulator:
     connection_weights: Mapping[int, Mapping[int, float]] = {}
     connection_ports: Mapping[int, Mapping[int, str]] = {}
     log: Mapping[str, Mapping[str, List]] = {}              # map from id to (map from variable name to list of values over time)
-    timestep: float = .1      # should stay constant (static variable), don't change at runtime!
+    timestep: float = {{ 1E-4 * seconds_to_time_unit }}      # [{{ time_unit }}] -- should stay constant (static variable), don't change at runtime!
 
     def __init__(self):
-        self._t = 0.       # time [ms]
+        self._t = 0.       # time [{{ time_unit }}]
         self.neurons = []
         self.connections = {}
         self.connection_weights = {}
@@ -153,7 +153,7 @@ class Simulator:
         Parameters
         ----------
         t_stop
-            Stopping time in milliseconds.
+            Stopping time [{{ time_unit }}].
         """
         self._t = 0.
         while self._t < t_stop:

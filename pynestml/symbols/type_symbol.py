@@ -188,9 +188,8 @@ class TypeSymbol(Symbol):
         else:
             return False
 
-        if (isinstance(unit_a, units.Unit) or isinstance(unit_a, units.PrefixUnit) or isinstance(unit_a, units.CompositeUnit)) \
-            and (isinstance(unit_b, units.Unit) or isinstance(unit_b, units.PrefixUnit)
-                 or isinstance(unit_b, units.CompositeUnit)) and unit_a.physical_type == unit_b.physical_type:
+        # note that ``UnitBase`` also includes irreducible (SI base) units such as "A" and "s", which is what physical quantities such as "electrical current" and "time" resolve to
+        if isinstance(unit_a, units.UnitBase) and isinstance(unit_b, units.UnitBase) and unit_a.physical_type == unit_b.physical_type:
             return True
 
         return False

@@ -21,6 +21,8 @@
 
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
+from astropy import units as u
+
 from pynestml.codegeneration.printers.constant_printer import ConstantPrinter
 from pynestml.codegeneration.printers.cpp_expression_printer import CppExpressionPrinter
 from pynestml.codegeneration.printers.cpp_printer import CppPrinter
@@ -184,5 +186,8 @@ class GeNNCodeGenerator(NESTCodeGenerator):
 
     def analyse_neuron(self, neuron: ASTModel, metadata: Dict[str, Dict[str, Any]]) -> Tuple[Dict[str, ASTAssignment], Dict[str, ASTAssignment], List[ASTOdeEquation], List[ASTOdeEquation]]:
         # timestep symbol in GeNN is "dt" rather than "__h"
-        neuron.add_to_internals_block(ModelParser.parse_declaration("dt ms = resolution()"), index=0)
+        # the model has already been non-dimensionalised (see NonDimensionalisationTransformer), so the timestep is a real number (in units of ms)
+        decl = ModelParser.parse_declaration("dt real = resolution()")
+        decl.get_data_type().physical_unit = u.ms
+        neuron.add_to_internals_block(decl, index=0)
         return super().analyse_neuron(neuron, metadata)

@@ -19,9 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Mapping, Sequence
+from typing import Mapping, Optional, Sequence
 
 from astropy import units as u
+from astropy.units.physical import PhysicalType
 
 from pynestml.utils.logger import Logger, LoggingLevel
 from pynestml.utils.messages import Messages
@@ -90,6 +91,48 @@ class PredefinedUnits:
         """
         if unit.get_name() is not cls.name2unit.keys():
             cls.name2unit[unit.get_name()] = unit
+
+    @classmethod
+    def get_quantity(cls, name: str) -> Optional[PhysicalType]:
+        r"""
+        Returns the physical quantity (as an astropy ``PhysicalType``) with the given name, for instance, ``"time"`` or ``"electrical potential"``, or None if no such quantity is known. The list of known quantity names is defined by astropy (see https://docs.astropy.org/en/stable/units/physical_types.html).
+
+        :param name: the name of a physical quantity
+        :return: the corresponding physical type, or None
+        """
+        try:
+            physical_type = u.get_physical_type(name)
+        except (ValueError, TypeError, KeyError):
+            return None
+
+        if str(physical_type) == "unknown":
+            return None
+
+        return physical_type
+
+    @classmethod
+    def is_quantity(cls, name: str) -> bool:
+        r"""
+        Indicates whether the handed over name represents a physical quantity, for instance, ``"time"`` or ``"electrical potential"``.
+
+        :param name: a single name
+        :return: True if quantity name, otherwise False.
+        """
+        return cls.get_quantity(name) is not None
+
+    @classmethod
+    def get_quantity_si_unit(cls, name: str) -> Optional[u.UnitBase]:
+        r"""
+        Returns the SI unit corresponding to a physical quantity, for instance, ``s`` for ``"time"`` and ``V`` for ``"electrical potential"``, or None if no quantity by this name is known.
+
+        :param name: the name of a physical quantity
+        :return: the SI unit of the quantity, or None
+        """
+        physical_type = cls.get_quantity(name)
+        if physical_type is None:
+            return None
+
+        return physical_type._unit    # astropy does not provide a public API to obtain the SI unit of a ``PhysicalType``
 
     @classmethod
     def get_units(cls) -> Sequence[UnitType]:

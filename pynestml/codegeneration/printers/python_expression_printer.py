@@ -19,9 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
-import astropy
-
-from pynestml.codegeneration.nest_unit_converter import NESTUnitConverter
 from pynestml.codegeneration.printers.expression_printer import ExpressionPrinter
 from pynestml.meta_model.ast_arithmetic_operator import ASTArithmeticOperator
 from pynestml.meta_model.ast_bit_operator import ASTBitOperator
@@ -40,9 +37,6 @@ class PythonExpressionPrinter(ExpressionPrinter):
 
     def print(self, node: ASTNode) -> str:
         if isinstance(node, ASTExpression):
-            if node.get_implicit_conversion_factor() and not node.get_implicit_conversion_factor() == 1:
-                return "(" + str(node.get_implicit_conversion_factor()) + " * (" + self.print_expression(node) + "))"
-
             return self.print_expression(node)
 
         return self._simple_expression_printer.print(node)

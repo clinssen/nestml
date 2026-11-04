@@ -31,6 +31,7 @@ from pynestml.symbols.predefined_functions import PredefinedFunctions
 from pynestml.symbols.predefined_types import PredefinedTypes
 from pynestml.symbols.predefined_units import PredefinedUnits
 from pynestml.symbols.predefined_variables import PredefinedVariables
+from pynestml.transformers.non_dimensionalisation_transformer import NonDimensionalisationTransformer, get_default_unit_system_path
 
 
 class PrintCodeGeneratorTest(unittest.TestCase):
@@ -49,6 +50,10 @@ class PrintCodeGeneratorTest(unittest.TestCase):
         self.target_path = str(os.path.realpath(os.path.join(os.path.dirname(__file__),
                                                              os.path.join(os.pardir, "target"))))
 
+    def non_dimensionalise(self, models, metadata):
+        r"""Code generators expect that all physical units have been removed from the model"""
+        return NonDimensionalisationTransformer({"unit_system": get_default_unit_system_path("NEST")}).transform(models, metadata)
+
     def test_simple_print_statment(self):
         input_path = str(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
             "resources", "SimplePrintStatement.nestml"))))
@@ -64,8 +69,10 @@ class PrintCodeGeneratorTest(unittest.TestCase):
         FrontendConfiguration.parse_config(params)
         compilation_unit = ModelParser.parse_file(input_path)
 
+        metadata = {}
+        models = self.non_dimensionalise(compilation_unit.get_model_list(), metadata)
         nestCodeGenerator = NESTCodeGenerator()
-        nestCodeGenerator.generate_code(compilation_unit.get_model_list(), metadata={})
+        nestCodeGenerator.generate_code(models, metadata=metadata)
 
         with open(str(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
                 os.pardir, "target", "simple_print_test.cpp")))), "r") as reader:
@@ -86,8 +93,10 @@ class PrintCodeGeneratorTest(unittest.TestCase):
         FrontendConfiguration.parse_config(params)
         compilation_unit = ModelParser.parse_file(input_path)
 
+        metadata = {}
+        models = self.non_dimensionalise(compilation_unit.get_model_list(), metadata)
         nestCodeGenerator = NESTCodeGenerator()
-        nestCodeGenerator.generate_code(compilation_unit.get_model_list(), metadata={})
+        nestCodeGenerator.generate_code(models, metadata=metadata)
 
         with open(str(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
                 os.pardir, "target", "print_test_variables.cpp")))), "r") as reader:
@@ -108,8 +117,10 @@ class PrintCodeGeneratorTest(unittest.TestCase):
         FrontendConfiguration.parse_config(params)
         compilation_unit = ModelParser.parse_file(input_path)
 
+        metadata = {}
+        models = self.non_dimensionalise(compilation_unit.get_model_list(), metadata)
         nestCodeGenerator = NESTCodeGenerator()
-        nestCodeGenerator.generate_code(compilation_unit.get_model_list(), metadata={})
+        nestCodeGenerator.generate_code(models, metadata=metadata)
 
         with open(str(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
                 os.pardir, "target", "print_variable.cpp")))), "r") as reader:
@@ -130,8 +141,10 @@ class PrintCodeGeneratorTest(unittest.TestCase):
         FrontendConfiguration.parse_config(params)
         compilation_unit = ModelParser.parse_file(input_path)
 
+        metadata = {}
+        models = self.non_dimensionalise(compilation_unit.get_model_list(), metadata)
         nestCodeGenerator = NESTCodeGenerator()
-        nestCodeGenerator.generate_code(compilation_unit.get_model_list(), metadata={})
+        nestCodeGenerator.generate_code(models, metadata=metadata)
 
         with open(str(os.path.realpath(os.path.join(os.path.dirname(__file__), os.path.join(
                 os.pardir, "target", "print_test_function.cpp")))), "r") as reader:

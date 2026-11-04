@@ -163,8 +163,8 @@ class PredefinedTypes:
                 # otherwise its a prefix, store it as such
                 cls.register_unit(name)
                 return cls.get_type(str(name))
-        # this case deals with something like 1.0 if we have (ms/ms)
-        if isinstance(name, CompositeUnit) and len(name.bases) == 0:
+        # this case deals with something like 1.0 if we have (ms/ms), or dimensionless units with a scale, such as (ms/s). (Scale factors are taken into account by the NonDimensionalisationTransformer, based on the units of the individual variables and literals.)
+        if isinstance(name, CompositeUnit) and (len(name.bases) == 0 or name.physical_type == "dimensionless"):
             return cls.get_real_type()
         if isinstance(name, CompositeUnit):
             cls.register_unit(name)

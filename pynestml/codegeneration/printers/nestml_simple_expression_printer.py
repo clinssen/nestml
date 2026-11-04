@@ -45,9 +45,6 @@ class NESTMLSimpleExpressionPrinter(SimpleExpressionPrinter):
         return self.print_simple_expression(node)
 
     def print(self, node: ASTNode) -> str:
-        if node.get_implicit_conversion_factor() and not node.get_implicit_conversion_factor() == 1:
-            return "(" + str(node.get_implicit_conversion_factor()) + " * (" + self._print(node) + "))"
-
         return self._print(node)
 
     def print_unit_type(self, node: ASTUnitType) -> str:
@@ -75,6 +72,10 @@ class NESTMLSimpleExpressionPrinter(SimpleExpressionPrinter):
             return t_lhs + "/" + self.print(node.get_rhs())
 
         assert node.unit is not None
+
+        if node.is_quoted:
+            # physical quantity whose name may contain spaces, e.g. ``"electrical potential"``
+            return "\"" + str(node.unit) + "\""
 
         return str(node.unit)
 

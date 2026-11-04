@@ -956,17 +956,6 @@ class NESTCodeGenerator(CodeGenerator):
                 if "neuron_synapse_pairs" in self._options.keys():
                     is_post_port = CodeGeneratorUtils.is_post_port(orig_port_name, orig_neuron_name, orig_synapse_name, neuron_synapse_pairs=self._options["neuron_synapse_pairs"])
 
-            if is_post_port:
-                orig_port_name = spike_input_port_name[:spike_input_port_name.index("__for_")]
-                for paired_synapse in metadata[neuron.name]["paired_synapses"]:
-                    buffer_type = paired_synapse.get_scope().resolve_to_symbol(orig_port_name, SymbolKind.VARIABLE).get_type_symbol()
-                    if buffer_type is not None:
-                        break
-            else:
-                buffer_type = neuron.get_scope().resolve_to_symbol(spike_input_port_name, SymbolKind.VARIABLE).get_type_symbol()
-
-            assert not buffer_type is None
-
             for kernel_var in kernel.get_variables():
                 for var_order in range(ASTUtils.get_kernel_var_order_from_ode_toolbox_result(kernel_var.get_name(), solver_dicts)):
                     kernel_spike_buf_name = ASTUtils.construct_kernel_X_spike_buf_name(kernel_var.get_name(), spike_input_port, var_order)
@@ -983,9 +972,6 @@ class NESTCodeGenerator(CodeGenerator):
                         assignment_str += "(" + str(spike_input_port) + ")"
                     if not expr in ["1.", "1.0", "1"]:
                         assignment_str += " * (" + expr + ")"
-
-                    if not buffer_type.print_nestml_type() in ["1.", "1.0", "1", "real", "integer"]:
-                        assignment_str += " / (1 " + buffer_type.print_nestml_type() + ")"
 
                     ast_assignment = ModelParser.parse_assignment(assignment_str)
                     ast_assignment.update_scope(neuron.get_scope())
@@ -1010,24 +996,8 @@ class NESTCodeGenerator(CodeGenerator):
                 factor_expr.accept(ASTSymbolTableVisitor())
                 assignment_str += "(" + self._printer_no_origin.print(factor_expr) + ") * "
 
-            is_post_port = False
-            if "__with_" in neuron.name:
-                orig_port_name = inport.name.split("__for_")[0]
-                orig_neuron_name, orig_synapse_name = neuron.name.split("__with_")
-                orig_neuron_name = orig_neuron_name.removesuffix(FrontendConfiguration.suffix)
-                orig_synapse_name = orig_synapse_name.removesuffix(FrontendConfiguration.suffix)
-
-                if "neuron_synapse_pairs" in self._options.keys():
-                    is_post_port = CodeGeneratorUtils.is_post_port(orig_port_name, orig_neuron_name, orig_synapse_name, neuron_synapse_pairs=self._options["neuron_synapse_pairs"])
-
-            if is_post_port:
-                buffer_type = metadata[neuron.name]["paired_synapse"].get_scope().resolve_to_symbol(orig_port_name, SymbolKind.VARIABLE).get_type_symbol()
-            else:
-                buffer_type = neuron.get_scope().resolve_to_symbol(inport.get_name(), SymbolKind.VARIABLE).get_type_symbol()
-
+            # the model has been non-dimensionalised (see NonDimensionalisationTransformer), so that the numerical value of the spike input port is equal to the sum of the weights of the spikes that arrived during the current timestep
             assignment_str += str(inport)
-            if not buffer_type.print_nestml_type() in ["1.", "1.0", "1"]:
-                assignment_str += " / (1 " + buffer_type.print_nestml_type() + ")"
             ast_assignment = ModelParser.parse_assignment(assignment_str)
             ast_assignment.update_scope(neuron.get_scope())
             ast_assignment.accept(ASTSymbolTableVisitor())

@@ -1,0 +1,10 @@
+{
+    "time": "s",
+    "electrical potential": "V",
+    "electrical current": "A",
+    "electrical conductance": "S",
+    "electrical capacitance": "F",
+    "electrical resistance": "Ohm",
+    "frequency": "Hz",
+    "amount of substance": "mol"
+}

@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Mapping, Tuple
+from typing import Mapping, Optional, Tuple, Union
 
 import importlib
 import multiprocessing
@@ -40,7 +40,7 @@ class PythonStandaloneTargetTools:
     Helper functions for the Python standalone target.
     """
     @classmethod
-    def _get_model_parameters_and_state(cls, nestml_file_name: str):
+    def _get_model_parameters_and_state(cls, nestml_file_name: str, unit_system: Optional[Union[str, Mapping[str, str]]] = None):
         suffix = ""
         module_name = FrontendConfiguration.get_module_name()
         target_path = tempfile.mkdtemp(prefix="nestml_python_target_", suffix="", dir=".")    # dir = "." is necessary for Python import
@@ -49,7 +49,8 @@ class PythonStandaloneTargetTools:
                                                                                             "target_path": target_path,
                                                                                             "suffix": suffix,
                                                                                             "module_name": module_name,
-                                                                                            "logging_level": "ERROR"})
+                                                                                            "logging_level": "ERROR",
+                                                                                            "codegen_opts": {"unit_system": unit_system} if unit_system is not None else None})
         process.start()
         process.join()    # wait for code generation to complete
 
@@ -80,16 +81,17 @@ class PythonStandaloneTargetTools:
         return parameters, internals, state_vars
 
     @classmethod
-    def get_neuron_numerical_initial_values(cls, nestml_file_name: str) -> Tuple[Mapping[str, float], Mapping[str, float], Mapping[str, float]]:
+    def get_neuron_numerical_initial_values(cls, nestml_file_name: str, unit_system: Optional[Union[str, Mapping[str, str]]] = None) -> Tuple[Mapping[str, float], Mapping[str, float], Mapping[str, float]]:
         r"""
         Get the numerical values of the parameters, internals, and state variables for the given neuron model.
 
         Internally, code is generated for the model for the Python standalone target, and then the value is read off by instantiating the resulting code.
 
         :param nestml_file_name: File name of the neuron model
+        :param unit_system: The unit system in which the values should be expressed (see :py:class:`NonDimensionalisationTransformer`); either a path to a JSON file or a dictionary. By default, the unit system of the Python standalone target (SI units) is used.
         :return: Dictionaries mapping parameters, internals and state variables to their numerical initial values
         """
-        parameters, internals, state = cls._get_model_parameters_and_state(nestml_file_name)
+        parameters, internals, state = cls._get_model_parameters_and_state(nestml_file_name, unit_system=unit_system)
 
         if not parameters or not state:
             Logger.log_message(None, -1,

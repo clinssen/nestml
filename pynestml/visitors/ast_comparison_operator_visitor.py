@@ -57,6 +57,11 @@ class ASTComparisonOperatorVisitor(ASTVisitor):
             expr.type = PredefinedTypes.get_boolean_type()
             return
 
+        if isinstance(lhs_type, UnitTypeSymbol) and isinstance(rhs_type, UnitTypeSymbol) and lhs_type.differs_only_in_magnitude(rhs_type):
+            # the units differ only in magnitude (e.g. "ms" and "s"); conversion factors are inserted by the NonDimensionalisationTransformer
+            expr.type = PredefinedTypes.get_boolean_type()
+            return
+
         # Error message for any other operation
         if (isinstance(lhs_type, UnitTypeSymbol) and rhs_type.is_numeric()) or (
                 isinstance(rhs_type, UnitTypeSymbol) and lhs_type.is_numeric()):

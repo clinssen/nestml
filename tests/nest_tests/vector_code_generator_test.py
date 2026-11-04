@@ -33,6 +33,7 @@ from pynestml.symbols.predefined_units import PredefinedUnits
 from pynestml.utils.ast_source_location import ASTSourceLocation
 from pynestml.utils.logger import LoggingLevel, Logger
 from pynestml.utils.model_parser import ModelParser
+from pynestml.transformers.non_dimensionalisation_transformer import NonDimensionalisationTransformer, get_default_unit_system_path
 
 
 class VectorCodeGenerationTest(unittest.TestCase):
@@ -68,8 +69,12 @@ class VectorCodeGenerationTest(unittest.TestCase):
 
         compilation_unit = ModelParser.parse_file(input_path)
 
+        # code generators expect that all physical units have been removed from the model
+        metadata = {}
+        models = NonDimensionalisationTransformer({"unit_system": get_default_unit_system_path("NEST")}).transform(compilation_unit.get_model_list(), metadata)
+
         nestCodeGenerator = NESTCodeGenerator()
-        nestCodeGenerator.generate_code(compilation_unit.get_model_list(), metadata={})
+        nestCodeGenerator.generate_code(models, metadata=metadata)
 
     def test_vector_code_generation_and_build(self):
         input_path = str(os.path.realpath(os.path.join(os.path.dirname(__file__), "resources",

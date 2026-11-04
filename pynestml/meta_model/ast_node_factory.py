@@ -353,9 +353,10 @@ class ASTNodeFactory:
                              is_div: bool = False,
                              is_times: bool = False,
                              unit: Optional[str] = None,
+                             is_quoted: bool = False,
                              source_position: Optional[ASTSourceLocation] = None) -> ASTUnitType:
         return ASTUnitType(is_encapsulated, compound_unit, base, is_pow, exponent, exponent_num, exponent_den, lhs, rhs, is_div,
-                           is_times, unit, source_position=source_position)
+                           is_times, unit, is_quoted=is_quoted, source_position=source_position)
 
     @classmethod
     def create_ast_update_block(cls, block, source_position):

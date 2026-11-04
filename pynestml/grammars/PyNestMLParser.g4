@@ -41,7 +41,9 @@ parser grammar PyNestMLParser;
            | isVoid=VOID_KEYWORD
            | unit=unitType;
   /**
-   * ASTUnitType. Represents an unit data type. It can be a plain data type as 'mV' or a complex data type as 'mV/s'
+   * ASTUnitType. Represents a unit or quantity data type. It can be a plain unit such as 'mV', a physical quantity such as 'time', or a combination such as 'mV/s' or '"electrical potential" / time'.
+   * @attribute unit: A single unit or single-word quantity, e.g., 'mV' or 'time'.
+   * @attribute quantity: A physical quantity in double quotation marks, e.g., '"electrical conductance"'. Quotes are needed if the name of the quantity contains spaces.
   **/
   unitTypeExponent : (negative=MINUS?) leftParentheses=LEFT_PAREN num=UNSIGNED_INTEGER divOp=FORWARD_SLASH den=UNSIGNED_INTEGER rightParentheses=RIGHT_PAREN
                    | ( PLUS | MINUS )? (UNSIGNED_INTEGER | FLOAT);
@@ -50,7 +52,8 @@ parser grammar PyNestMLParser;
            | base=unitType powOp=STAR_STAR exponent=unitTypeExponent
            | left=unitType (timesOp=STAR | divOp=FORWARD_SLASH) right=unitType
            | unitlessLiteral=UNSIGNED_INTEGER divOp=FORWARD_SLASH right=unitType
-           | unit=NAME;
+           | unit=NAME
+           | quantity=STRING_LITERAL;
 
   // -------------------------------------------------------------------------
   //  Decorators on equations, expressions, declarations, etc.

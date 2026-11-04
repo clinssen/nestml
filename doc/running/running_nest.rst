@@ -50,6 +50,12 @@ The NESTML models are then available for instantiation, for example as:
 For more details on how to generate code for synaptic plasticity models, please refer to the section :ref:`Generating code for plastic synapses <Generating code for plastic synapses>`.
 
 
+Physical units
+--------------
+
+In the generated code, as well as in the PyNEST interface, quantities are expressed in the units that are customary in NEST Simulator: times in ms, voltages in mV, currents in pA, conductances in nS, capacitances in pF, resistances in GΩ, frequencies in Hz, and amounts of substance in mmol, independent of the unit with which a variable was declared in the NESTML model (see :ref:`Physical units in generated code`). For example, a parameter declared as ``g_L "electrical conductance" = 1 uS`` has the value 1000 when read via PyNEST. The unit system is defined in ``pynestml/codegeneration/resources_nest/unit_system.json``; a different unit system can be selected by means of the ``unit_system`` code generator option, but note that the unit of time should remain milliseconds, as this is the unit of time used by NEST Simulator.
+
+
 Simulation loop
 ---------------
 

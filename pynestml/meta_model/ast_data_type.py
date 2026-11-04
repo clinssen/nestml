@@ -46,10 +46,11 @@ class ASTDataType(ASTNode):
         is_void = False
         unit_type = None  # a unit type is not a boolean, but a concrete object
         type_symbol = None  # the corresponding type symbol
+        physical_unit = None  # after non-dimensionalisation (see NonDimensionalisationTransformer), the data type of a quantity with a physical unit is ``real``; this attribute then holds the (astropy) unit in which the real-valued number is expressed, for instance, "mV"
     """
 
     def __init__(self, is_integer=False, is_real=False, is_string=False, is_boolean=False, is_void=False,
-                 unit_type: Optional[ASTUnitType] = None, type_symbol=None, *args, **kwargs):
+                 unit_type: Optional[ASTUnitType] = None, type_symbol=None, physical_unit=None, *args, **kwargs):
         """
         Standard constructor.
 
@@ -67,6 +68,7 @@ class ASTDataType(ASTNode):
         :type is_void: boolean
         :param unit_type: an object of type ASTUnitType
         :type unit_type: ASTUnitType
+        :param physical_unit: for a non-dimensionalised data type: the (astropy) unit in which the value is expressed
         """
         super(ASTDataType, self).__init__(*args, **kwargs)
         self.is_integer = is_integer
@@ -76,6 +78,7 @@ class ASTDataType(ASTNode):
         self.is_void = is_void
         self.unit_type = unit_type
         self.type_symbol = type_symbol
+        self.physical_unit = physical_unit
 
     def clone(self):
         """
@@ -94,13 +97,13 @@ class ASTDataType(ASTNode):
                           is_void=self.is_void,
                           unit_type=unit_type_dup,
                           type_symbol=self.type_symbol,
+                          physical_unit=self.physical_unit,
                           # ASTNode common attributes:
                           source_position=self.source_position,
                           scope=self.scope,
                           comment=self.comment,
                           pre_comments=[s for s in self.pre_comments],
-                          in_comment=self.in_comment,
-                          implicit_conversion_factor=self.implicit_conversion_factor)
+                          in_comment=self.in_comment)
 
         return dup
 
@@ -119,6 +122,12 @@ class ASTDataType(ASTNode):
         :rtype: ASTUnitType
         """
         return self.unit_type
+
+    def get_physical_unit(self):
+        r"""
+        After non-dimensionalisation of the model (see NonDimensionalisationTransformer), data types of quantities with physical units are replaced by ``real``. This function then returns the unit in which the real-valued number is expressed, for instance, "mV". Returns None if the data type is not dimensional, or if the model has not been non-dimensionalised.
+        """
+        return self.physical_unit
 
     def get_type_symbol(self):
         """

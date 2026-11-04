@@ -33,6 +33,12 @@ After the code has been generated, a simple test can can be run by calling:
    python3 test_python_standalone_module.py
 
 
+Physical units
+~~~~~~~~~~~~~~
+
+In the generated code, all quantities are expressed in SI units: for example, times in seconds, voltages in volts, currents in amperes and conductances in siemens (see :ref:`Physical units in generated code`). This includes the simulation timestep and the times passed to the simulator. The unit system is defined in ``pynestml/codegeneration/resources_python_standalone/unit_system.json``; a different unit system can be selected by means of the ``unit_system`` code generator option.
+
+
 Code generation options
 ~~~~~~~~~~~~~~~~~~~~~~~
 

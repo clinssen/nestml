@@ -24,12 +24,10 @@ from __future__ import annotations
 from pynestml.codegeneration.nest_gpu_code_generator_utils import NESTGPUCodeGeneratorUtils
 from pynestml.codegeneration.printers.cpp_variable_printer import CppVariablePrinter
 from pynestml.codegeneration.printers.expression_printer import ExpressionPrinter
-from pynestml.codegeneration.nest_unit_converter import NESTUnitConverter
 from pynestml.meta_model.ast_variable import ASTVariable
 from pynestml.symbols.predefined_units import PredefinedUnits
 from pynestml.symbols.predefined_variables import PredefinedVariables
 from pynestml.symbols.symbol import SymbolKind
-from pynestml.symbols.unit_type_symbol import UnitTypeSymbol
 from pynestml.utils.logger import Logger, LoggingLevel
 from pynestml.utils.messages import Messages
 
@@ -59,16 +57,8 @@ class NESTGPUVariablePrinter(CppVariablePrinter):
         assert symbol is not None
 
         if symbol.is_buffer():
-            if isinstance(symbol.get_type_symbol(), UnitTypeSymbol):
-                units_conversion_factor = NESTUnitConverter.get_factor(symbol.get_type_symbol().unit.unit)
-            else:
-                units_conversion_factor = 1
             s = ""
-            if not units_conversion_factor == 1:
-                s += "(" + str(units_conversion_factor) + " * "
             s += self._print(variable, symbol, with_origin=self.with_origin)
-            if not units_conversion_factor == 1:
-                s += ")"
             return s
 
         assert not symbol.is_kernel(), "Cannot print kernel; kernel should have been converted during code generation"

@@ -88,7 +88,20 @@ class ASTDataTypeVisitor(ASTVisitor):
         :rtype: type_symbol
         """
         if node.is_simple_unit():
-            type_s = PredefinedTypes.get_type(node.unit)
+            type_s = None
+            if not node.is_quoted:
+                # try to interpret the name as a physical unit, e.g. "mV"
+                type_s = PredefinedTypes.get_type(node.unit)
+
+            if type_s is None:
+                # try to interpret the name as a physical quantity, e.g. "time" or "electrical potential". The type of a variable declared as a quantity is the SI unit of that quantity (for instance, "V" for "electrical potential"). The scale (prefix) in which the value is ultimately expressed in generated code is determined by the NonDimensionalisationTransformer.
+                si_unit = PredefinedUnits.get_quantity_si_unit(node.unit)
+                if si_unit is not None:
+                    if si_unit.physical_type == "dimensionless":
+                        type_s = PredefinedTypes.get_real_type()
+                    else:
+                        type_s = handle_unit(si_unit)
+
             if type_s is None:
                 code, message = Messages.unknown_type(str(node.unit))
                 Logger.log_message(None, code, message, node.get_source_position(), LoggingLevel.ERROR)

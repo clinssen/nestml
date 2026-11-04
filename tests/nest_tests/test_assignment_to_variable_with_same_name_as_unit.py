@@ -60,4 +60,4 @@ class TestAssignmentToVariableWithSameNameAsUnit:
         nest.Simulate(100.)
 
         V_log = mm.get("events")["V"]
-        np.testing.assert_allclose(V_log[-1], 1E-6 * np.e)
+        np.testing.assert_allclose(V_log[-1], 1E-9 * np.e)    # 1 V/F * e = 1E-9 * e mV/pF

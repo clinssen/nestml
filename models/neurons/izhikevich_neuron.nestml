@@ -61,31 +61,31 @@
 #
 model izhikevich_neuron:
     state:
-        V_m mV = V_m_init         # Membrane potential
-        U_m real = b * V_m_init   # Membrane potential recovery variable
+        V_m "electrical potential" = V_m_init   # Membrane potential
+        U_m real = b * V_m_init                 # Membrane potential recovery variable
 
     equations:
         V_m' = (0.04 * V_m * V_m / 1 mV + 5 * V_m + (140 - U_m) * 1 mV + ((I_e + I_stim) * 1 GOhm)) / 1 ms
         U_m' = a * (b * V_m - U_m * 1 mV) / (1 mV*ms)
 
     parameters:
-        a real = 0.02           # describes time scale of recovery variable
-        b real = 0.2            # sensitivity of recovery variable
-        c mV = -65 mV           # after-spike reset value of V_m
-        d real = 8.0            # after-spike reset value of U_m
-        V_m_init mV = -65 mV    # initial membrane potential
-        V_min mV = -inf * 1 mV  # Absolute lower value for the membrane potential.
-        V_th mV = 30 mV         # Threshold potential
+        a real = 0.02                                        # describes time scale of recovery variable
+        b real = 0.2                                         # sensitivity of recovery variable
+        c "electrical potential" = -65 mV                    # after-spike reset value of V_m
+        d real = 8.0                                         # after-spike reset value of U_m
+        V_m_init "electrical potential" = -65 mV             # initial membrane potential
+        V_min "electrical potential" = -inf * 1 mV           # Absolute lower value for the membrane potential.
+        V_th "electrical potential" = 30 mV                  # Threshold potential
 
         # constant external input current
-        I_e pA = 0 pA
+        I_e "electrical current" = 0 pA
 
     internals:
-        unit_psp mV = 1 mV        # Unitary postsynaptic membrane potential
+        unit_psp "electrical potential" = 1 mV    # Unitary postsynaptic membrane potential
 
     input:
         spikes <- spike
-        I_stim pA <- continuous
+        I_stim "electrical current" <- continuous
 
     output:
         spike

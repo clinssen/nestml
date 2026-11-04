@@ -129,11 +129,16 @@ class ASTBuilderVisitor(PyNestMLParserVisitor):
         is_div = True if ctx.divOp is not None else False
         rhs = self.visit(ctx.right) if ctx.right is not None else None
         unit = str(ctx.unit.text) if ctx.unit is not None else None
+        is_quoted = False
+        if ctx.quantity is not None:
+            # a physical quantity in double quotation marks, e.g. ``"electrical potential"``: strip the quotes
+            unit = str(ctx.quantity.text)[1:-1]
+            is_quoted = True
 
         return ASTNodeFactory.create_ast_unit_type(is_encapsulated=is_encapsulated, compound_unit=compound_unit,
                                                    base=base, is_pow=is_pow,
                                                    exponent=exponent, exponent_num=exponent_num, exponent_den=exponent_den, lhs=lhs, rhs=rhs, is_div=is_div,
-                                                   is_times=is_times, unit=unit, source_position=create_source_pos(ctx))
+                                                   is_times=is_times, unit=unit, is_quoted=is_quoted, source_position=create_source_pos(ctx))
 
     # Visit a parse tree produced by PyNESTMLParser#rhs.
     def visitExpression(self, ctx):

@@ -234,7 +234,7 @@ class TestIntegrateODEs:
             os.path.join(os.path.dirname(__file__), os.path.join("resources", "integrate_odes_test_params2.nestml")))
         generate_target(input_path=fname, target_platform="NONE", logging_level="DEBUG")
 
-        assert len(Logger.get_messages("integrate_odes_test", LoggingLevel.ERROR)) == 2
+        assert len(Logger.get_messages("integrate_odes_test", LoggingLevel.ERROR)) == 4
 
     def test_integrate_odes_spikes(self):
         r"""
@@ -277,7 +277,7 @@ class TestIntegrateODEs:
             fig.savefig("/tmp/test_integrate_odes_spikes.png", dpi=300)
 
         # verify
-        np.testing.assert_allclose(x_actual[-1], .004)    # XXX desired should be 4, this is due to an issue with the scale of the weight, see https://github.com/nest/nestml/issues/984
+        np.testing.assert_allclose(x_actual[-1], 4.)    # four spikes of weight 1 were integrated
 
     def test_integrate_odes_higher_order(self):
         r"""
@@ -323,7 +323,7 @@ class TestIntegrateODEs:
 
         # verify
         np.testing.assert_allclose(x_actual[-1], 0.10737970490959549)
-        np.testing.assert_allclose(y_actual[-1], 0.6211608596446752)
+        np.testing.assert_allclose(y_actual[-1], 42 * (1 - np.exp(-times[-1] / 1E6)))    # time constant is 1E3 s = 1E6 ms
 
     def test_integrate_odes_numeric_higher_order(self):
         r"""

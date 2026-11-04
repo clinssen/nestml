@@ -322,6 +322,40 @@ class VariableSymbol(Symbol):
         """
         return copy(self.type_symbol)
 
+    def get_physical_unit(self):
+        r"""
+        Returns the (astropy) physical unit in which the value of this variable is expressed, or None if the variable is dimensionless or non-numeric.
+
+        After the model has been non-dimensionalised (see :py:class:`NonDimensionalisationTransformer`), the variable is real-typed, and this function returns the unit in which the real-valued number is expressed in the generated code, for instance, "mV". This can be used, for instance, to print units in comments in the generated code. Before non-dimensionalisation, the unit corresponding to the type of the variable is returned.
+        """
+        from pynestml.meta_model.ast_data_type import ASTDataType
+        from pynestml.symbols.unit_type_symbol import UnitTypeSymbol
+
+        ref = self.get_referenced_object()
+        data_type = None
+        if ref is not None and "get_data_type" in dir(ref):
+            data_type = ref.get_data_type()
+        elif ref is not None and "get_datatype" in dir(ref):
+            data_type = ref.get_datatype()
+
+        if isinstance(data_type, ASTDataType) and data_type.get_physical_unit() is not None:
+            return data_type.get_physical_unit()
+
+        if isinstance(self.type_symbol, UnitTypeSymbol):
+            return self.type_symbol.astropy_unit
+
+        return None
+
+    def print_physical_unit(self) -> str:
+        r"""
+        Returns the physical unit in which the value of this variable is expressed (see :py:meth:`get_physical_unit`) as a string, for instance, "mV". Returns the empty string if the variable is dimensionless or non-numeric.
+        """
+        unit = self.get_physical_unit()
+        if unit is None:
+            return ""
+
+        return unit.to_string()
+
     def set_type_symbol(self, type_symbol):
         """
         Updates the current type symbol to a new one.

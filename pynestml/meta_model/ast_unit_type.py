@@ -35,7 +35,7 @@ class ASTUnitType(ASTNode):
     complex data type as "mV/s"
     """
 
-    def __init__(self, is_encapsulated: bool = False, compound_unit: Optional[ASTUnitType] = None, base: Optional[ASTUnitType] = None, is_pow: bool = False, exponent: Optional[Union[int, float]] = None, exponent_num: Optional[float] = None, exponent_den: Optional[float] = None, lhs: Optional[Union[ASTUnitType, int]] = None, rhs: Optional[ASTUnitType] = None, is_div: bool = False, is_times: bool = False, _unit: Optional[str] = None, type_symbol: Optional[TypeSymbol] = None, *args, **kwargs):
+    def __init__(self, is_encapsulated: bool = False, compound_unit: Optional[ASTUnitType] = None, base: Optional[ASTUnitType] = None, is_pow: bool = False, exponent: Optional[Union[int, float]] = None, exponent_num: Optional[float] = None, exponent_den: Optional[float] = None, lhs: Optional[Union[ASTUnitType, int]] = None, rhs: Optional[ASTUnitType] = None, is_div: bool = False, is_times: bool = False, _unit: Optional[str] = None, type_symbol: Optional[TypeSymbol] = None, is_quoted: bool = False, *args, **kwargs):
         """
         Standard constructor.
 
@@ -51,8 +51,9 @@ class ASTUnitType(ASTNode):
         :param rhs: the right-hand side rhs
         :param is_div: is a division rhs
         :param is_times: is a times rhs
-        :param _unit: is a single unit, e.g. mV
+        :param _unit: is a single unit, e.g. mV, or a single physical quantity, e.g. ``time`` or ``electrical potential``
         :param type_symbol: the corresponding type symbol
+        :param is_quoted: True if ``_unit`` was given in double quotation marks in the model (for quantities whose name contains spaces, e.g. ``"electrical potential"``)
         """
         super(ASTUnitType, self).__init__(*args, **kwargs)
         if _unit:
@@ -69,6 +70,7 @@ class ASTUnitType(ASTNode):
         self.is_div = is_div
         self.rhs = rhs
         self.unit = _unit
+        self.is_quoted = is_quoted
         self.type_symbol = type_symbol
 
     def clone(self):
@@ -106,13 +108,13 @@ class ASTUnitType(ASTNode):
                           is_times=self.is_times,
                           _unit=self.unit,
                           type_symbol=self.type_symbol,
+                          is_quoted=self.is_quoted,
                           # ASTNode common attributes:
                           source_position=self.source_position,
                           scope=self.scope,
                           comment=self.comment,
                           pre_comments=[s for s in self.pre_comments],
-                          in_comment=self.in_comment,
-                          implicit_conversion_factor=self.implicit_conversion_factor)
+                          in_comment=self.in_comment)
 
         return dup
 
@@ -200,6 +202,6 @@ class ASTUnitType(ASTNode):
             return False
         if self.is_simple_unit() + other.is_simple_unit() == 1:
             return False
-        if self.is_simple_unit() and other.is_simple_unit() and not self.unit == other.unit:
+        if self.is_simple_unit() and other.is_simple_unit() and not (self.unit == other.unit and self.is_quoted == other.is_quoted):
             return False
         return True

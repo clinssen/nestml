@@ -20,7 +20,12 @@
 # along with NEST.  If not, see <http://www.gnu.org/licenses/>.
 
 from pynestml.meta_model.ast_node import ASTNode
+from pynestml.meta_model.ast_unit_type import ASTUnitType
 from pynestml.symbols.predefined_types import PredefinedTypes
+from pynestml.symbols.predefined_units import PredefinedUnits
+from pynestml.symbols.symbol import SymbolKind
+from pynestml.utils.logger import Logger, LoggingLevel
+from pynestml.utils.messages import Messages
 from pynestml.visitors.ast_data_type_visitor import ASTDataTypeVisitor
 from pynestml.visitors.ast_visitor import ASTVisitor
 
@@ -29,6 +34,20 @@ class ASTNumericLiteralVisitor(ASTVisitor):
     """
     Visits a single numeric literal and updates its type.
     """
+
+    def _check_no_quantities_in_unit_type(self, node: ASTNode, unit_type: ASTUnitType) -> None:
+        r"""Physical quantities (such as "time") can only be used as data types, not as the unit of a numeric literal: log an error if a quantity is used."""
+        if unit_type.is_simple_unit():
+            is_variable = node.get_scope() is not None and node.get_scope().resolve_to_symbol(unit_type.unit, SymbolKind.VARIABLE) is not None    # variables that appear inside the unit type will be split off by the UnitTypeFixerVisitor
+            if unit_type.is_quoted or (not is_variable and not PredefinedUnits.is_unit(unit_type.unit) and PredefinedUnits.is_quantity(unit_type.unit)):
+                code, message = Messages.get_quantity_used_as_unit_of_literal(str(node), unit_type.unit)
+                Logger.log_message(code=code, message=message, error_position=node.get_source_position(), log_level=LoggingLevel.ERROR)
+
+            return
+
+        for child in unit_type.get_children():
+            if isinstance(child, ASTUnitType):
+                self._check_no_quantities_in_unit_type(node, child)
 
     def visit_simple_expression(self, node: ASTNode) -> None:
         """
@@ -39,6 +58,7 @@ class ASTNumericLiteralVisitor(ASTVisitor):
         assert node.get_scope() is not None, "Run symboltable creator."
         # if unitType is set in this rhs, the var type overrides the literal
         if node.unitType is not None:
+            self._check_no_quantities_in_unit_type(node, node.unitType)
             node.unitType.accept(ASTDataTypeVisitor())
             node.type = node.unitType.get_type_symbol()
             node.type.referenced_object = node

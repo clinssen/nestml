@@ -26,21 +26,7 @@ from pynestml.utils.messages import Messages
 
 class TypeCaster:
     @staticmethod
-    def do_magnitude_conversion_rhs_to_lhs(_rhs_type_symbol, _lhs_type_symbol, _containing_expression):
-        """
-        Determine conversion factor from rhs to lhs, register it with the relevant expression
-        """
-        _containing_expression.set_implicit_conversion_factor(
-            UnitTypeSymbol.get_conversion_factor(_rhs_type_symbol.astropy_unit,
-                                                 _lhs_type_symbol.astropy_unit))
-        code, message = Messages.get_implicit_magnitude_conversion(_lhs_type_symbol, _rhs_type_symbol,
-                                                                   _containing_expression.get_implicit_conversion_factor())
-        Logger.log_message(code=code, message=message,
-                           error_position=_containing_expression.get_source_position(),
-                           log_level=LoggingLevel.INFO)
-
-    @staticmethod
-    def try_to_recover_or_error(_lhs_type_symbol, _rhs_type_symbol, _containing_expression, set_implicit_conversion_factor_on_lhs=False):
+    def try_to_recover_or_error(_lhs_type_symbol, _rhs_type_symbol, _containing_expression):
         if _rhs_type_symbol.is_castable_to(_lhs_type_symbol):
             if isinstance(_lhs_type_symbol, UnitTypeSymbol) \
                     and isinstance(_rhs_type_symbol, UnitTypeSymbol):
@@ -53,9 +39,12 @@ class TypeCaster:
                                        code=code, message=message, log_level=LoggingLevel.ERROR)
                     return
 
-                if set_implicit_conversion_factor_on_lhs and not conversion_factor == 1.:
-                    # the units are mutually convertible, but require a factor unequal to 1 (e.g. mV and A*Ohm)
-                    TypeCaster.do_magnitude_conversion_rhs_to_lhs(_rhs_type_symbol, _lhs_type_symbol, _containing_expression)
+                if not conversion_factor == 1.:
+                    # the units are mutually convertible, but require a factor unequal to 1 (e.g. mV and A*Ohm). The factor will be inserted into the model by the NonDimensionalisationTransformer.
+                    code, message = Messages.get_implicit_magnitude_conversion(_lhs_type_symbol, _rhs_type_symbol, conversion_factor)
+                    Logger.log_message(code=code, message=message,
+                                       error_position=_containing_expression.get_source_position(),
+                                       log_level=LoggingLevel.INFO)
 
             # the units are mutually convertible (e.g. V and A*Ohm)
             code, message = Messages.get_implicit_cast_rhs_to_lhs(_rhs_type_symbol.print_symbol(),

@@ -82,8 +82,22 @@ class ASTVariable(ASTNode):
                            scope=self.scope,
                            comment=self.comment,
                            pre_comments=[s for s in self.pre_comments],
-                           in_comment=self.in_comment,
-                           implicit_conversion_factor=self.implicit_conversion_factor)
+                           in_comment=self.in_comment)
+
+    def get_physical_unit(self):
+        r"""
+        Returns the (astropy) physical unit in which the value of this variable is expressed, or None if the variable is dimensionless, non-numeric, or cannot be resolved. After the model has been non-dimensionalised (see NonDimensionalisationTransformer), all variables are real-typed, and this is the unit in which the real-valued number is expressed in generated code (for instance, "mV"). See also :py:meth:`VariableSymbol.get_physical_unit`.
+        """
+        from pynestml.symbols.symbol import SymbolKind
+
+        if self.get_scope() is None:
+            return None
+
+        symbol = self.get_scope().resolve_to_symbol(self.get_complete_name(), SymbolKind.VARIABLE)
+        if symbol is None:
+            return None
+
+        return symbol.get_physical_unit()
 
     def resolve_in_own_scope(self):
         from pynestml.symbols.symbol import SymbolKind
